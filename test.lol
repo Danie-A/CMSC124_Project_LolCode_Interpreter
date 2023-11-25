@@ -1,1 +1,1 @@
-VISIBLE "Hello            World"
+VISIBLE CONCAT PRODUKT OF "Hello            World"

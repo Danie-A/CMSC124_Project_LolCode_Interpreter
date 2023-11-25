@@ -7,8 +7,9 @@ import regex as re
 #     print("FALSE")
 
 lines = [
-    'This is a "string" with "multiple words" and PRODUKT OF and QUOSHUNT OF'
+    'This is                a "string" with "multiple words" and "PRODUKT            OF" and QUOSHUNT OF'
 ]
+
 
 for line in lines:
     chars = list(line)
@@ -41,4 +42,9 @@ for line in lines:
     # Printing tokens to check the output
     print(tokens)
 
+# token = "-0"
 
+# if re.fullmatch(r"(-?(0|[1-9][0-9]*)(\.[0-9]+)?)", token):
+#     print("TRUE")
+# else:
+#     print("FALSE")
