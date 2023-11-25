@@ -65,10 +65,13 @@ reg = {
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
 
-    lexeme = ""
+    lexeme = "" # initialize empty temporary string
+    multi_word = False # initialize multi_word to false
     items = []
     for line in lines:
         chars = list(line) # split line to each character in the line to the 'chars' list
+        if multi_word == False:
+            lexeme = ""
         tokens = [] # initialize empty tokens list
         in_quotes = False # initialize in_quotes to false
         for char in chars:
@@ -223,6 +226,9 @@ def lexical_analyzer(contents):
             tokens.append(lexeme)  # append any remaining lexeme as a lexeme
             lexeme = '' # set lexeme to empty again
         
+        
+        
+        full_quote = False
         num_quote = 0
         for i,token in enumerate(tokens):
             if token == '"':
@@ -281,8 +287,6 @@ def lexical_analyzer(contents):
                 items.append(("variable_value_reassignment", token))
                         
             #Arithmetic/Mathematical Operations
-            elif re.fullmatch(r"AN", token):
-                items.append(("and_keyword", token))
             elif re.fullmatch(r"SUM OF", token):
                 items.append(("add_keyword", token))
             elif re.fullmatch(r"DIFF OF", token):
@@ -383,20 +387,14 @@ def lexical_analyzer(contents):
                 items.append(("numbr_literal", token))
             elif re.fullmatch(r"-?(0|[1-9][0-9]*)(\.[0-9]+)?", token):
                 items.append(("numbar_literal", token))
-            
-            elif re.fullmatch(r".*", token):
-                items.append(("any", token))
+                
+
 
             # if for loop
             # for i in reg_keys:
             #     if re.fullmatch(reg[i], token):
             #         items.append([i, token])
             #         break
-            
-    
-    # print items separated by newline
-    for item in items:
-        print(item)
                     
     return items
 
