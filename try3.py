@@ -48,3 +48,19 @@ for line in lines:
 #     print("TRUE")
 # else:
 #     print("FALSE")
+
+contents = """
+OBTW YEEHAWW ROAWERR
+    This is a comment
+    boom boom POWERRR BOOM
+TLDR
+I HAS A var ITZ 34 BTW this is a variable declaration and assignment statement
+I HAS A troofy ITZ FAIL
+
+"""
+
+contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents)
+contents = re.sub(r"OBTW.*TLDR", "", contents, flags=re.DOTALL) # remove comments by deleting OBTW, between them, and TLDR
+
+
+print("Contents are:",contents, ":end contents")

@@ -240,9 +240,9 @@ def lexical_analyzer(contents):
             # [/] loop identifier
             
             # HARD PART
-            # [] Multiple Block Comments - DAN OBTW
-            # [] Single Line Comments - DANI / DAN BTW
-            # [] Regex for \n, any, and epsilon - DANI NOW
+            # [/] Multiple Block Comments - DAN OBTW
+            # [/] Single Line Comments - DANI / DAN BTW
+            # [/] Regex for \n, any, and epsilon - DANI NOW
             
             # Other code that rely on multiple lines
             
@@ -411,6 +411,9 @@ def lexical_analyzer(contents):
 
 def parse(file):
     contents = open(file, 'r').read()
+    
+    contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
+    contents = re.sub(r"OBTW.*TLDR", "", contents, flags=re.DOTALL)  # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
     tokens = lexical_analyzer(contents)
     return tokens
 
