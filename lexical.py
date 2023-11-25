@@ -1,45 +1,5 @@
-# code for getting the lexemes of the .lol file
-from tkinter import *
 
-root = Tk()
-root.title("The Lords of the Strings Lexical Analyzer")
 
-topFrame = Frame(root)
-bottomFrame = Frame(root)
-
-fileExplorer = Label(topFrame, text="File Explorer")
-textEditor = Text(topFrame, width=43, height=10)
-tokensView = Label(topFrame, text="Token List")
-symbolTable = Label(topFrame, text="Symbol Table")
-
-executeButton = Button(bottomFrame, text="Execute")
-console = Label(bottomFrame, text="Console")
-
-fileExplorer.grid(row=0, column=0, padx=10, pady=10)
-textEditor.grid(row=1, column=0, padx=10, pady=10)
-tokensView.grid(row=1, column=1, padx=10, pady=10)
-symbolTable.grid(row=1, column=2, padx=10, pady=10)
-
-executeButton.grid(row=0, column=0, padx=10, pady=10)
-console.grid(row=1, column=0, padx=10, pady=10)
-
-# display frames
-topFrame.pack(side=TOP)
-bottomFrame.pack(side=TOP)
-
-# Set the width and height of the window
-window_width = 1200
-window_height = 600
-root.geometry(f"{window_width}x{window_height}")
-
-# Center the window on the screen
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-x = (screen_width - window_width) // 2
-y = (screen_height - window_height) // 3 # Add padding on top
-root.geometry(f"+{x}+{y}")
-
-root.mainloop()
 
 reg = {
     "varident": r'^[a-zA-Z][a-zA-Z0-9_]*$',
