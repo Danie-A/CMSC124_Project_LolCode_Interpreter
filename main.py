@@ -17,8 +17,8 @@ def on_resize(event):
     
 def open_file():
     file_path = filedialog.askopenfilename()
-    if file_path:
-        file_path_label.config(text=file_path)
+    # if file_path:
+    #     file_path_label.config(text=file_path)
 
 root = tk.Tk()
 root.title("The Lords of the Strings Lexical Analyzer")
@@ -31,7 +31,7 @@ bottomFrame = tk.Frame(root,)
 # Top Frame =====
 # Text Editor
 textEditorFrame = tk.Frame(topFrame, width=root.winfo_width() ,bg=bgcolor2)
-openfileUI = tk.Frame(textEditorFrame, height)
+openfileUI = tk.Frame(textEditorFrame, height=30, )
 
 
 # ===============
