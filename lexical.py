@@ -241,8 +241,9 @@ def lexical_analyzer(contents):
             
             # HARD PART
             # [] Multiple Block Comments - DAN OBTW
-            # [] Single Line Comments - DANI/DAN BTW
-            # [] Regex for \n, any, and epsilon
+            # [] Single Line Comments - DANI / DAN BTW
+            # [] Regex for \n, any, and epsilon - DANI NOW
+            
             # Other code that rely on multiple lines
             
             elif re.fullmatch(r"WIN|FAIL", token):
@@ -384,8 +385,14 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"-?(0|[1-9][0-9]*)(\.[0-9]+)?", token):
                 items.append(("numbar_literal", token))
             
+            # ADDED LEXEMES FROM GRAMMAR
+            elif re.fullmatch(r"\n", token):
+                items.append(("linebreak", token))
+            elif re.fullmatch(r"", token):
+                items.append(("epsilon", token))
             elif re.fullmatch(r".*", token):
                 items.append(("any", token))
+            
 
             # if for loop
             # for i in reg_keys:

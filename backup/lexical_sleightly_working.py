@@ -247,8 +247,9 @@ def lexical_analyzer(contents):
             
             # HARD PART
             # [] Multiple Block Comments - DAN OBTW
-            # [] Single Line Comments - DANI/DAN BTW
-            # [] Regex for \n, any, and epsilon
+            # [] Single Line Comments - DANI / DAN BTW
+            # [] Regex for \n, any, and epsilon - DANI NOW
+            
             # Other code that rely on multiple lines
             
             elif re.fullmatch(r"WIN|FAIL", token):
