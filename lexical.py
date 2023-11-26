@@ -249,15 +249,25 @@ def lexical_analyzer(contents):
             # If comment are seen, show error because it must already be deleted from the start of the program
             elif re.fullmatch(r"BTW", token):
                 items.append(("line_comment_delimiter", token))
+                # show error message and end program
+                print("[ERROR] Wrong BTW Comment Format Detected.")
+                # end program
+                sys.exit()
 
             elif re.fullmatch(r"OBTW", token):
-                # show error message and end program
-                
                 items.append(("start_block_comment", token))
+                
+                # show error message and end program
+                print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
+                # end program
+                sys.exit()
+                
             elif re.fullmatch(r"TLDR", token):
                 items.append(("end_block_comment", token))
-            
-            # Other code that rely on multiple lines
+                # show error message and end program
+                print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
+                # end program
+                sys.exit()
             
             elif re.fullmatch(r"WIN|FAIL", token):
                 items.append(("troof_literal", token))
@@ -394,6 +404,9 @@ def lexical_analyzer(contents):
                 items.append(("epsilon", token))
             elif re.fullmatch(r".*", token):
                 items.append(("any", token))
+            else:
+                print("[ERROR] Invalid Token Detected: ", token)
+                sys.exit()
             
 
             # if for loop
