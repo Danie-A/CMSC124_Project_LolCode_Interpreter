@@ -1,8 +1,11 @@
-VISIBLE FOUND YR PRODUKT OF I IZ A "Hello            World"
+VISIBLE FOUND YR PRODUKT OF I IZ A "Hello            World" BTW I HAS A eme eme
 WIN FAIL NOOB var1
 O RLY? YA RLY OIC                   VISIBLE " RARRARAR "
 I HAS A BTW this is not a variable
-OBTW
+I HAS A BTW IMEKUSMEKUS NA NATIN YAN
+
+rawr OBTW eme eme TLDR
+OBTW EME EME UWU WUWU
     fgsfg
     sfdgsdfg
     sfdgsdfgsdfg
@@ -10,4 +13,5 @@ OBTW
     gsd
     fgsfgsdfg
     sfdgsdfgfg
-TLDR
+TLDR hihi 
+I HAS A var ITZ 26.7

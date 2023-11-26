@@ -79,7 +79,7 @@ def lexical_analyzer(contents):
                 tokens.append(char)  # append the quote '"' itself as a lexeme
                 in_quotes = not in_quotes  # if in_quotes is true, set to false, if false, set to true
             elif char == " " and not in_quotes: # in_quotes is false
-                print("lexeme is ", lexeme)
+                # print("lexeme is ", lexeme)
                 if lexeme=="I":
                     # [] Keywords with Spaces
                     lexeme += char # append char to lexeme
@@ -213,7 +213,7 @@ def lexical_analyzer(contents):
                     lexeme = ''                     
                                
                 else: # if lexeme is not empty
-                    print("ELSE RUNS")
+                    #print("ELSE RUNS")
                     if lexeme:
                         tokens.append(lexeme)
                         lexeme = '' # set lexeme to empty again
@@ -240,9 +240,22 @@ def lexical_analyzer(contents):
             # [/] loop identifier
             
             # HARD PART
-            # [/] Multiple Block Comments - DAN OBTW
+            # [/] Multiple Block Comments - DAN OBTW - must not have code before it TLDR must not have code after it
+            # 
             # [/] Single Line Comments - DANI / DAN BTW
             # [/] Regex for \n, any, and epsilon - DANI NOW
+            
+            # Comments
+            # If comment are seen, show error because it must already be deleted from the start of the program
+            elif re.fullmatch(r"BTW", token):
+                items.append(("line_comment_delimiter", token))
+
+            elif re.fullmatch(r"OBTW", token):
+                # show error message and end program
+                
+                items.append(("start_block_comment", token))
+            elif re.fullmatch(r"TLDR", token):
+                items.append(("end_block_comment", token))
             
             # Other code that rely on multiple lines
             
@@ -260,17 +273,6 @@ def lexical_analyzer(contents):
                 items.append(("start_var_declaration_delimiter", token))
             elif re.fullmatch(r"BUHBYE", token):
                 items.append(("end_var_declaration_delimiter", token))
-            
-            # Comments
-            elif re.fullmatch(r"BTW", token):
-                items.append(("line_comment_delimiter", token))
-            
-            # [] TO-DO Comment Literal
-            
-            elif re.fullmatch(r"OBTW", token):
-                items.append(("start_block_comment", token))
-            elif re.fullmatch(r"TLDR", token):
-                items.append(("end_block_comment", token))
             
             elif re.fullmatch(r"I HAS A", token):
                 items.append(("variable_declaration", token))
@@ -411,9 +413,10 @@ def lexical_analyzer(contents):
 
 def parse(file):
     contents = open(file, 'r').read()
-    
+    print(repr(contents))
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
-    contents = re.sub(r"OBTW.*TLDR", "", contents, flags=re.DOTALL)  # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
+    contents = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", "", contents, flags=re.DOTALL) # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
+    #print("REVISED CONTENTS ARE:\n", contents)
     tokens = lexical_analyzer(contents)
     return tokens
 
