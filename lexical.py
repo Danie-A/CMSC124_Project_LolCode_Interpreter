@@ -85,8 +85,8 @@ def find_tldr(i,line):
     else:
         # Check if TLDR is not found
         if re.search(r'\bTLDR\b', line):
-            print("CommentError: Words exist after TLDR.")
-            print(f"\n\tLine {i+1}: {line}")
+            print("\nCommentError: Words exist after TLDR.")
+            print(f"\n\tLine {i+1}: {line}\n")
             sys.exit()        
         else:
             return False
@@ -125,8 +125,8 @@ def lexical_analyzer(contents):
             # Check if there are words before "OBTW"
             if words_before_obtw:
                 
-                print("CommentError: Words exist before OBTW:", words_before_obtw)
-                print(f"\n\tLine {i+1}: {line}")
+                print("\nCommentError: Words exist before OBTW:", words_before_obtw)
+                print(f"\n\tLine {i+1}: {line}\n")
                 sys.exit()
             else:
                 # print("THIS RUNS!!!!!!!\n\n\n")
@@ -317,21 +317,21 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"BTW", token):
                 # items.append(Token("line_comment_delimiter", token))
                 # show error message and end program
-                print(f"COMMENT ERROR >> Wrong BTW Comment Format Detected.\n\tLine {i+1}: {line}")
+                print(f"\nCommentError: Wrong BTW Comment Format Detected.\n\tLine {i+1}: {line}\n")
                 # end program
                 sys.exit()
 
             elif re.fullmatch(r"OBTW", token):
                 # items.append(Token("start_block_comment", token))
                 # show error message and end program
-                print(f"COMMENT ERROR >> Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}")
+                print(f"\nCommentError: Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}\n")
                 # end program
                 sys.exit()
                 
             elif re.fullmatch(r"TLDR", token):
                 # items.append(Token("end_block_comment", token))
                 # show error message and end program
-                print(f"COMMENT ERROR >> Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}")
+                print(f"\nCommentError: Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}\n")
                 # end program
                 sys.exit()
             
