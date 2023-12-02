@@ -3,7 +3,7 @@ from tkinter import font
 from tkinter import ttk
 from tkinter import filedialog
 
-from lexical import parse
+from lexical import Token, parse
 
 # Global Vairables ===
 fileLoaded = False
@@ -53,7 +53,7 @@ def read_file_lexical(file_path):
     tokens = parse(file_path)
     print(tokens)
     for token in tokens:
-        lexemeTable.insert("", "end", values=(token.tokentype, token.tokenvalue))
+        lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
 
 def execute_code():
     pass
