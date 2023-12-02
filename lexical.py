@@ -71,15 +71,74 @@ class Token:
     def __repr__(self) -> str:
         return f"({self.tokentype}, \"{self.tokenvalue}\")"
 
+
+
+def find_tldr(i,line):
+    # Regular expression pattern
+    pattern = r'(\bTLDR\b)\s*$'
+
+    # Find a match using the pattern
+    match = re.search(pattern, line)
+
+    if match:
+        return True
+    else:
+        # Check if TLDR is not found
+        if re.search(r'\bTLDR\b', line):
+            print("CommentError: Words exist after TLDR.")
+            print(f"\n\tLine {i+1}: {line}")
+            sys.exit()        
+        else:
+            return False
+
+    
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
-
+    print("lines are:", lines)
     lexeme = ""
     items = []
+    obtwFound = False
     for i, line in enumerate(lines):
+        print(f"i and line is {i+1}: {line}")
+
+        # For Multi-Line Comments 
+        
+        # Check if OBTW is found
+        if obtwFound:
+            # Check if TLDR is found
+            if find_tldr(i,line):
+                obtwFound = False
+                # change line to empty string
+                lines[i] = ""
+                continue
+            else:
+                # change line to empty string
+                lines[i] = ""
+                continue
+        
+        # OBTW
+        pattern = r'^\s*(.*?)\bOBTW\b'
+        match = re.match(pattern, line)
+        if match:
+            words_before_obtw = match.group(1).split() # get first OBTW and split to find words before OBTW
+            
+            # Check if there are words before "OBTW"
+            if words_before_obtw:
+                
+                print("CommentError: Words exist before OBTW:", words_before_obtw)
+                print(f"\n\tLine {i+1}: {line}")
+                sys.exit()
+            else:
+                # print("THIS RUNS!!!!!!!\n\n\n")
+                obtwFound = True
+                # change line to empty string
+                lines[i] = ""
+                continue
+                
         chars = list(line) # split line to each character in the line to the 'chars' list
         tokens = [] # initialize empty tokens list
         in_quotes = False # initialize in_quotes to false
+        
         for char in chars:
             if char == '"':
                 if in_quotes: # if in_quotes is true (already second quote)
@@ -238,48 +297,41 @@ def lexical_analyzer(contents):
         tokens.append("\n")
         
         num_quote = 0
-        for i,token in enumerate(tokens):
+        for j,token in enumerate(tokens):
             if token == '"':
                 num_quote += 1
                 if num_quote == 2:
                     num_quote = 0
                 items.append(Token("string_delimiter", token))
-            elif i > 0 and i < len(tokens)-1 and tokens[i+1] == '"' and tokens[i-1] == '"':
+            elif j > 0 and j < len(tokens)-1 and tokens[j+1] == '"' and tokens[j-1] == '"':
                 if num_quote == 1:
                     items.append(Token("string_literal", token))
             
             # TO-DO
-            # [/] variable identifier
-            # [/] function identifier
-            # [/] loop identifier
-            
             # HARD PART
-            # [/] Multiple Block Comments - DAN OBTW - must not have code before it TLDR must not have code after it
-            # 
-            # [/] Single Line Comments - DANI / DAN BTW
-            # [/] Regex for \n, any, and epsilon - DANI NOW
+            # [] Line Errors : Danie
+            # [] Parser Try  : Danie | Mart | Dan
             
             # Comments
             # If comment are seen, show error because it must already be deleted from the start of the program
             elif re.fullmatch(r"BTW", token):
-                items.append(Token("line_comment_delimiter", token))
+                # items.append(Token("line_comment_delimiter", token))
                 # show error message and end program
-                print("[ERROR] Wrong BTW Comment Format Detected.")
+                print(f"COMMENT ERROR >> Wrong BTW Comment Format Detected.\n\tLine {i+1}: {line}")
                 # end program
                 sys.exit()
 
             elif re.fullmatch(r"OBTW", token):
-                items.append(Token("start_block_comment", token))
-                
+                # items.append(Token("start_block_comment", token))
                 # show error message and end program
-                print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
+                print(f"COMMENT ERROR >> Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}")
                 # end program
                 sys.exit()
                 
             elif re.fullmatch(r"TLDR", token):
-                items.append(Token("end_block_comment", token))
+                # items.append(Token("end_block_comment", token))
                 # show error message and end program
-                print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
+                print(f"COMMENT ERROR >> Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}")
                 # end program
                 sys.exit()
             
@@ -419,7 +471,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r".*", token):
                 items.append(Token("any", token))
             else:
-                print("[ERROR] Invalid Token Detected: Line {}", i,  token)
+                print(f"InvalidTokenError: Invalid Token Detected.\n\tLine {i+1}: {line}\n\tToken: {token}")
                 sys.exit()    
             
             
@@ -440,8 +492,13 @@ def parse(file):
     contents = open(file, 'r').read()
     print(repr(contents))
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
-    contents = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", "", contents, flags=re.DOTALL) # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
-    #print("REVISED CONTENTS ARE:\n", contents)
+    # contents = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", "", contents, flags=re.DOTALL) # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
+    # result = re.sub(r"OBTW.*?TLDR", lambda x: '\n' * x.group(0).count('\n'), contents, flags=re.DOTALL)
+    # if line has words before OBTW show error
+    
+    #result = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", lambda x: '\n' * x.group(0).count('\n'), contents, flags=re.DOTALL)
+    
+    #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(contents)
     return tokens
 
