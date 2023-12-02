@@ -17,4 +17,4 @@ OBTW EME EME UWU WUWU
     fgsfgsdfg
     sfdgsdfgfg
 TLDR
-I HAS A var ITZ 26.7 $
+I HAS A var ITZ 26.7
