@@ -239,10 +239,10 @@ def lexical_analyzer(contents):
                 num_quote += 1
                 if num_quote == 2:
                     num_quote = 0
-                items.append(("string_delimiter", token))
+                items.append(Token("string_delimiter", token))
             elif i > 0 and i < len(tokens)-1 and tokens[i+1] == '"' and tokens[i-1] == '"':
                 if num_quote == 1:
-                    items.append(("string_literal", token))
+                    items.append(Token("string_literal", token))
             
             # TO-DO
             # [/] variable identifier
