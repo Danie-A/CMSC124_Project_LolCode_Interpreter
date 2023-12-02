@@ -62,6 +62,15 @@ reg = {
     "mkay": r'^MKAY$',
 }
 
+class Token:
+    def __init__(self, tokentype, tokenvalue, valuetype_ = None):
+        self.tokentype = tokentype
+        self.tokenvalue = tokenvalue
+        self.valuetype = valuetype_
+
+    def __repr__(self) -> str:
+        return f"({self.tokentype}, {self.tokenvalue})"
+
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
 
@@ -74,6 +83,7 @@ def lexical_analyzer(contents):
         for char in chars:
             if char == '"':
                 if in_quotes: # if in_quotes is true (already second quote)
+                    
                     tokens.append(lexeme)  # append the string inside quotes as string literal token
                     lexeme = '' # set lexeme to empty again
                 tokens.append(char)  # append the quote '"' itself as a lexeme
@@ -248,14 +258,14 @@ def lexical_analyzer(contents):
             # Comments
             # If comment are seen, show error because it must already be deleted from the start of the program
             elif re.fullmatch(r"BTW", token):
-                items.append(("line_comment_delimiter", token))
+                items.append(Token("line_comment_delimiter", token))
                 # show error message and end program
                 print("[ERROR] Wrong BTW Comment Format Detected.")
                 # end program
                 sys.exit()
 
             elif re.fullmatch(r"OBTW", token):
-                items.append(("start_block_comment", token))
+                items.append(Token("start_block_comment", token))
                 
                 # show error message and end program
                 print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
@@ -263,147 +273,147 @@ def lexical_analyzer(contents):
                 sys.exit()
                 
             elif re.fullmatch(r"TLDR", token):
-                items.append(("end_block_comment", token))
+                items.append(Token("end_block_comment", token))
                 # show error message and end program
                 print("[ERROR] Wrong OBTW TLDR Comment Format Detected.")
                 # end program
                 sys.exit()
             
             elif re.fullmatch(r"WIN|FAIL", token):
-                items.append(("troof_literal", token))
+                items.append(Token("troof_literal", token))
             elif re.fullmatch(r"NOOB|NUMBR|NUMBAR|YARN|TROOF", token):
-                items.append(("type_literal", token))
+                items.append(Token("type_literal", token))
             elif re.fullmatch(r"HAI", token):
-                items.append(("start_code_delimiter", token))
+                items.append(Token("start_code_delimiter", token))
             elif re.fullmatch(r"KTHXBYE", token):
-                items.append(("end_code_delimiter", token))
+                items.append(Token("end_code_delimiter", token))
             
             # Variable Declaration
             elif re.fullmatch(r"WAZZUP", token):
-                items.append(("start_var_declaration_delimiter", token))
+                items.append(Token("start_var_declaration_delimiter", token))
             elif re.fullmatch(r"BUHBYE", token):
-                items.append(("end_var_declaration_delimiter", token))
+                items.append(Token("end_var_declaration_delimiter", token))
             
             elif re.fullmatch(r"I HAS A", token):
-                items.append(("variable_declaration", token))
+                items.append(Token("variable_declaration", token))
             
             elif re.fullmatch(r"ITZ", token):
-                items.append(("variable_assignment", token))
+                items.append(Token("variable_assignment", token))
             
             elif re.fullmatch(r"R", token):
-                items.append(("variable_value_reassignment", token))
+                items.append(Token("variable_value_reassignment", token))
                         
             #Arithmetic/Mathematical Operations
             elif re.fullmatch(r"AN", token):
-                items.append(("and_keyword", token))
+                items.append(Token("and_keyword", token))
             elif re.fullmatch(r"SUM OF", token):
-                items.append(("add_keyword", token))
+                items.append(Token("add_keyword", token))
             elif re.fullmatch(r"DIFF OF", token):
-                items.append(("subtract_keyword", token))
+                items.append(Token("subtract_keyword", token))
             elif re.fullmatch(r"PRODUKT OF", token):
-                items.append(("multiply_keyword",token))
+                items.append(Token("multiply_keyword",token))
             elif re.fullmatch(r"QUOSHUNT OF", token):
-                items.append(("divide_keyword",token))
+                items.append(Token("divide_keyword",token))
             elif re.fullmatch(r"MOD OF", token):
-                items.append(("modulo_keyword",token))
+                items.append(Token("modulo_keyword",token))
             elif re.fullmatch(r"BIGGR OF", token):
-                items.append(("return_larger_number_keyword",token))
+                items.append(Token("return_larger_number_keyword",token))
             elif re.fullmatch(r"SMALLR OF", token):
-                items.append(("return_smaller_number_keyword",token))
+                items.append(Token("return_smaller_number_keyword",token))
             #Boolean Operations
             elif re.fullmatch(r"BOTH OF", token):
-                items.append(("both_true_check_keyword",token))
+                items.append(Token("both_true_check_keyword",token))
             elif re.fullmatch(r"EITHER OF", token):
-                items.append(("both_false_check_keyword",token))
+                items.append(Token("both_false_check_keyword",token))
             elif re.fullmatch(r"WON OF", token):
-                items.append(("exactly_one_is_true_check_keyword",token))
+                items.append(Token("exactly_one_is_true_check_keyword",token))
             elif re.fullmatch(r"NOT", token):
-                items.append(("negate_keyword", token))
+                items.append(Token("negate_keyword", token))
             elif re.fullmatch(r"ANY OF", token):
-                items.append(("atleast_one_true_check_keyword", token))
+                items.append(Token("atleast_one_true_check_keyword", token))
             elif re.fullmatch(r"ALL OF", token):
-                items.append(("all_true_check_keyword", token))
+                items.append(Token("all_true_check_keyword", token))
             #Comparison Operation Keywords
             elif re.fullmatch(r"BOTH SAEM", token):
-                items.append(("both_argument_equal_check_keyword", token))
+                items.append(Token("both_argument_equal_check_keyword", token))
             elif re.fullmatch(r"DIFFRINT", token):
-                items.append(("both_argument_not_equal_check_keyword", token))
+                items.append(Token("both_argument_not_equal_check_keyword", token))
             
             elif re.fullmatch(r"SMOOSH", token):
-                items.append(("concatenation_keyword", token))
+                items.append(Token("concatenation_keyword", token))
             elif re.fullmatch(r"MAEK", token):
-                items.append(("typecast_keyword", token))
+                items.append(Token("typecast_keyword", token))
             elif re.fullmatch(r"A", token):
-                items.append(("typecast_prefix", token))
+                items.append(Token("typecast_prefix", token))
             elif re.fullmatch(r"IS NOW A", token): 
-                items.append(("variable_value_reassignment_keyword", token))
+                items.append(Token("variable_value_reassignment_keyword", token))
             #Input/Output Keyword
             elif re.fullmatch(r"VISIBLE", token):
-                items.append(("print_keyword", token))
+                items.append(Token("print_keyword", token))
             elif re.fullmatch(r"GIMMEH", token):
-                items.append(("input_keyword", token))
+                items.append(Token("input_keyword", token))
             #Flow-control Keywords
             elif re.fullmatch(r"O RLY\?", token):
-                items.append(("if_keyword", token))
+                items.append(Token("if_keyword", token))
             elif re.fullmatch(r"YA RLY", token):
-                items.append(("if_true_keyword", token))
+                items.append(Token("if_true_keyword", token))
             elif re.fullmatch(r"MEBBE", token):
-                items.append(("else_if_keyword", token))
+                items.append(Token("else_if_keyword", token))
             elif re.fullmatch(r"NO WAI", token):
-                items.append(("else_keyword", token))
+                items.append(Token("else_keyword", token))
             elif re.fullmatch(r"OIC", token):
             #Switch-case keywods
-                items.append(("end_of_if_block_keyword", token))    
+                items.append(Token("end_of_if_block_keyword", token))    
             elif re.fullmatch(r"WTF\?", token):
-                items.append(("switch_keyword", token))     
+                items.append(Token("switch_keyword", token))     
             elif re.fullmatch(r"OMG", token):
-                items.append(("switch_case_keyword", token))   
+                items.append(Token("switch_case_keyword", token))   
             elif re.fullmatch(r"OMGWTF", token):
-                items.append(("switch_default_keyword", token))
+                items.append(Token("switch_default_keyword", token))
             #Loop related keywords/ Inc and Dec
             elif re.fullmatch(r"IM IN YR", token):
-                items.append(("explicit_start_loop_keyword", token))
+                items.append(Token("explicit_start_loop_keyword", token))
             elif re.fullmatch(r"UPPIN", token):
-                items.append(("increment_keyword",token)) 
+                items.append(Token("increment_keyword",token)) 
             elif re.fullmatch(r"NERFIN", token):
-                items.append(("decrement_keyword", token))   
+                items.append(Token("decrement_keyword", token))   
             elif re.fullmatch(r"YR", token):
-                items.append(("concise_start_loop_keyword", token))   
+                items.append(Token("concise_start_loop_keyword", token))   
             elif re.fullmatch(r"TIL", token):
-                items.append(("until_indicated_end_of_loop_keyword", token))
+                items.append(Token("until_indicated_end_of_loop_keyword", token))
             elif re.fullmatch(r"WILE", token):
-                items.append(("while_indicated_end_of_loop_keyword", token))   
+                items.append(Token("while_indicated_end_of_loop_keyword", token))   
             elif re.fullmatch(r"IM OUTTA YR", token):
-                items.append(("break_loop_keyword", token))
+                items.append(Token("break_loop_keyword", token))
             #Function/Assignment keywords
             elif re.fullmatch(r"HOW IZ I", token):
-                items.append(("define_function_keyword", token))
+                items.append(Token("define_function_keyword", token))
             elif re.fullmatch(r"IF U SAY SO", token):
-                items.append(("end_of_function_keyword", token))
+                items.append(Token("end_of_function_keyword", token))
             elif re.fullmatch(r"GTFO", token):
-                items.append(("general_purpose_break_keyword", token))
+                items.append(Token("general_purpose_break_keyword", token))
             elif re.fullmatch(r"FOUND YR", token):
-                items.append(("return_keyword", token))
+                items.append(Token("return_keyword", token))
             elif re.fullmatch(r"I IZ", token):
-                items.append(("function_call", token))
+                items.append(Token("function_call", token))
             elif re.fullmatch(r"MKAY", token):
-                items.append(("end_of_assignment_keyword", token))
+                items.append(Token("end_of_assignment_keyword", token))
 
             # VARIABLE IDENTIFIERS
             elif re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_]*", token):
-                items.append(("variable_identifier", token))
+                items.append(Token("variable_identifier", token))
             elif re.fullmatch(r"-?([1-9][0-9]*|0)", token):
-                items.append(("numbr_literal", token))
+                items.append(Token("numbr_literal", token))
             elif re.fullmatch(r"-?(0|[1-9][0-9]*)(\.[0-9]+)?", token):
-                items.append(("numbar_literal", token))
+                items.append(Token("numbar_literal", token))
             
             # ADDED LEXEMES FROM GRAMMAR
             elif re.fullmatch(r"\n", token):
-                items.append(("linebreak", token))
+                items.append(Token("linebreak", token))
             elif re.fullmatch(r"", token):
-                items.append(("epsilon", token))
+                items.append(Token("epsilon", token))
             elif re.fullmatch(r".*", token):
-                items.append(("any", token))
+                items.append(Token("any", token))
             else:
                 print("[ERROR] Invalid Token Detected: Line {}", i,  token)
                 sys.exit()
@@ -422,8 +432,6 @@ def lexical_analyzer(contents):
                     
     return items
 
-
-
 def parse(file):
     contents = open(file, 'r').read()
     print(repr(contents))
@@ -432,7 +440,6 @@ def parse(file):
     #print("REVISED CONTENTS ARE:\n", contents)
     tokens = lexical_analyzer(contents)
     return tokens
-
 
 reg_keys = list(reg.keys())
 

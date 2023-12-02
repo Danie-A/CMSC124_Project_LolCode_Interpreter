@@ -51,9 +51,9 @@ def open_file():
         
 def read_file_lexical(file_path):
     tokens = parse(file_path)
+    print(tokens)
     for token in tokens:
-        lexemeTable.insert(token, "end", values=())
-    pass
+        lexemeTable.insert("", "end", values=(token.tokentype, token.tokenvalue))
 
 def execute_code():
     pass
