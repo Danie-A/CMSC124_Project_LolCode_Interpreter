@@ -69,7 +69,7 @@ class Token:
         self.valuetype = valuetype_
 
     def __repr__(self) -> str:
-        return f"({self.tokentype}, {self.tokenvalue})"
+        return f"({self.tokentype}, \"{self.tokenvalue}\")"
 
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
@@ -229,9 +229,13 @@ def lexical_analyzer(contents):
                         lexeme = '' # set lexeme to empty again
             else:
                 lexeme += char # append char to lexeme
+        
         if lexeme:
             tokens.append(lexeme)  # append any remaining lexeme as a lexeme
             lexeme = '' # set lexeme to empty again
+            
+        # add linebreak
+        tokens.append("\n")
         
         num_quote = 0
         for i,token in enumerate(tokens):
@@ -409,16 +413,16 @@ def lexical_analyzer(contents):
             
             # ADDED LEXEMES FROM GRAMMAR
             elif re.fullmatch(r"\n", token):
-                items.append(Token("linebreak", token))
+                items.append(Token("linebreak", "\\n"))
             elif re.fullmatch(r"", token):
                 items.append(Token("epsilon", token))
             elif re.fullmatch(r".*", token):
                 items.append(Token("any", token))
             else:
                 print("[ERROR] Invalid Token Detected: Line {}", i,  token)
-                sys.exit()
+                sys.exit()    
             
-
+            
             # if for loop
             # for i in reg_keys:
             #     if re.fullmatch(reg[i], token):
