@@ -67,7 +67,7 @@ def lexical_analyzer(contents):
 
     lexeme = ""
     items = []
-    for line in lines:
+    for i, line in enumerate(lines):
         chars = list(line) # split line to each character in the line to the 'chars' list
         tokens = [] # initialize empty tokens list
         in_quotes = False # initialize in_quotes to false
@@ -405,7 +405,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r".*", token):
                 items.append(("any", token))
             else:
-                print("[ERROR] Invalid Token Detected: ", token)
+                print("[ERROR] Invalid Token Detected: Line {}", i,  token)
                 sys.exit()
             
 

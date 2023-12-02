@@ -3,6 +3,8 @@ from tkinter import font
 from tkinter import ttk
 from tkinter import filedialog
 
+from lexical import parse
+
 # Global Vairables ===
 fileLoaded = False
 
@@ -45,7 +47,14 @@ def open_file():
         filepathText.delete("1.0","end")
         filepathText.insert(tk.END, file_path)
         filepathText.config(state=tk.DISABLED)
+        read_file_lexical(file_path)
         
+def read_file_lexical(file_path):
+    tokens = parse(file_path)
+    for token in tokens:
+        lexemeTable.insert(token, "end", values=())
+    pass
+
 def execute_code():
     pass
 
