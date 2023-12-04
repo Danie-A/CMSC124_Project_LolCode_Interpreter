@@ -6,7 +6,7 @@ I HAS A BTW IMEKUSMEKUS NA NATIN YAN
 
 OBTW 
 eme eme 
-TLDR hihi
+TLDR
 
 OBTW EME EME UWU WUWU
     fgsfg

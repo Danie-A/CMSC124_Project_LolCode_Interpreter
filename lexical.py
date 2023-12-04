@@ -402,7 +402,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"A", token):
                 items.append(Token("typecast_prefix", token))
             elif re.fullmatch(r"IS NOW A", token): 
-                items.append(Token("variable_value_reassignment_keyword", token))
+                items.append(Token("full_typecast_keyword", token))
             #Input/Output Keyword
             elif re.fullmatch(r"VISIBLE", token):
                 items.append(Token("print_keyword", token))
