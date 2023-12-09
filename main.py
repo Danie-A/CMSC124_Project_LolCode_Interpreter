@@ -5,9 +5,14 @@ from tkinter import filedialog
 
 from lexical import Token, parse
 
+from syntax import do_parse_tree
+
+import sys
+
 # Global Vairables ===
 fileLoaded = False
-
+file_path = ""
+tokens = []
 # ====================
 
 # Color ======
@@ -39,17 +44,22 @@ def insert_spaces(event):
 
 # Program Functions
 def open_file():
-    global fileLoaded
+    global fileLoaded, file_path
     file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Lolcode files", "*.lol"), ("All files", "*.*")])
-    if file_path:
+    file = open(file_path, "r")
+    if file_path != "":
         fileLoaded = True
         filepathText.config(state=tk.NORMAL)
         filepathText.delete("1.0","end")
         filepathText.insert(tk.END, file_path)
         filepathText.config(state=tk.DISABLED)
+        textEditor.insert("1.0",file.read())
+        textEditor.config(state=tk.DISABLED)
+        file.close()
         read_file_lexical(file_path)
         
 def read_file_lexical(file_path):
+    global tokens
     tokens = parse(file_path)
     print(tokens)
     for token in tokens:
@@ -57,6 +67,24 @@ def read_file_lexical(file_path):
 
 def execute_code():
     pass
+    # global tokens, file_path
+    # if fileLoaded == True:
+    #     print("filepath is ", file_path)
+    #     filename_quoted = shlex.quote(file_path)
+    #     command = f"python ./syntax.py {filename_quoted}"
+    #     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    #     output, error = process.communicate()
+
+    #     print(output.decode())
+    #     print(error.decode())
+    #     # parse_tree = do_parse_tree(tokens)
+
+    #     # output = sys.stdout
+
+    #     outputText.insert('1.0', output.decode())
+
+    #     sys.stdout = output
 
 # =============================
 

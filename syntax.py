@@ -23,7 +23,7 @@ def if_linebreak():
         advance()
     else:
         print('SyntaxError: Linebreak expected after statement : Line {}'.format(current_line))
-        sys.exit()
+        return 
            
 def program():
     global current_token, current_line
@@ -45,10 +45,10 @@ def program():
                     if_linebreak()
                 else:
                     print('SyntaxError: End variable declaration delimiter not found : Line {}'.format(current_line))
-                    sys.exit()
+                    return 
             else:
                 print('SyntaxError: Start variable declaration delimiter not found : Line {}'.format(current_line))
-                sys.exit()
+                return 
             
             # STATEMENTS_LIST
             statementList = statement_list()
@@ -58,13 +58,13 @@ def program():
                 advance()
             else:
                 print('SyntaxError: End code delimter not found : Line {}'.format(current_line))
-                sys.exit()
+                return 
         else:
             print('SyntaxError: Linebreak expected after HAI : Line {}'.format(current_line))
-            sys.exit()
+            return 
     else: 
         print('SyntaxError: Start code delimiter not found : Line {}'.format(current_line))
-        sys.exit()
+        return 
 
     return nodes
 
@@ -81,7 +81,7 @@ def var_declaration_list():
             advance()
         else:
             print('SyntaxError: Linebreak expected after variable declaration : Line {}'.format(current_line))
-            sys.exit()
+            return 
     return nodes
 
 def var_declaration():
@@ -106,16 +106,13 @@ def var_declaration():
                 return ("VARIABLE", varident, "NOOB") # place untyped or uninitialized variable inside nodes list
             else:
                 print('SyntaxError: Invalid variable assignment : Line {}'.format(current_line))
-                sys.exit()
-
+                return 
         else:
             print('SyntaxError: Invalid variable identifier : Line {}'.format(current_line))
-            sys.exit()
+            return 
     else:
-        raise SyntaxError('SyntaxError: Invalid variable declaration : Line {}'.format(current_line))
-        sys.exit()
-        
-    return nodes
+        print('SyntaxError: Invalid variable declaration : Line {}'.format(current_line))
+        return 
 
 def varident():
     global current_token
@@ -125,7 +122,7 @@ def varident():
         return node
     else:
         print('SyntaxError: Invalid variable identifier : Line {}'.format(current_line))
-        sys.exit()
+        return 
 
 def statement():
     global current_token
@@ -136,7 +133,7 @@ def statement():
         advance() # pass GIMMEH
         varident_ = varident()
         return ("INPUT", varident_)
-    elif current_token.tokentype == "variable_identifier":
+    elif current_token.tokentype == "variable_identifier": #assignment statement
         varidentDest = current_token.tokenvalue
         advance() # pass varident
         if current_token.tokentype == "variable_value_reassignment":
@@ -151,7 +148,7 @@ def statement():
             # to add expression
             else:
                 print('SyntaxError: Error in reassignment statement. Invalid variable identifier, literal, or expression : Line {}'.format(current_line))
-                sys.exit()
+                return 
         
         elif current_token.tokentype == "full_typecast_keyword": # changing the type of the varriable
             advance() # pass IS NOW A
@@ -161,10 +158,10 @@ def statement():
                 return("FULL_TYPECAST", varidentDest, type_literal_)
             else:
                 print('SyntaxError: Typecasting Error. Invalid type literal : Line {}'.format(current_line))
-                sys.exit()
+                return 
         else:
             print('SyntaxError: Variable value reassignment (R) not found : Line {}'.format(current_line))
-            sys.exit()
+            return 
     elif current_token.tokentype == "typecast_keyword":
         advance() # pass MAEK
         varident_ = varident() # var
@@ -177,10 +174,10 @@ def statement():
             return ("TYPECAST", varident_, type_literal_)
         else:
             print('SyntaxError: Invalid typecast literal: Line {}'.format(current_line))
-            sys.exit()        
+            return         
     else:
         print('SyntaxError: Invalid statement : Line {}'.format(current_line))
-        sys.exit()
+        return 
     
 # [] to-add expression() function 
 
@@ -199,13 +196,13 @@ def literal():
                 return node
             else:
                 print('SyntaxError: String delimiter expected : Line {}'.format(current_line))
-                sys.exit()
+                return 
         else:
             print('SyntaxError: Invalid string literal : Line {}'.format(current_line))
-            sys.exit()
+            return 
     else:
         print('SyntaxError: Invalid literal : Line {}'.format(current_line))
-        sys.exit()
+        return 
 
 def statement_list():
     global current_token, current_line
@@ -219,29 +216,50 @@ def statement_list():
             advance()
         else:
             print('SyntaxError: Linebreak expected after statement : Line {}'.format(current_line))
-            sys.exit()
+            return 
     return nodes
     
 def print_expression():
     global current_token
 
-    literal_ = literal() # check if any of the literals
-    return literal_
-    
-    if current_token.tokentype == "variable_identifier": # check if variable identifier
+    if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
+        node = current_token
+        advance()
+        return node
+    elif current_token.tokentype == "string_delimiter": # string literal
+        advance()
+        if current_token.tokentype == "string_literal":
+            node = current_token
+            advance() #string delimiter
+            if current_token.tokentype == "string_delimiter":
+                advance() 
+                return node
+            else:
+                print('SyntaxError: String delimiter expected : Line {}'.format(current_line))
+                return 
+        else:
+            print('SyntaxError: Invalid string literal : Line {}'.format(current_line))
+            return 
+    elif current_token.tokentype == "variable_identifier": # check if variable identifier
         node = ("VARIDENT", current_token.tokentype, current_token.tokenvalue)
         advance()
         return node
-
     else:
-        print('SyntaxError: Invalid expression : Line {}'.format(current_line))
-        sys.exit()
+        print('SyntaxError: Invalid print arguments : Line {}'.format(current_line))
+        return 
+
 
 def syntax_analyzer():
     global current_token,token_idx
     print("\nSYNTAX ANALYZER:")
     advance()
     return program()
+
+def do_parse_tree(tokens_list):
+    global tokens
+    tokens = tokens_list
+    parse_tree = syntax_analyzer()
+    return parse_tree
         
 if __name__ == '__main__':
     tokens = parse(sys.argv[1])
