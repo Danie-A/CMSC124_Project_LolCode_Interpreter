@@ -1,9 +1,18 @@
-### TO FIX:
-
-[] Assumption that there is one whitespace between keywords since tabs are allowed
-
 ### TO DO:
 
-[] Line Errors : Danie
-[] Connect Lexemes and Syntax to UI : Dan / Danie
-[] Search Parser Guide : Mart / Danie / Dan
+SEMANTICS
+[] input
+[] print terminal
+[] make variable
+[] typecast
+[] add / sub
+
+UI
+[] write on text file section
+[] execute text file
+[] show error or output in console section
+
+### TO FIX:
+
+[] sys.exit() or return
+[] fix gui
