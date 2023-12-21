@@ -72,7 +72,6 @@ class Token:
         return f"({self.tokentype}, \"{self.tokenvalue}\")"
 
 
-
 def find_tldr(i,line):
     # Regular expression pattern
     pattern = r'(\bTLDR\b)\s*$'

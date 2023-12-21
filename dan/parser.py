@@ -1,4 +1,4 @@
-from lexical import Token, parse
+from lexer import Token, parse
 import sys
 
 class Node:
@@ -247,7 +247,6 @@ def print_expression():
     else:
         print('SyntaxError: Invalid print arguments : Line {}'.format(current_line))
         return 
-
 
 def syntax_analyzer():
     global current_token,token_idx
