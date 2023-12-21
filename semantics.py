@@ -2,7 +2,6 @@ import numbers
 
 
 class Stack:
-    
     def __init__(self, size):
         self.buffer = [0 for _ in range(size)]
         self.stackpointer = -1

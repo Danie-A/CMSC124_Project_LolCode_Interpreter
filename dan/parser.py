@@ -24,6 +24,9 @@ def if_linebreak():
     else:
         print('SyntaxError: Linebreak expected after statement : Line {}'.format(current_line))
         return 
+
+def error(msg, line):
+    print("Error: {} at line {}".format(msg,line))
            
 def program():
     global current_token, current_line
@@ -31,41 +34,8 @@ def program():
     if current_token.tokentype == "start_code_delimiter":
         nodes.append(("START",current_token))
         advance()
-        if current_token.tokentype == "linebreak":
-            current_line +=1 
-            advance()
-            # VARIABLE DECLARATION
-            if current_token.tokentype == "start_var_declaration_delimiter": # WAZZUP
-                advance() # pass wazzup
-                if_linebreak()
-                varDeclarationList = var_declaration_list()
-                nodes.append(("VAR_DEC_LIST",varDeclarationList))
-                if current_token.tokentype == "end_var_declaration_delimiter":
-                    advance() # pass BUHBYE
-                    if_linebreak()
-                else:
-                    print('SyntaxError: End variable declaration delimiter not found : Line {}'.format(current_line))
-                    return 
-            else:
-                print('SyntaxError: Start variable declaration delimiter not found : Line {}'.format(current_line))
-                return 
-            
-            # STATEMENTS_LIST
-            statementList = statement_list()
-            nodes.append(("STAT_LIST", statementList))
-            if current_token.tokentype == "end_code_delimiter":
-                nodes.append(("END",current_token))
-                advance()
-            else:
-                print('SyntaxError: End code delimter not found : Line {}'.format(current_line))
-                return 
-        else:
-            print('SyntaxError: Linebreak expected after HAI : Line {}'.format(current_line))
-            return 
-    else: 
-        print('SyntaxError: Start code delimiter not found : Line {}'.format(current_line))
-        return 
-
+        if_linebreak()
+        
     return nodes
 
 
@@ -196,7 +166,7 @@ def literal():
                 return node
             else:
                 print('SyntaxError: String delimiter expected : Line {}'.format(current_line))
-                return 
+                end_parse()
         else:
             print('SyntaxError: Invalid string literal : Line {}'.format(current_line))
             return 
