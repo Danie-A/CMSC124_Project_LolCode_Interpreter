@@ -1,67 +1,6 @@
 import regex as re
 import sys
 
-reg = {
-    "varident": r'^[a-zA-Z][a-zA-Z0-9_]*$',
-    "numbr_literal": r'^-?([1-9][0-9]*|0)$',
-    "numbar_literal": r'^(-?[0-9]*(\.[0-9]+)?)$',
-    "yarn_literal": r'^\"[^\"\']*\"$',
-    "troof_literal": r'^(WIN|FAIL)$',
-    "type_literal": r'^(NOOB|NUMBR|NUMBAR|YARN|TROOF)$',
-    "hai": r'^HAI$',
-    "kthxbye": r'^KTHXBYE$',
-    "wazzup": r'^WAZZUP$',
-    "buhbye": r'^BUHBYE$',
-    "btw": r'^BTW$',
-    "obtw": r'^OBTW$',
-    "tldr": r'^TLDR$',
-    "ihasa": r'^I HAS A$',
-    "itz": r'^ITZ$',
-    "r": r'^R$',
-    "sum": r'^SUM OF$',
-    "diff": r'^DIFF OF$',
-    "produkt": r'^PRODUKT OF$',
-    "quoshunt": r'^QUOSHUNT OF$',
-    "mod": r'^MOD OF$',
-    "biggr": r'^BIGGR OF$',
-    "smallr": r'^SMALLR OF$',
-    "both": r'^BOTH OF$',
-    "either": r'^EITHER OF$',
-    "won": r'^WON OF$',
-    "not": r'^NOT$',
-    "any": r'^ANY OF$',
-    "all": r'^ALL OF$',
-    "bothsaem": r'^BOTH SAEM$',
-    "diffrint": r'^DIFFRINT$',
-    "smoosh": r'^SMOOSH$',
-    "maek": r'^MAEK$',
-    "a": r'^A$',
-    "isnowa": r'^IS NOW A$',
-    "visible": r'^VISIBLE$',
-    "gimmeh": r'^GIMMEH$',
-    "orly?": r'^O RLY\?$',
-    "yarly": r'^YA RLY$',
-    "mebbe": r'^MEBBE$',
-    "nowai": r'^NO WAI$',
-    "oic": r'^OIC',
-    "wtf?": r'^WTF\?$',
-    "omg": r'^OMG$',
-    "omgwtf": r'^OMGWTF$',
-    "iminyr": r'^IM IN YR$',
-    "uppin": r'^UPPIN$',
-    "nerfin": r'^NERFIN$',
-    "yr": r'^YR$',
-    "til": r'^TIL$',
-    "wile": r'^WILE$',
-    "imouttayr": r'^IM OUTTA YR$',
-    "howiz": r'^HOW IZ I$',
-    "ifusayso": r'^IF U SAY SO$',
-    "gtfo": r'^GTFO$',
-    "foundyr": r'^FOUND YR$',
-    "iiz": r'^I IZ$',
-    "mkay": r'^MKAY$',
-}
-
 class Token:
     def __init__(self, tokentype, tokenvalue, valuetype_ = None):
         self.tokentype = tokentype
@@ -70,8 +9,6 @@ class Token:
 
     def __repr__(self) -> str:
         return f"({self.tokentype}, \"{self.tokenvalue}\")"
-
-
 
 def find_tldr(i,line):
     # Regular expression pattern
@@ -91,7 +28,6 @@ def find_tldr(i,line):
         else:
             return False
 
-    
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
     print("lines are:", lines)
@@ -307,11 +243,6 @@ def lexical_analyzer(contents):
                 if num_quote == 1:
                     items.append(Token("string_literal", token))
             
-            # TO-DO
-            # HARD PART
-            # [] Line Errors : Danie
-            # [] Parser Try  : Danie | Mart | Dan
-            
             # Comments
             # If comment are seen, show error because it must already be deleted from the start of the program
             elif re.fullmatch(r"BTW", token):
@@ -473,15 +404,7 @@ def lexical_analyzer(contents):
             else:
                 print(f"InvalidTokenError: Invalid Token Detected.\n\tLine {i+1}: {line}\n\tToken: {token}")
                 sys.exit()    
-            
-            
-            # if for loop
-            # for i in reg_keys:
-            #     if re.fullmatch(reg[i], token):
-            #         items.append([i, token])
-            #         break
-            
-    
+
     # print items separated by newline
     for item in items:
         print(item)
@@ -492,17 +415,10 @@ def parse(file):
     contents = open(file, 'r').read()
     print(repr(contents))
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
-    # contents = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", "", contents, flags=re.DOTALL) # remove comments by deleting OBTW, between them, and TLDR, flags=re.DOTALL to include multiple lines
-    # result = re.sub(r"OBTW.*?TLDR", lambda x: '\n' * x.group(0).count('\n'), contents, flags=re.DOTALL)
-    # if line has words before OBTW show error
-    
-    #result = re.sub(r"(?<=\n)\s*OBTW.*TLDR\s*(?=\n)", lambda x: '\n' * x.group(0).count('\n'), contents, flags=re.DOTALL)
     
     #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(contents)
     return tokens
-
-reg_keys = list(reg.keys())
 
 if __name__ == '__main__':
     print(parse(sys.argv[1]))

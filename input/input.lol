@@ -8,7 +8,7 @@ HAI
     VISIBLE WIN
     GIMMEH var2
     var2 R 4
-    var R var3 $
+    var R var3
     var3 R 16.5
     var R 20
     var R FAIL
