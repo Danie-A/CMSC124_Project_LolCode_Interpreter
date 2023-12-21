@@ -2,10 +2,12 @@ HAI
     WAZZUP
     I HAS A var ITZ 3
     I HAS A var2
-    I HAS A var3 ITZ FAIL
+    I HAS A var3 ITZ var2
+    I HAS A var4 ITZ "NOOB"
     BUHBYE
     VISIBLE "loe"
     VISIBLE WIN
+    VISIBLE SUM OF 3 AN 2
     GIMMEH var2
     var2 R 4
     var R var3

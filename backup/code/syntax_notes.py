@@ -1,4 +1,12 @@
+has_error = False
 
+        # if has_error:
+        #     pass
+        # else:
+        #     has_error = True
+        #     error("[SyntaxError] Linebreak expected after statement", current_line)
+        # return 
+        
 reg = {
     "varident": r'^[a-zA-Z][a-zA-Z0-9_]*$',
     "numbr_literal": r'^-?([1-9][0-9]*|0)$',

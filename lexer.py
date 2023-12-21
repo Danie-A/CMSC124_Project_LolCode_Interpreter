@@ -389,10 +389,12 @@ def lexical_analyzer(contents):
             # VARIABLE IDENTIFIERS
             elif re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_]*", token):
                 items.append(Token("variable_identifier", token))
+            # NUMBR LITERAL
             elif re.fullmatch(r"-?([1-9][0-9]*|0)", token):
-                items.append(Token("numbr_literal", token))
+                items.append(Token("numbr_literal", int(token)))
+            # NUMBAR LITERAL
             elif re.fullmatch(r"-?(0|[1-9][0-9]*)(\.[0-9]+)?", token):
-                items.append(Token("numbar_literal", token))
+                items.append(Token("numbar_literal", float(token)))
             
             # ADDED LEXEMES FROM GRAMMAR
             elif re.fullmatch(r"\n", token):

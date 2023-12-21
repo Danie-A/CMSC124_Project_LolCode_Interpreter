@@ -3,9 +3,9 @@ from tkinter import font
 from tkinter import ttk
 from tkinter import filedialog
 
-from lexical import Token, parse
+from lexer import Token, parse
 
-from syntax import do_parse_tree
+from parser import do_parse_tree
 
 import sys
 
@@ -57,14 +57,25 @@ def open_file():
         textEditor.config(state=tk.DISABLED)
         file.close()
         read_file_lexical(file_path)
+        read_file_parser()
         
 def read_file_lexical(file_path):
     global tokens
     tokens = parse(file_path)
     print(tokens)
     for token in tokens:
-        lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
+        if token.tokentype != "linebreak":
+            lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
 
+def read_file_parser():
+    global tokens
+    _, variableDictionary = do_parse_tree(tokens)
+    # get the key and value from the dictionary
+    print(variableDictionary)
+    for key, value in variableDictionary.items():
+        print(key, value)
+        symbolTable.insert("", "end", values=(key, value))
+    
 def execute_code():
     pass
     # global tokens, file_path
