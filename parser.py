@@ -53,6 +53,7 @@ tokens = []
 token_idx = -1
 current_token = None
 current_line = 1
+errorMessage = ""
     
 def advance():
     global token_idx, current_token
@@ -60,9 +61,15 @@ def advance():
         token_idx += 1
         current_token = tokens[token_idx]
 
+class Error(Exception):
+    def __init__(self, message=None):
+        self.message = message
+        super().__init__(message)
+        
 def error(msg, line):
-    print("Error: {} : Line {}".format(msg,line))
-    sys.exit()
+    # use Error class
+    errorMessage = "{} : Line {}".format(msg,line)
+    raise Error(errorMessage)
 
 def if_linebreak():
     global current_token, current_line
@@ -203,7 +210,7 @@ def statement():
             else:
                 error("[SyntaxError] Invalid variable value reassignment", current_line)
         
-        elif current_token.tokentype == "full_typecast_keyword": # changing the type of the varriable
+        elif current_token.tokentype == "full_typecast_keyword": # changing the type of the variable
             advance() # pass IS NOW A
             if current_token.tokentype == "type_literal":
                 type_literal_ = current_token
@@ -279,6 +286,7 @@ def arithmetic_expression():
     global current_token, current_line
     if current_token.tokentype == "add_keyword":
         advance() # pass SUM OF
+        
         # left operand # operand can be a variable, numbar, numbr, string, troof  
         if current_token.tokentype in expression_tokens:
             left = expression()
@@ -330,13 +338,17 @@ def arithmetic_expression():
                     error("[Logic Error] Variable not found", current_line)
             else:
                 error("[Syntax Error] Invalid operand", current_line)            
+            
             #add
+            
             advance()
             result = left + right
             return ('EXPRESSION', result)
         else:
             error("[Syntax Error] AN keyword not found", current_line)
+    
     # SUBTRACTION 
+    
     # MULTIPLICATION
     else:
         error("[Syntax Error] Incorrect Arithmetic Expression", current_line)
@@ -359,13 +371,16 @@ def handle_full_typecast(var_name, target_type, current_line):
             variables[var_name] = new_value
         elif isinstance(var_value, str):
             # test yarn_pattern
-            print("stringgg")
             if re.fullmatch(yarn_pattern, var_value):
                 print("var_value:", var_value)
                 var_value = re.sub(r'\.\d+', '', var_value)
                 variables[var_name] = int(var_value)
             else:
                 error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBR", current_line)
+        elif isinstance(var_value, float):
+            variables[var_name] = int(var_value)
+        elif isinstance(var_value, int):
+            variables[var_name] = var_value
         else: # for None
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
     
@@ -383,6 +398,10 @@ def handle_full_typecast(var_name, target_type, current_line):
                 variables[var_name] = int(var_value)
             else:
               error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBAR", current_line)  
+        elif isinstance(var_value, float):
+            variables[var_name] = var_value
+        elif isinstance(var_value, int):
+            variables[var_name] = float(var_value)
         else: # for None
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBAR", current_line)
     
@@ -410,7 +429,6 @@ def handle_full_typecast(var_name, target_type, current_line):
         variables[var_name] = str(variables[var_name])
     elif target_type == "NOOB": # var IS NOW A NOOB # typecase a variable to NOOB
         variables[var_name] = None
-    
     else:
         error(f"[RuntimeError] Failed to convert '{var_value}'", current_line)
 
