@@ -86,11 +86,16 @@ def lexical_analyzer(contents):
                 print(f"\n\tLine {i+1}: {line}\n")
                 sys.exit()
             else:
-                # print("THIS RUNS!!!!!!!\n\n\n")
                 obtwFound = True
                 # change line to empty string
                 lines[i] = ""
                 continue
+        
+        
+        if line.strip() == "": # if line is empty
+            # add an item which is an empty space
+            items.append(Token("empty_line", line))
+            continue # skip to next line
                 
         chars = list(line) # split line to each character in the line to the 'chars' list
         tokens = [] # initialize empty tokens list
@@ -236,8 +241,7 @@ def lexical_analyzer(contents):
                      lexeme += char
                 elif lexeme == "FOUND YR":
                     tokens.append(lexeme)
-                    lexeme = ''                     
-                               
+                    lexeme = ''                                  
                 else: # if lexeme is not empty
                     #print("ELSE RUNS")
                     if lexeme:
@@ -245,6 +249,7 @@ def lexical_analyzer(contents):
                         lexeme = '' # set lexeme to empty again
             else:
                 lexeme += char # append char to lexeme
+        
         
         if lexeme:
             tokens.append(lexeme)  # append any remaining lexeme as a lexeme
@@ -535,9 +540,10 @@ def if_linebreak():
     if current_token.tokentype == "linebreak":
         current_line += 1
         advance()
+        skip_empty_lines()
     else:
         error("[SyntaxError] Linebreak expected after statement", current_line)
- 
+        
 def program():
     global current_token, current_line
     nodes = []
@@ -545,6 +551,7 @@ def program():
         nodes.append(("START",current_token))
         advance()
         if_linebreak()
+        # [] functions
         # VARIABLE DECLARATION
         if current_token.tokentype == "start_var_declaration_delimiter": # WAZZUP
             advance() # pass wazzup
@@ -572,20 +579,20 @@ def program():
 
     return nodes
 
+def skip_empty_lines():
+    global current_token, current_line
+    while current_token.tokentype == "empty_line":
+        advance() # skip empty lines
+        current_line += 1
 
-def var_declaration_list():
+def var_declaration_list(): 
     global current_token, current_line
     nodes = []
     while current_token.tokentype != "end_var_declaration_delimiter":
         node = var_declaration()
         if node is not None:
             nodes.append(node)
-        if current_token.tokentype == "linebreak":
-            current_line += 1
-            advance()
-        else:
-            error("[SyntaxError] Linebreak expected after variable declaration", current_line)
-            break
+        if_linebreak()
     return nodes
 
 def var_declaration():
@@ -920,13 +927,11 @@ def statement_list():
         if node is not None:
             nodes.append(node)
         if_linebreak()
-
     return nodes
 
 
 def print_expression():
     global current_token
-
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
         node = current_token
         advance() # pass literal
@@ -1053,7 +1058,7 @@ def read_file_lexical(file_path):
     tokens = parse(file_path)
     print(tokens)
     for token in tokens:
-        if token.tokentype != "linebreak":
+        if token.tokentype != "linebreak" and token.tokentype != "empty_line":
             lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
 
 def read_file_parser():
@@ -1199,10 +1204,10 @@ bottomFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # Event Binds
 textEditor.bind("<Tab>", insert_spaces)
-root.bind('<Configure>', on_resize) 
+# root.bind('<Configure>', on_resize) 
 
 # print(font.families())
-# root.mainloop()
+root.mainloop()
 
 if __name__ == '__main__':
     tokens = parse(sys.argv[1])

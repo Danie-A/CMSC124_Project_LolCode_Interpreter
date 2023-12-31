@@ -1,16 +1,11 @@
 ### TO DO:
 
-SEMANTICS
-[] arithmetic expression
-[] arithmetic nesting
-[] multi-linebreak ignore - Dan
-
 UI - Dan
 [] show variables in symbol table - Dan
 [] write on text file section - Dan
+[] only when execute is clicked, lexeme is showed (open file)
 [] execute text file - Danie Try
 [] show error or output in console section - Danie Try
-[] full screen dont change size - Danie
 
 ### NEXT HURDLES:
 
@@ -29,8 +24,10 @@ GUI
 [] Symbol Table
 [] Text Editor + Execute
 
-User Output - Danie
+User Output - Mart
 [] Expression
+[] VISIBLE IT
+[] VISIBLE +
 
 Variables
 [/] I HAS A
@@ -65,14 +62,16 @@ Functions - Danie
 
 ### TO FIX:
 
-[not-fixed] sys.exit() or return -
-[] fix gui
-[/] linebreak not included in lexeme table
-
 ### CASES TO CONSIDER:
 
+[] var declaration list not required in parser
+
+### DONE:
+
+[/] multi-linebreak ignore - Danie
+
 Printing - Mart
-[] Printing WIN or FAIL
+[/] Printing WIN or FAIL
 
 Variable Declaration:
 [x] uninitialized variable - None
@@ -83,4 +82,6 @@ TYPECAST:
 [/] what if var_value is "WIN" or "FAIL" (string) \* var = "WIN"
 [/] if "WIN" --> '"WIN"'
 
+[/] sys.exit() or return
+[/] linebreak not included in lexeme table
 {'var': '"WIN"'}
