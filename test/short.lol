@@ -1,0 +1,7 @@
+HAI
+    WAZZUP  
+        I HAS A var ITZ 3
+    BUHBYE
+    VISIBLE "HEY"
+    VISIBLE var
+KTHXBYE

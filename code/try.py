@@ -1,7 +1,29 @@
-line = "   \t\n"
-result = line.strip()
+# line = "   \t\n"
+# result = line.strip()
 
-if result:
-    print("Line has content")
-else:
-    print("Line is empty or contains only whitespace characters")
+# if result:
+#     print("Line has content")
+# else:
+#     print("Line is empty or contains only whitespace characters")
+
+print(str("sleighulet ") + ' sleigh')
+
+import tkinter as tk
+
+def update_line_numbers(event=None):
+    line_numbers.delete('1.0', 'end')
+    num_lines = outputText.index('end - 1 line').split('.')[0]
+    line_numbers.insert('1.0', '\n'.join(str(i) for i in range(1, int(num_lines) + 1)))
+
+root = tk.Tk()
+
+line_numbers = tk.Text(root, width=4, padx=3, takefocus=0, border=0, background='khaki', state='disabled', wrap='none')
+line_numbers.pack(side='left', fill='y')
+
+outputText = tk.Text(root, wrap='word')
+outputText.pack(side='right', fill='both', expand=True)
+
+outputText.bind('<Any-KeyPress>', update_line_numbers)
+outputText.bind('<Any-KeyRelease>', update_line_numbers)
+
+root.mainloop()

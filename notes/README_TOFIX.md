@@ -1,10 +1,17 @@
 ### TO DO:
 
-UI - Dan
-[] show variables in symbol table - Dan
-[] write on text file section - Dan
-[] only when execute is clicked, lexeme is showed (open file)
-[] execute text file - Danie Try
+UI - Dan / Danie
+[/] show variables in symbol table - Danie
+[/] dont disable text editor when open file
+[/] execute text file (lexer) - Danie Try
+[/] write on text file section
+[/] only when execute is clicked, lexeme is showed (open file)
+on execute:
+[/] reset symbol table
+[/] reset text editor
+[/] reset console
+
+[] disable execute button when GIMMEH pop up
 [] show error or output in console section - Danie Try
 
 ### NEXT HURDLES:
@@ -16,26 +23,24 @@ CMSC 124 Project To-Do
 > every latest operation
 > latest calculation
 
-Typecasting - Danie
-[] MAEK
-
 GUI
 [] Console
 [] Symbol Table
 [] Text Editor + Execute
 
 User Output - Mart
-[] Expression
+[] VISIBLE Expression
 [] VISIBLE IT
 [] VISIBLE +
-
-Variables
-[/] I HAS A
-[/] ITZ expr
 
 If-Else - Mart
 [] YA RLY
 [] NO WAI
+
+Switch-Case - Mart
+[] OMG
+[] OMGWTF
+[] GTFO
 
 Operations
 [] Assignment (R) - Danie
@@ -44,27 +49,34 @@ Operations
 [] Comparison - Dan
 [] Boolean - Dan
 
-Switch-Case - Mart - Danie
-[] OMG
-[] OMGWTF
-[] GTFO
-
 Loops - Dan
 [] Delimiter
 [] Uppin/Nerfin
 [] TIL
 [] WILE
 
+Typecasting - Danie
+[] MAEK
+
 Functions - Danie
 [] Definition
 [] Return
 [] Calling
 
+Variables
+[/] I HAS A
+[] ITZ expr (arithmetic, boolean, comparison, smoosh)
+
 ### TO FIX:
 
 ### CASES TO CONSIDER:
 
-[] var declaration list not required in parser
+[] var declaration list not required in parser (? i forgot what this means)
+
+### UNNECESSARY WANTS:
+
+[/] Dark Mode (to Beige Mode)
+[-] Fix Padding of Elements GUI
 
 ### DONE:
 

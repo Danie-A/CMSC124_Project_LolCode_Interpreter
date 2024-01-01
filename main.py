@@ -51,12 +51,12 @@ def find_tldr(i,line):
 
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
-    print("lines are:", lines)
+    # print("lines are:", lines)
     lexeme = ""
     items = []
     obtwFound = False
     for i, line in enumerate(lines):
-        print(f"i and line is {i+1}: {line}")
+        # print(f"i and line is {i+1}: {line}")
 
         # For Multi-Line Comments 
         
@@ -439,15 +439,27 @@ def lexical_analyzer(contents):
                     
     return items
 
-def parse(file):
+# parse function for terminal-based
+def parse_terminal(file):
+    # reset variables
+    
     contents = open(file, 'r').read()
-    print(repr(contents))
+    # print(repr(contents)) # printable representation of contents
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
     
     #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(contents)
     return tokens
 
+# parse function for GUI-based
+def parse_tkinter(code):
+    print(repr(code)) # printable representation of contents
+    code = re.sub(r"(?<!O)BTW.*?(?=\n)", "", code) # remove comments by deleting BTW and after it before \n
+    
+    #print("REVISED CONTENTS ARE:\n", result)
+    tokens = lexical_analyzer(code)
+    return tokens
+    
 # ______________________________________________________________________________________________________________
 # -------------------------------------------[  PARSER ]--------------------------------------------------------
 """
@@ -533,6 +545,7 @@ class Error(Exception):
 def error(msg, line):
     # use Error class
     errorMessage = "{} : Line {}".format(msg,line)
+    insert_output(errorMessage)
     raise Error(errorMessage)
 
 def if_linebreak():
@@ -590,6 +603,7 @@ def var_declaration_list():
     nodes = []
     while current_token.tokentype != "end_var_declaration_delimiter":
         node = var_declaration()
+        update_symbol_table()
         if node is not None:
             nodes.append(node)
         if_linebreak()
@@ -659,6 +673,7 @@ def statement():
         varident_ = varident()
         variables[varident_.tokenvalue]= input("")
         print("variables is now:", variables)
+        update_symbol_table()
         return ("INPUT", varident_)
     elif current_token.tokentype == "variable_identifier": #assignment statement
         varidentDest = current_token.tokenvalue
@@ -849,7 +864,7 @@ def handle_full_typecast(var_name, target_type, current_line):
             variables[var_name] = var_value
         else: # for None
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
-    
+
     elif target_type == "NUMBAR":
         if var_value == True:   #Note: consider string literals WIN and FAIL, not just troof
             new_value = 1
@@ -897,6 +912,7 @@ def handle_full_typecast(var_name, target_type, current_line):
         variables[var_name] = None
     else:
         error(f"[RuntimeError] Failed to convert '{var_value}'", current_line)
+    update_symbol_table()
 
 def literal():
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
@@ -931,7 +947,7 @@ def statement_list():
 
 
 def print_expression():
-    global current_token
+    global current_token, outputText
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
         node = current_token
         advance() # pass literal
@@ -940,6 +956,8 @@ def print_expression():
         #extract/print value of literal 
         literal_value = node.tokenvalue
         print(literal_value)
+        # show literal_value in outputText tkinter
+        insert_output(literal_value)
         return node
     elif current_token.tokentype == "string_delimiter": # string literal
         advance()
@@ -951,6 +969,7 @@ def print_expression():
                 #extract/print value of string literal 
                 string_value = node.tokenvalue
                 print(string_value)
+                insert_output(string_value) # show in tkinter console
                 return node
             else:
                 error("[SyntaxError] String delimiter expected", current_line)
@@ -963,6 +982,7 @@ def print_expression():
         #extract/print value of var identifier
         variable_value = variables[current_token.tokenvalue]
         print(variable_value)
+        insert_output(variable_value) # show in tkinter console
         advance() # pass varident
         return node
     elif current_token.tokentype in expression_tokens:
@@ -982,8 +1002,8 @@ def do_parse_tree(tokens_list):
     global tokens
     tokens = tokens_list
     parse_tree = syntax_analyzer()
-    return parse_tree, variables
-
+    print(variables)
+    print(("PROGRAM",parse_tree))
 
 # ______________________________________________________________________________________________________________
 # -------------------------------------------[  GUI ]-----------------------------------------------------------
@@ -1015,6 +1035,21 @@ bgcolor2 = "#BDE0FE"
 bgcolor3 = "#FFDAC1"
 bgcolor4 = "#FFE1E9"
 bgcolor5 = "#55CBCD"
+
+# beige colors
+dark00 = "#2c2820"
+dark0 = "#3d382d"
+dark1 = "#575144"
+dark2 = "#9e9a91"
+dark3 = "#c6c3bb"
+dark4 = "#9e998f"
+# dark black colors
+# dark0 = "#202225"
+# dark1 = "#292b2f"
+# dark2 = "#2f3136"
+# dark3 = "#40444b"
+bluishdark = "#6786b5"
+
 # ============
 
 # Font =======
@@ -1047,75 +1082,124 @@ def open_file():
         filepathText.delete("1.0","end")
         filepathText.insert(tk.END, file_path)
         filepathText.config(state=tk.DISABLED)
+        # erase previous contents of textEditor
+        textEditor.delete("1.0", tk.END) 
         textEditor.insert("1.0",file.read())
-        textEditor.config(state=tk.DISABLED)
         file.close()
-        read_file_lexical()
-        read_file_parser()
         
-def read_file_lexical(file_path):
+def execute_lexical():
     global tokens
-    tokens = parse(file_path)
-    print(tokens)
-    for token in tokens:
-        if token.tokentype != "linebreak" and token.tokentype != "empty_line":
-            lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
+    # get text from text editor
+    text = textEditor.get("1.0", tk.END)
+    
+    # print("text is:\n", text)
+    if text:
+        tokens = parse_tkinter(text)
+        print(tokens)
+        for token in tokens:
+            if token.tokentype != "linebreak" and token.tokentype != "empty_line": # won't include linebreak and empty line in lexeme table
+                lexemeTable.insert("", "end", values=(token.tokenvalue, token.tokentype))
 
-def read_file_parser():
+def execute_parser():
     global tokens
-    _, variableDictionary = do_parse_tree(tokens)
-    # get the key and value from the dictionary
-    print(variableDictionary)
-    for key, value in variableDictionary.items():
-        print(key, value)
+    do_parse_tree(tokens)
+
+# update symbol table when variables dictionary changes
+def update_symbol_table():
+    global variables, symbolTable
+    # empty the table
+    for i in symbolTable.get_children():
+        symbolTable.delete(i)
+    # add variables again to the table
+    for key, value in variables.items():
         symbolTable.insert("", "end", values=(key, value))
+
+def reset_symbol_table():
+    global variables, symbolTable, tokens, token_idx, current_token, current_line, errorMessage
+    # empty the table
+    for i in symbolTable.get_children():
+        symbolTable.delete(i)
+    # reset variables
+    variables = {'IT': None}
+    # add variables again to the table
+    for key, value in variables.items():
+        symbolTable.insert("", "end", values=(key, value))
+
+    # reset parser global variables
+    tokens = []
+    token_idx = -1
+    current_token = None
+    current_line = 1
+    errorMessage = ""
+    
+def reset_lexeme_table():
+    global lexemeTable
+    # empty the table
+    for i in lexemeTable.get_children():
+        lexemeTable.delete(i)
+
+def reset_console():
+    # reset console: set outputText to empty
+    outputText.configure(state=tk.NORMAL)
+    outputText.delete("1.0","end")
+    outputText.configure(state=tk.DISABLED)
     
 def execute_code():
+    # reset lexeme and symbol table
+    reset_lexeme_table()
+    reset_symbol_table()
+    reset_console()
+    
+    # execute lexical analyzer and parser
+    execute_lexical()
+    execute_parser()
     pass
-    # global tokens, file_path
-    # if fileLoaded == True:
-    #     print("filepath is ", file_path)
-    #     filename_quoted = shlex.quote(file_path)
-    #     command = f"python ./syntax.py {filename_quoted}"
-    #     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    #     output, error = process.communicate()
-
-    #     print(output.decode())
-    #     print(error.decode())
-    #     # parse_tree = do_parse_tree(tokens)
-
-    #     # output = sys.stdout
-
-    #     outputText.insert('1.0', output.decode())
-
-    #     sys.stdout = output
-
-# =============================
+def insert_output(output):
+    outputText.configure(state=tk.NORMAL) # make outputText editable
+    outputText.insert('end', str(output) + "\n") # show new output in tkinter console
+    outputText.configure(state=tk.DISABLED) # make outputText uneditable again
 
 root = tk.Tk()
 root.title("The Lords of the Strings LOLCODE Interpreter")
-root.geometry('1300x700')
-root.minsize(1300,700)
+
+# sets the width and height of the window
+window_width = 1350
+window_height = 700
+root.geometry(f"{window_width}x{window_height}")
+
+# centers the window on the screen
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+x = (screen_width - window_width) // 2
+y = (screen_height - window_height) // 3 # Add padding on top
+root.geometry(f"+{x}+{y}")
+
+# root.minsize(1350,700)
 
 font.nametofont("TkDefaultFont").configure(family=defaultFont[0], size=defaultFont[1])
-
+root.config(bg=dark0)
 topFrame = tk.Frame(root, bg=bgcolor1)
-bottomFrame = tk.Frame(root, bg=bgcolor4)
+bottomFrame = tk.Frame(root, bg=dark0)
 
+# dark mode
+style = ttk.Style()
+style.theme_use('clam')
+style.configure("Custom.Treeview", background=dark3, fieldbackground=dark3)
 # Top Frame =====
 # Text Editor
-textEditorFrame = tk.Frame(topFrame, width=400,bg=bgcolor1)
-openfileUI = tk.Frame(textEditorFrame)
-filepathText = tk.Text(openfileUI, height = 1, width=54)
-openfileButton = tk.Button(openfileUI, text="Open", command=open_file)
+textEditorFrame = tk.Frame(topFrame, width=400,bg=dark0)
+openfileUI = tk.Frame(textEditorFrame, bg=dark0)
+filepathText = tk.Text(openfileUI, height = 1, width=54, bg=dark1, fg="white", selectbackground=dark2, selectforeground="white")
+openfileButton = tk.Button(openfileUI, text="Open", command=open_file, bg=dark1, fg="white", font=labelFont, activebackground=dark0, activeforeground="white")
 filepathText.configure(state=tk.DISABLED)
 
-textEditFrame = tk.Frame(textEditorFrame)
-textEditor = tk.Text(textEditFrame, height = 10, width = 60, wrap='none', font=texteditorFont)
+textEditFrame = tk.Frame(textEditorFrame, bg=dark0)
+textEditor = tk.Text(textEditFrame, padx=20, pady=20, height = 10, width = 60, wrap='none', font=texteditorFont, selectbackground=dark2, selectforeground="white")
 
+# SCROLLBAR
 textEditorvsb = ttk.Scrollbar(textEditFrame, orient="vertical", command=textEditor.yview)
-textEditor.configure(yscrollcommand=textEditorvsb.set)
+textEditor.configure(yscrollcommand=textEditorvsb.set, bg=dark0, fg="white", insertbackground="white") # dark mode
 textEditorvsb.pack(side=tk.RIGHT, fill=tk.Y)
 
 textEditorhsb = ttk.Scrollbar(textEditFrame, orient="horizontal", command=textEditor.xview)
@@ -1131,12 +1215,12 @@ textEditFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 textEditorFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Lexemes Table
-lexemeFrame = tk.Frame(topFrame, width=300, bg=bgcolor3)
-lexemeTableLabel = tk.Label(lexemeFrame, text="Lexeme Table", bg=bgcolor3, font=labelFont)
+lexemeFrame = tk.Frame(topFrame, width=300, bg=dark0)
+lexemeTableLabel = tk.Label(lexemeFrame, text="Lexeme Table", font=labelFont, fg="white", bg=dark0)
 
-lexemeTableFrame = tk.Frame(lexemeFrame, width=300, bg=bgcolor3)
+lexemeTableFrame = tk.Frame(lexemeFrame, width=300, bg=dark0)
 
-lexemeTable = ttk.Treeview(lexemeTableFrame, columns=("lexeme", "classification"), show='headings')
+lexemeTable = ttk.Treeview(lexemeTableFrame, columns=("lexeme", "classification"), show='headings', style="Custom.Treeview")
 lexemeTable.heading("lexeme", text="Lexeme")
 lexemeTable.heading("classification", text="Classification")
 
@@ -1151,12 +1235,12 @@ lexemeTableFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 lexemeFrame.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
 
 # Symbol Table
-symbolFrame = tk.Frame(topFrame, width=300, bg=bgcolor2)
-symbolTableLabel = tk.Label(symbolFrame, text="Symbol Table", bg=bgcolor2, font=labelFont)
+symbolFrame = tk.Frame(topFrame, width=300, bg=dark1)
+symbolTableLabel = tk.Label(symbolFrame, text="Symbol Table", font=labelFont, fg="white", bg=dark1)
 
-symbolTableFrame = tk.Frame(symbolFrame, width=300, bg=bgcolor2)
+symbolTableFrame = tk.Frame(symbolFrame, width=300, bg=dark1)
 
-symbolTable = ttk.Treeview(symbolTableFrame, columns=("identifier", "value"), show='headings')
+symbolTable = ttk.Treeview(symbolTableFrame, columns=("identifier", "value"), show='headings', style="Custom.Treeview")
 symbolTable.heading("identifier", text="Identifier")
 symbolTable.heading("value", text="Value")
 
@@ -1169,33 +1253,41 @@ symbolTable.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 symbolTableFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 symbolFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-# ===============
 
-# Bottom Frame ==
-executeButton = tk.Button(bottomFrame, text="EXECUTE", font=labelFont, command=execute_code)
+# --------------------------------------------------------
+# BOTTOM FRAME
+# --------------------------------------------------------
+
+# EXECUTE BUTTON 
+executeButton = tk.Button(bottomFrame, text="EXECUTE", font=labelFont, command=execute_code, bg=dark1, fg="white", activebackground=dark0, activeforeground="white")
 executeButton.pack(side=tk.TOP, fill=tk.X)
 
-outputFrame = tk.Frame(bottomFrame, bg=bgcolor4)
-outputText = tk.Text(outputFrame, height = 10, width = 60, wrap='none', font=texteditorFont)
+# CONSOLE CONFIGURATIONS
+
+# console frame
+outputFrame = tk.Frame(bottomFrame)
+
+# console text
+outputText = tk.Text(outputFrame, bg=dark00, padx=20, pady=20, fg="white", height = 10, width = 60, wrap='none', font=texteditorFont, selectbackground=dark2, selectforeground="white")
+
+# console scrollbars
 outputTextvsb = ttk.Scrollbar(outputFrame, orient="vertical", command=outputText.yview)
 outputText.configure(yscrollcommand=outputTextvsb.set)
 outputTextvsb.pack(side=tk.RIGHT, fill=tk.Y)
 outputTexthsb = ttk.Scrollbar(outputFrame, orient="horizontal", command=outputText.xview)
 outputText.configure(xscrollcommand=outputTexthsb.set)
+
+# console pack and disable text editing
 outputTexthsb.pack(side=tk.BOTTOM, fill=tk.X)
 outputText.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 outputFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 outputText.configure(state=tk.DISABLED)
 
-# Console Try
 """
 >> Temporary Solution for Console Input
 [] .configure when there is VISIBLE or Error()
 [] Pop up and ask user input, when button is clicked, value is stored in variable
 """
-
-# outputText = Console(outputFrame, height = 10, width = 60, wrap='none', font=texteditorFont)
-# outputText.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # ===============
 
@@ -1204,14 +1296,14 @@ bottomFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # Event Binds
 textEditor.bind("<Tab>", insert_spaces)
-# root.bind('<Configure>', on_resize) 
 
-# print(font.families())
+# root.bind('<Configure>', on_resize) # flickering bug 
+
 root.mainloop()
 
-if __name__ == '__main__':
-    tokens = parse(sys.argv[1])
-    print(tokens)
-    parse_tree = syntax_analyzer()
-    print(variables)
-    print(("PROGRAM",parse_tree))
+# if __name__ == '__main__':
+#     tokens = parse_terminal(sys.argv[1])
+#     print(tokens)
+#     parse_tree = syntax_analyzer()
+#     print(variables)
+#     print(("PROGRAM",parse_tree))
