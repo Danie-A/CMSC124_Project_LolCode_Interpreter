@@ -6,24 +6,30 @@
 # else:
 #     print("Line is empty or contains only whitespace characters")
 
-print(str("sleighulet ") + ' sleigh')
+# print(str("sleighulet ") + ' sleigh')
 
-import tkinter as tk
+# import tkinter as tk
 
-def update_line_numbers(event=None):
-    line_numbers.delete('1.0', 'end')
-    num_lines = outputText.index('end - 1 line').split('.')[0]
-    line_numbers.insert('1.0', '\n'.join(str(i) for i in range(1, int(num_lines) + 1)))
+# def update_line_numbers(event=None):
+#     line_numbers.delete('1.0', 'end')
+#     num_lines = outputText.index('end - 1 line').split('.')[0]
+#     line_numbers.insert('1.0', '\n'.join(str(i) for i in range(1, int(num_lines) + 1)))
 
-root = tk.Tk()
+# root = tk.Tk()
 
-line_numbers = tk.Text(root, width=4, padx=3, takefocus=0, border=0, background='khaki', state='disabled', wrap='none')
-line_numbers.pack(side='left', fill='y')
+# line_numbers = tk.Text(root, width=4, padx=3, takefocus=0, border=0, background='khaki', state='disabled', wrap='none')
+# line_numbers.pack(side='left', fill='y')
 
-outputText = tk.Text(root, wrap='word')
-outputText.pack(side='right', fill='both', expand=True)
+# outputText = tk.Text(root, wrap='word')
+# outputText.pack(side='right', fill='both', expand=True)
 
-outputText.bind('<Any-KeyPress>', update_line_numbers)
-outputText.bind('<Any-KeyRelease>', update_line_numbers)
+# outputText.bind('<Any-KeyPress>', update_line_numbers)
+# outputText.bind('<Any-KeyRelease>', update_line_numbers)
 
-root.mainloop()
+# root.mainloop()
+
+# var = input("inputsmth: ")
+# print("input is: ["+var+"]")
+
+num = ("a", "b", "c", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+print("numis ", num[1])

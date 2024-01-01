@@ -2,9 +2,7 @@ import regex as re
 import sys
 import math
 import tkinter as tk
-from tkinter import font
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import font, ttk, filedialog, simpledialog
 import subprocess as sub
 
 """
@@ -484,6 +482,7 @@ expression_tokens = ["add_keyword",
                     "multiply_keyword", 
                     "divide_keyword", 
                     "modulo_keyword",
+                    "typecast_keyword",
                     "return_larger_number_keyword", 
                     "return_smaller_number_keyword", 
                     "both_true_check_keyword", 
@@ -663,6 +662,64 @@ def varident():
     else:
         error("[SyntaxError] Invalid variable identifier", current_line)
 
+# tkinter pop up gui for user input (GIMMEH)
+def popup_input(varident_):
+    global variables
+    user_input = simpledialog.askstring("Input", f"GIMMEH {varident_.tokenvalue}:")
+    if user_input is None:
+        variables[varident_.tokenvalue] = ""
+    else:
+        variables[varident_.tokenvalue] = user_input
+    update_symbol_table()
+    print("User input:", user_input)
+
+
+# only the syntax --- to edit
+def function_call():
+    global current_token
+    if current_token.tokentype == "define_function_keyword":
+        advance() # pass HOW IZ I
+        if current_token.tokentype == "variable_identifier":
+            advance() # pass function name
+            statementList = statement_list()
+            if current_token.tokentype == "end_of_function_keyword":
+                advance() # pass IF U SAY SO     
+                return ("FUNCTION", statementList)
+            else:
+                error("[SyntaxError] Invalid end of function (IF U SAY SO)", current_line)
+        else:
+            error("[SyntaxError] Invalid function name", current_line)
+    else:
+        error("[SyntaxError] Invalid function call (HOW IZ I)", current_line)
+
+def place_in_IT(value):
+    global variables
+    variables["IT"] = value
+    update_symbol_table()
+    
+def semi_typecast_expression():
+        advance() # pass MAEK
+        varident_ = varident() # var
+        # may or may not include A typecast_prefix
+        if current_token.tokentype == "typecast_prefix":
+            advance() # pass A
+            if current_token.tokentype == "type_literal":
+                type_literal_ = current_token
+                new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+                place_in_IT(new_value) # place in IT
+                advance() # pass NUMBAR/NUMBR/TROOF/YARN
+                return ("TYPECAST", new_value, varident_, type_literal_)
+            else:
+                error("[SyntaxError: Invalid typecast literal: Line", current_line)
+        elif current_token.tokentype == "type_literal":
+            type_literal_ = current_token
+            new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+            place_in_IT(new_value) # place in IT
+            advance() # pass NUMBAR/NUMBR/TROOF/YARN
+            return ("TYPECAST", new_value, varident_, type_literal_)
+        else:
+             error("[SyntaxError: Invalid typecast literal: Line", current_line)
+    
 def statement():
     global current_token
     if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
@@ -671,9 +728,9 @@ def statement():
     elif current_token.tokentype == "input_keyword":
         advance() # pass GIMMEH
         varident_ = varident()
-        variables[varident_.tokenvalue]= input("")
+        # pop up tkinter input box
+        popup_input(varident_)
         print("variables is now:", variables)
-        update_symbol_table()
         return ("INPUT", varident_)
     elif current_token.tokentype == "variable_identifier": #assignment statement
         varidentDest = current_token.tokenvalue
@@ -690,7 +747,6 @@ def statement():
             #TODO: add expression
             else:
                 error("[SyntaxError] Invalid variable value reassignment", current_line)
-        
         elif current_token.tokentype == "full_typecast_keyword": # changing the type of the variable
             advance() # pass IS NOW A
             if current_token.tokentype == "type_literal":
@@ -703,22 +759,33 @@ def statement():
         else:
             error("[SyntaxError] Invalid variable value reassignment. R not found. ", current_line)
 
-    elif current_token.tokentype == "typecast_keyword":
+    elif current_token.tokentype == "typecast_keyword": # SEMI TYPECAST
         advance() # pass MAEK
         varident_ = varident() # var
         # may or may not include A typecast_prefix
         if current_token.tokentype == "typecast_prefix":
             advance() # pass A
-        if current_token.tokentype == "type_literal":
+            if current_token.tokentype == "type_literal":
+                type_literal_ = current_token
+                new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+                place_in_IT(new_value) # place in IT
+                advance() # pass NUMBAR/NUMBR/TROOF/YARN
+                return ("TYPECAST", varident_, type_literal_)
+            else:
+                error("[SyntaxError: Invalid typecast literal: Line", current_line)
+        elif current_token.tokentype == "type_literal":
             type_literal_ = current_token
+            new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+            place_in_IT(new_value) # place in IT
             advance() # pass NUMBAR/NUMBR/TROOF/YARN
             return ("TYPECAST", varident_, type_literal_)
         else:
              error("[SyntaxError: Invalid typecast literal: Line", current_line)
-    
+         
     # elif currenttoken.tokentype == "concatenation_keyword" #SMOOSH 
     
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
+
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
     
@@ -733,8 +800,11 @@ def statement():
 
 def expression():
     global current_token, current_line
+    node = None
     if current_token.tokentype in arith_tokens:
         node = arithmetic_expression() 
+    elif current_token.tokentype == "typecast_keyword":
+        node = semi_typecast_expression()
     # elif current_token.tokentype in comp_tokens:
     #     node = compare_expression()
     # elif current_token.tokentype in bool_tokens:
@@ -765,7 +835,8 @@ def typecast_troof(troof):
     
 def arithmetic_expression():
     global current_token, current_line
-    if current_token.tokentype == "add_keyword":
+    if current_token.tokentype in ["add_keyword","subtract_keyword","multiply_keyword","divide_keyword","modulo_keyword", "return_larger_number_keyword", "return_smaller_number_keyword"]:
+        operationType = current_token.tokentype # save operation type
         advance() # pass SUM OF
         
         # left operand # operand can be a variable, numbar, numbr, string, troof  
@@ -786,7 +857,7 @@ def arithmetic_expression():
             left = typecast_troof(current_token.tokenvalue)
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                left = variables[current_token.tokenvalue]
+                left = typecast_string(variables[current_token.tokenvalue])
             else:
                 error("[Logic Error] Variable not found", current_line)
         else:
@@ -813,17 +884,22 @@ def arithmetic_expression():
             elif current_token.tokentype == "troof_literal":
                 right = typecast_troof(current_token.tokenvalue)
             elif current_token.tokentype == "variable_identifier":
-                if variables[current_token.tokenvalue] is not None:
-                    right = variables[current_token.tokenvalue]
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    right = typecast_string(variables[current_token.tokenvalue])
                 else:
                     error("[Logic Error] Variable not found", current_line)
             else:
                 error("[Syntax Error] Invalid operand", current_line)            
-            
-            #add
-            
-            advance()
-            result = left + right
+           
+            if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
+                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
+            elif operationType == "add_keyword": # ADD OPERATION
+
+                result = left + right
+                print(result)
+            else:
+                error("[Syntax Error] Invalid arithmetic operation", current_line)
+            advance() # pass RIGHT OPERAND (?)
             return ('EXPRESSION', result)
         else:
             error("[Syntax Error] AN keyword not found", current_line)
@@ -914,6 +990,79 @@ def handle_full_typecast(var_name, target_type, current_line):
         error(f"[RuntimeError] Failed to convert '{var_value}'", current_line)
     update_symbol_table()
 
+def handle_semi_typecast(var_name, target_type, current_line):
+    global current_token
+    yarn_pattern = r"^-?(0|[1-9][0-9]*)(\.[0-9]+)?$"
+    
+    #Get the value associated w/ variable identifier
+    var_value = variables.get(var_name, "NOOB")
+
+    #perfrom type conversion based on target type
+    if target_type == "NUMBR":
+        if var_value == "WIN":   #Note: consider string literals WIN and FAIL, not just troof
+            new_value = 1
+        elif var_value == "FAIL":
+            new_value = 0
+        elif isinstance(var_value, str):
+            # test yarn_pattern
+            if re.fullmatch(yarn_pattern, var_value):
+                print("var_value:", var_value)
+                var_value = re.sub(r'\.\d+', '', var_value)
+                new_value = int(var_value)
+            else:
+                error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBR", current_line)
+        elif isinstance(var_value, float):
+            new_value = int(var_value)
+        elif isinstance(var_value, int):
+            new_value = var_value
+        else: # for None
+            error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
+
+    elif target_type == "NUMBAR":
+        if var_value == True:   #Note: consider string literals WIN and FAIL, not just troof
+            new_value = 1.0
+        elif var_value == False:
+            new_value = 0.0
+        elif isinstance(var_value, str):
+            if re.fullmatch(yarn_pattern, var_value):
+                new_value = int(var_value)
+            else:
+              error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBAR", current_line)  
+        elif isinstance(var_value, float):
+            new_value = var_value
+        elif isinstance(var_value, int):
+            new_value = float(var_value)
+        else: # for None
+            error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBAR", current_line)
+    
+    elif target_type == "TROOF":
+            if var_value == "":
+                new_value = False # will print FAIL in Symbol Table
+            elif var_value == "WIN":
+                new_value = True # equivalent to WIN troof_literal
+            elif var_value == "FAIL":
+                new_value = False # equivalent to FAIL troof_literal
+            elif var_value == 0:
+                new_value = False # equivalent to FAIL
+            else:
+                new_value = True # equivalent to WIN
+                        
+    elif target_type == "YARN":
+        if variables[var_name] == True:
+            new_value = "WIN"
+        elif variables[var_name] == False:
+            new_value = "FAIL"
+        elif variables[var_name] == None:
+            error(f"[RuntimeError] Cannot convert uninitialized value to YARN", current_line)
+        new_value = str(variables[var_name])
+    elif target_type == "NOOB": # var IS NOW A NOOB # typecase a variable to NOOB
+        new_value = None
+    else:
+        error(f"[RuntimeError] Failed to convert '{var_value}'", current_line)
+    
+    return new_value
+
+
 def literal():
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
         node = current_token
@@ -934,11 +1083,20 @@ def literal():
     else:
         error("[SyntaxError] Invalid literal", current_line)
 
-
 def statement_list():
     global current_token, current_line
     nodes = []
     while current_token.tokentype != "end_code_delimiter":
+        node = statement()
+        if node is not None:
+            nodes.append(node)
+        if_linebreak()
+    return nodes
+
+def function_statement_list():
+    global current_token, current_line
+    nodes = []
+    while current_token.tokentype != "end_of_function_keyword":
         node = statement()
         if node is not None:
             nodes.append(node)
@@ -952,8 +1110,6 @@ def print_expression():
         node = current_token
         advance() # pass literal
         # print the value of the literal
-        # print(node.tokenvalue, end=" ")
-        #extract/print value of literal 
         literal_value = node.tokenvalue
         print(literal_value)
         # show literal_value in outputText tkinter
@@ -981,16 +1137,28 @@ def print_expression():
             error("[SyntaxError] Variable not yet declared", current_line)
         #extract/print value of var identifier
         variable_value = variables[current_token.tokenvalue]
+        # change variable value to WIN or FAIL
+        variable_value = check_if_bool(variable_value)
         print(variable_value)
         insert_output(variable_value) # show in tkinter console
         advance() # pass varident
         return node
     elif current_token.tokentype in expression_tokens:
         node = expression()
-        print(node[1])
+        ans = check_if_bool(node[1])
+        print(ans)
+        insert_output(ans) # show in tkinter console
         return node
     else:
         error("[SyntaxError] Invalid print arguments", current_line)
+
+def check_if_bool(ans):
+    if ans == True:
+        return "WIN"
+    elif ans == False:
+        return "FAIL"
+    else:
+        return ans
 
 def syntax_analyzer():
     global current_token,token_idx
@@ -1058,7 +1226,7 @@ bluishdark = "#6786b5"
 # Font =======
 defaultFont = ("Microsoft YaHei UI", 8, "normal")
 labelFont = ("Microsoft YaHei UI", 8, "bold") 
-texteditorFont = ("Courier New", 10, "normal") 
+texteditorFont = ("Consolas", 10, "normal") 
 # ============
 
 # GUI Functions ===============
@@ -1115,6 +1283,8 @@ def update_symbol_table():
         symbolTable.delete(i)
     # add variables again to the table
     for key, value in variables.items():
+        # if value is True or False, should show WIN or FAIL
+        value = check_if_bool(value)
         symbolTable.insert("", "end", values=(key, value))
 
 def reset_symbol_table():
@@ -1240,7 +1410,6 @@ lexemeFrame.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
 # Symbol Table
 symbolFrame = tk.Frame(topFrame, width=300, bg=dark0)
 symbolTableLabel = tk.Label(symbolFrame, text="Symbol Table", font=labelFont, fg="white", bg=dark0)
-
 symbolTableFrame = tk.Frame(symbolFrame, width=300, bg=dark0)
 
 symbolTable = ttk.Treeview(symbolTableFrame, columns=("identifier", "value"), show='headings', style="Custom.Treeview")
@@ -1286,13 +1455,7 @@ outputText.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 outputFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 outputText.configure(state=tk.DISABLED)
 
-"""
->> Temporary Solution for Console Input
-[] .configure when there is VISIBLE or Error()
-[] Pop up and ask user input, when button is clicked, value is stored in variable
-"""
-
-# ===============
+# ----------------------------------------------------------------
 
 topFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 bottomFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)

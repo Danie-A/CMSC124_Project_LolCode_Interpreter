@@ -3,7 +3,7 @@ HAI
         I HAS A var ITZ 6 BTW uninitialized var
         I HAS A var2 ITZ "a" BTW initialized var   
     BUHBYE
-    GIMMEH var2
+    BTW GIMMEH var2
     VISIBLE SUM OF 3 AN 5
     VISIBLE SUM OF 6 AN 7
     VISIBLE SUM OF "WIN" AN WIN
@@ -11,4 +11,6 @@ HAI
     VISIBLE SUM OF 8 AN 9
     var IS NOW A NUMBR
     VISIBLE "HELLO" 
+    VISIBLE var2 AN 6
+    BTW Error because of type mismatch
 KTHXBYE

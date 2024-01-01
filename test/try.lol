@@ -3,7 +3,7 @@ HAI
         I HAS A var BTW uninitialized var
         I HAS A var2 ITZ "some"
         I HAS A var3 ITZ var2
-        I HAS A var4 ITZ SUM OF 5 AN 4
+        I HAS A var4 ITZ 5
         I HAS A num1 ITZ 8
         I HAS A num2 ITZ 10
         I HAS A ans
