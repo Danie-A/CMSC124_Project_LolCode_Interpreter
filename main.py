@@ -1037,17 +1037,20 @@ bgcolor4 = "#FFE1E9"
 bgcolor5 = "#55CBCD"
 
 # beige colors
-dark00 = "#2c2820"
-dark0 = "#3d382d"
-dark1 = "#575144"
-dark2 = "#9e9a91"
-dark3 = "#c6c3bb"
-dark4 = "#9e998f"
+# dark00 = "#2c2820"
+# dark0 = "#3d382d"
+# dark1 = "#575144"
+# dark2 = "#9e9a91"
+# dark3 = "#c6c3bb"
+# dark4 = "#9e998f"
 # dark black colors
-# dark0 = "#202225"
-# dark1 = "#292b2f"
-# dark2 = "#2f3136"
-# dark3 = "#40444b"
+dark00 = "#1f2124"
+dark0 = "#2f3136"
+dark1 = "#292b2f"
+dark2 = "#40444b"
+dark3 = "#565960"
+dark4 = "#c8ccd4"
+
 bluishdark = "#6786b5"
 
 # ============
@@ -1184,8 +1187,8 @@ bottomFrame = tk.Frame(root, bg=dark0)
 
 # dark mode
 style = ttk.Style()
-style.theme_use('clam')
-style.configure("Custom.Treeview", background=dark3, fieldbackground=dark3)
+# style.theme_use('clam')
+style.configure("Custom.Treeview", background=dark4, fieldbackground=dark4)
 # Top Frame =====
 # Text Editor
 textEditorFrame = tk.Frame(topFrame, width=400,bg=dark0)
@@ -1215,10 +1218,10 @@ textEditFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 textEditorFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Lexemes Table
-lexemeFrame = tk.Frame(topFrame, width=300, bg=dark0)
-lexemeTableLabel = tk.Label(lexemeFrame, text="Lexeme Table", font=labelFont, fg="white", bg=dark0)
+lexemeFrame = tk.Frame(topFrame, width=300, bg=dark2)
+lexemeTableLabel = tk.Label(lexemeFrame, text="Lexeme Table", font=labelFont, fg="white", bg=dark2)
 
-lexemeTableFrame = tk.Frame(lexemeFrame, width=300, bg=dark0)
+lexemeTableFrame = tk.Frame(lexemeFrame, width=300, bg=dark2)
 
 lexemeTable = ttk.Treeview(lexemeTableFrame, columns=("lexeme", "classification"), show='headings', style="Custom.Treeview")
 lexemeTable.heading("lexeme", text="Lexeme")
@@ -1235,10 +1238,10 @@ lexemeTableFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 lexemeFrame.pack(side=tk.LEFT, fill=tk.BOTH,expand=True)
 
 # Symbol Table
-symbolFrame = tk.Frame(topFrame, width=300, bg=dark1)
-symbolTableLabel = tk.Label(symbolFrame, text="Symbol Table", font=labelFont, fg="white", bg=dark1)
+symbolFrame = tk.Frame(topFrame, width=300, bg=dark0)
+symbolTableLabel = tk.Label(symbolFrame, text="Symbol Table", font=labelFont, fg="white", bg=dark0)
 
-symbolTableFrame = tk.Frame(symbolFrame, width=300, bg=dark1)
+symbolTableFrame = tk.Frame(symbolFrame, width=300, bg=dark0)
 
 symbolTable = ttk.Treeview(symbolTableFrame, columns=("identifier", "value"), show='headings', style="Custom.Treeview")
 symbolTable.heading("identifier", text="Identifier")
