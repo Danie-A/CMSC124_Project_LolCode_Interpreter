@@ -781,8 +781,13 @@ def statement():
             return ("TYPECAST", varident_, type_literal_)
         else:
              error("[SyntaxError: Invalid typecast literal: Line", current_line)
-         
-    # elif currenttoken.tokentype == "concatenation_keyword" #SMOOSH 
+    
+    elif current_token.tokentype == "concatenation_keyword": #SMOOSH
+        advance()
+        literal_ = literal()
+        print(current_token)
+        # if current_token.tokentype == "and_keyword":
+        #     pass
     
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
