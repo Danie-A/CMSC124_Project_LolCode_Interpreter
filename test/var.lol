@@ -11,18 +11,4 @@ HAI
         I HAS A var11
         I HAS A ans
     BUHBYE
-
-    GIMMEH var10
-    GIMMEH var11
-    
-    VISIBLE WIN
-    var5 IS NOW A YARN
-    num1 IS NOW A TROOF
-    
-    VISIBLE "WIN"
-    
-    SUM OF 3 AN 5
-    SUM OF WIN AN "WIN"
-    SUM OF 3 AN 5.5
-
 KTHXBYE

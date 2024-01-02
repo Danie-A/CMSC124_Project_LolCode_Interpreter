@@ -607,7 +607,7 @@ def var_declaration_list():
     nodes = []
     while current_token.tokentype != "end_var_declaration_delimiter":
         node = var_declaration()
-        update_symbol_table()
+        update_symbol_table() # update symbol table
         if node is not None:
             nodes.append(node)
         if_linebreak()
@@ -702,29 +702,48 @@ def place_in_IT(value):
     variables["IT"] = value
     update_symbol_table()
     
+# def semi_typecast_expression():
+#     new_value = None
+#     advance() # pass MAEK
+#     varident_ = varident() # var
+#     # may or may not include A typecast_prefix
+#     if current_token.tokentype == "typecast_prefix":
+#         advance() # pass A
+#         if current_token.tokentype == "type_literal":
+#             type_literal_ = current_token
+#             new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+#             place_in_IT(new_value) # place in IT
+#             advance() # pass NUMBAR/NUMBR/TROOF/YARN
+#             #return ("TYPECAST", new_value, varident_, type_literal_)
+#         else:
+#             error("[SyntaxError: Invalid typecast literal: Line", current_line)
+#     elif current_token.tokentype == "type_literal":
+#         type_literal_ = current_token
+#         new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
+#         place_in_IT(new_value) # place in IT
+#         advance() # pass NUMBAR/NUMBR/TROOF/YARN        
+#     else:
+#         error("[SyntaxError: Invalid typecast literal: Line", current_line)
+#     return new_value  # to not print parse tree in var R MAEK var TYPE 
+
+"""
+try to reverse
+"""
 def semi_typecast_expression():
-        advance() # pass MAEK
-        varident_ = varident() # var
-        # may or may not include A typecast_prefix
+    new_value = None
+    advance() # pass MAEK
+    var_token = varident() # var
+    # may or may not include A typecast_prefix
+    if current_token.tokentype != "typecast_prefix" and current_token.tokentype != "type_literal":
+        error("[SyntaxError: Invalid typecast: Line", current_line)
+    else:
         if current_token.tokentype == "typecast_prefix":
             advance() # pass A
-            if current_token.tokentype == "type_literal":
-                type_literal_ = current_token
-                new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-                place_in_IT(new_value) # place in IT
-                advance() # pass NUMBAR/NUMBR/TROOF/YARN
-                return ("TYPECAST", new_value, varident_, type_literal_)
-            else:
-                error("[SyntaxError: Invalid typecast literal: Line", current_line)
-        elif current_token.tokentype == "type_literal":
-            type_literal_ = current_token
-            new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-            place_in_IT(new_value) # place in IT
-            advance() # pass NUMBAR/NUMBR/TROOF/YARN
-            return ("TYPECAST", new_value, varident_, type_literal_)
-        else:
-             error("[SyntaxError: Invalid typecast literal: Line", current_line)
-    
+        new_value = handle_semi_typecast(var_token, current_token.tokenvalue, current_line)
+        place_in_IT(new_value) # place in IT
+        advance() # pass NUMBAR/NUMBR/TROOF/YARN              
+    return new_value  # to not print parse tree in var R MAEK var TYPE
+
 def statement():
     global current_token
     if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
@@ -818,9 +837,9 @@ def expression():
     elif current_token.tokentype == "typecast_keyword":
         node = semi_typecast_expression()
     elif current_token.tokentype in comp_tokens:
-         node = compare_expression()
-    # elif current_token.tokentype in bool_tokens:
-    #     node = boolean_expression()
+        node = compare_expression()
+    elif current_token.tokentype in bool_tokens:
+        node = boolean_expression()
     # smoosh also an expr (x R SMOOSH x AN y; var = expr)
     elif current_token.tokentype == "concatenation_keyword": #SMOOSH
         advance()
@@ -890,7 +909,9 @@ def arithmetic_expression():
             advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                left = typecast_string(variables[current_token.tokenvalue])
+                if isinstance(variables[current_token.tokenvalue], str): # check if string
+                    left = typecast_string(variables[current_token.tokenvalue])
+                left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -920,10 +941,12 @@ def arithmetic_expression():
                 advance()
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    right = typecast_string(variables[current_token.tokenvalue])
+                    if isinstance(variables[current_token.tokenvalue], str):
+                        right = typecast_string(variables[current_token.tokenvalue])
+                    right = variables[current_token.tokenvalue]
                     advance()
                 else:
-                    error("[Logic Error] Variable not found", current_line)
+                    error("[Logic Error] Variable value not found", current_line)
             else:
                 error("[Syntax Error] Invalid operand", current_line)            
            
@@ -1015,8 +1038,6 @@ def compare_expression():
         else:
             error("[Syntax Error] Invalid operand", current_line)
 
-
-
         if current_token.tokentype == "and_keyword":
             advance() # pass AN
             #right operand
@@ -1071,6 +1092,137 @@ def compare_expression():
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
         else:
             error("[Syntax Error] AN keyword not found", current_line)
+
+
+
+def boolean_expression():
+    global current_token, current_line
+    if current_token.tokentype in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword", "atleast_one_true_check_keyword", "all_true_check_keyword"]: 
+        operationType = current_token.tokentype #save boolean operation type
+        advance()
+        
+        if operationType in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword"]:
+            if current_token.tokentype in expression_tokens:
+                left = expression()
+            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                left = current_token.tokenvalue
+
+                if left == 0:
+                    new_value = "FAIL"
+                else:
+                    new_value = "WIN"
+                
+                left = new_value   #Implicitly typecasting (NOT SURE) 
+            elif current_token.tokentype == "string_delimiter":
+                advance() # pass starting "
+                if current_token.tokentype == "string_literal":
+                    if current_token.tokentype == "string_literal":
+                        left = current_token.tokenvalue
+                        if left == "":
+                            new_value = "FAIL"
+                        else:
+                            new_value = "WIN"
+                        left = new_value   #Implicitly typecasting (NOT SURE) 
+                        advance() # pass string literal
+                    if current_token.tokentype != "string_delimiter":
+                        error("[Syntax Error] String delimiter expected", current_line)
+                    advance() # pass closing "
+                else:
+                    error("[Syntax Error] Invalid string literal", current_line)
+                        
+            elif current_token.tokentype == "variable_identifier":
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    left = typecast_string(variables[current_token.tokenvalue])
+                    if left == 0:
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    left = new_value
+                    advance() # pass LEFT OPERAND
+                else:
+                    error("[Logic Error] Variable not found", current_line)
+            else:
+                error("[Syntax Error] Invalid operand", current_line)
+
+        if current_token.tokentype == "and_keyword":
+            advance() # pass AN
+            #right operand
+            if current_token.tokentype in expression_tokens:
+                right = expression()
+            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                right = current_token.tokenvalue
+                if right == 0:
+                    new_value = "FAIL"
+                else:
+                    new_value = "WIN"
+                
+                right = new_value   #Implicitly typecasting (NOT SURE) 
+            elif current_token.tokentype == "string_delimiter":
+                advance() # pass starting "
+                if current_token.tokentype == "string_literal":
+                    if current_token.tokentype == "string_literal":
+                        right = current_token.tokenvalue
+                        if right == "":
+                            new_value = "FAIL"
+                        else:
+                            new_value = "WIN"
+                        right = new_value   #Implicitly typecasting (NOT SURE) 
+                        advance() # pass string literal
+                    if current_token.tokentype != "string_delimiter":
+                        error("[Syntax Error] String delimiter expected", current_line)
+                    advance() # pass closing "
+                else:
+                    error("[Syntax Error] Invalid string literal", current_line)
+                        
+            elif current_token.tokentype == "variable_identifier":
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    right = typecast_string(variables[current_token.tokenvalue])
+                    if right == 0:
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    l
+                    advance() # pass LEFT OPERAND
+                else:
+                    error("[Logic Error] Variable not found", current_line)
+            else:
+                error("[Syntax Error] Invalid operand", current_line)       
+
+            if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
+                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)     
+
+            elif operationType == "both_true_check_keyword":
+                # run lang me
+                # left 
+                pass
+            elif type(left) == type(right):
+                if comparisonType == "both_argument_equal_check_keyword": # Equal to ==
+                    result = "WIN" if left == right else "FAIL"
+                    print("RESULT", result)
+                    place_in_IT(result)
+                    return result
+                elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
+                    result = "WIN" if left != right else "FAIL"
+                    print("RESULT", result)
+                    place_in_IT(result)
+                    return result
+            elif type(left) != type(right):
+                result = "FAIL"
+                print("RESULT", result)
+                place_in_IT(result)
+                return result  
+
+            else:
+                error("[Syntax Error] Invalid Comparison operation", current_line)  
+        else:
+            error("[Syntax Error] AN keyword not found", current_line)
+       
+            
+
+
+            
+
+
 
 
 def handle_full_typecast(var_name, target_type, current_line):
@@ -1158,7 +1310,7 @@ def handle_semi_typecast(var_name, target_type, current_line):
     
     #Get the value associated w/ variable identifier
     var_value = variables.get(var_name, "NOOB")
-
+    
     #perfrom type conversion based on target type
     if target_type == "NUMBR":
         if var_value == "WIN":   #Note: consider string literals WIN and FAIL, not just troof
@@ -1315,9 +1467,9 @@ def print_expression():
         error("[SyntaxError] Invalid print arguments", current_line)
 
 def check_if_bool(ans):
-    if ans == True and ans != 1:
+    if isinstance(ans, bool) and ans == True: # because True is similar to 1 
         return "WIN"
-    elif ans == False and ans != 0:
+    elif isinstance(ans, bool) and ans == False: # False similar to 0
         return "FAIL"
     elif ans == None:
         return "NOOB"

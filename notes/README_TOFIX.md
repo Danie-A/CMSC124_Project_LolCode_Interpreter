@@ -12,11 +12,13 @@ Submission: January 8
 > every latest operation
 > latest calculation
 
-User Output - Mart
+Variables - DANIE
+[] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
+
+User Output - Mart / Danie
 [] VISIBLE Expression
 [] VISIBLE IT
-[] VISIBLE +
-[/] fix visible WIN shows True - Danie
+[] VISIBLE + - DANIE
 
 If-Else - Mart
 [] YA RLY
@@ -29,10 +31,10 @@ Switch-Case - Mart
 
 Operations
 [/] Assignment (R) - DANIE
-[] Smoosh - DAN
-[/] Arithmetic - Dan - [/] Nested
+[/] Smoosh - DAN
+[/] Arithmetic - Dan - [/] Nested - [] check_if_bool_expr (created separate function)
 [/] Comparison - Mart
-[] Boolean - Dan
+[] Boolean - Mart
 
 Loops - Dan
 [] Delimiter
@@ -45,16 +47,11 @@ Functions - DANIE
 [] Return
 [] Calling
 
-Variables - DANIE
-[] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
-
-### 124 LEC:
-
-Submission - January 5
-[] Change Format
-[] Publish
-
 ### TO FIX:
+
+[] "Hello" AN "World" - AN not included in Lexer
+[] tkinter console prints parse tree (t.lol)
+var R MAEK var TROOF (prints parse tree)
 
 [] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
@@ -71,20 +68,29 @@ Submission - January 5
 
 ### TO CLARIFY:
 
-[] IT - boolean sa if-else, switch-case, function return, expr without var assignment
+[] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
 
 [] Function Declaration Inside HAI or Outside HAI
 
 [] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
 
+### 124 LEC:
+
+Submission - January 5
+[] Submit to GClass
+[] Peer Eval
+[/] Change Format
+[/] Submit to Publisher
+
 ### UNNECESSARY CHORES:
 
-[] Dark BG Lexeme Symbol Table and Heading
+[]
 
 ### DONE:
 
-TO-FIX
+DONE-FIX
 [/] NOOB print ui not None
+[/] fix visible WIN shows True - Danie
 
 Typecasting - DANIE
 [/] MAEK
@@ -98,6 +104,7 @@ GUI - Along the Way
 [-] Console
 [-] Symbol Table
 [-] Text Editor + Execute
+[-] Dark BG Lexeme Symbol Table and Heading
 
 UI
 [/] show variables in symbol table - Danie
