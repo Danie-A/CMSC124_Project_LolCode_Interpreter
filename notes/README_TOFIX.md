@@ -2,7 +2,7 @@
 
 Submission: January 8
 
-[] RESERVE Presentation Schedule
+[/] RESERVE Presentation Schedule
 
 ### TO-DO HURDLES:
 
@@ -40,16 +40,12 @@ Loops - Dan
 [] TIL
 [] WILE
 
-Typecasting - DANIE
-[/] MAEK
-
 Functions - DANIE
 [] Definition
 [] Return
 [] Calling
 
 Variables - DANIE
-[/] I HAS A
 [] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
 
 ### 124 LEC:
@@ -78,6 +74,9 @@ Submission - January 5
 [] Dark BG Lexeme Symbol Table and Heading
 
 ### DONE:
+
+Typecasting - DANIE
+[/] MAEK
 
 UI - Dan / Danie
 [/] disable execute button when GIMMEH pop up
