@@ -1,3 +1,5 @@
 HAI
+    WAZZUP
+    BUHBYE
     SMOOSH "Hello" AN "World"
 KTHXBYE

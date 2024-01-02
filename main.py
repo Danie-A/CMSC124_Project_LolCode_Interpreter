@@ -1,3 +1,4 @@
+from typing import Concatenate
 import regex as re
 import sys
 import math
@@ -791,14 +792,18 @@ def statement():
             advance() # pass NUMBAR/NUMBR/TROOF/YARN
             return ("TYPECAST", varident_, type_literal_)
         else:
-             error("[SyntaxError: Invalid typecast literal: Line", current_line)
+            error("[SyntaxError: Invalid typecast literal: Line", current_line)
     
     elif current_token.tokentype == "concatenation_keyword": #SMOOSH
         advance()
-        literal_ = literal()
-        print(current_token)
-        # if current_token.tokentype == "and_keyword":
-        #     pass
+        if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
+            concatenated_string = ""
+            while current_token.tokentype != "linebreak":
+                node = literal()
+                concatenated_string.join(node.tokenvalue)
+            return concatenated_string
+        else:
+            error("[SyntaxError: Invalid literal: Line", current_line)
     
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
@@ -1058,17 +1063,6 @@ def compare_expression():
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
         else:
             error("[Syntax Error] AN keyword not found", current_line)
-
-
-
-
-
-            
-
-
-            
-
-
 
 
 def handle_full_typecast(var_name, target_type, current_line):
