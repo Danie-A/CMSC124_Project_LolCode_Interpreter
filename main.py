@@ -931,16 +931,29 @@ def arithmetic_expression():
                 print(result)
                 # advance() # pass RIGHT OPERAND (?)
                 return result
+            elif operationType == "modulo_keyword":
+                result = left % right
+                print(result)
+                return result
+            elif operationType == "return_larger_number_keyword":
+                if left > right:
+                    result = left
+                elif left < right:
+                    result = right
+                else:
+                    result = left
+            elif operationType == "return_smaller_number_keyword":
+                if left > right:
+                    result = right
+                elif left < right:
+                    result = left
+                else:
+                    result = left
+
             else:
                 error("[Syntax Error] Invalid arithmetic operation", current_line)
-            
-            
         else:
             error("[Syntax Error] AN keyword not found", current_line)
-    
-    # SUBTRACTION 
-    
-    # MULTIPLICATION
     else:
         error("[Syntax Error] Incorrect Arithmetic Expression", current_line)
     
