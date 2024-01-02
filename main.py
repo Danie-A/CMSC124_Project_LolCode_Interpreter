@@ -796,18 +796,6 @@ def statement():
         else:
             error("[SyntaxError: Invalid typecast literal: Line", current_line)
     
-    # elif current_token.tokentype == "concatenation_keyword": #SMOOSH
-    #     advance()
-    #     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-    #         concatenated_string = ""
-    #         while current_token.tokentype != "linebreak":
-    #             node = literal()
-    #             concatenated_string = concatenated_string.join(node.tokenvalue)
-    #         print(concatenated_string)
-    #         return concatenated_string
-    #     else:
-    #         error("[SyntaxError: Invalid literal: Line", current_line)
-    
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
 
@@ -840,7 +828,7 @@ def expression():
             concatenated_string = ""
             while current_token.tokentype != "linebreak":
                 node = literal()
-                concatenated_string = concatenated_string.join(node.tokenvalue)
+                concatenated_string = concatenated_string + node.tokenvalue
                 if current_token.tokentype == "and_keyword":
                     advance()
                 elif current_token.tokentype == "linebreak":
