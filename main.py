@@ -942,6 +942,8 @@ def arithmetic_expression():
                     result = right
                 else:
                     result = left
+                print(result)
+                return result 
             elif operationType == "return_smaller_number_keyword":
                 if left > right:
                     result = right
@@ -949,7 +951,8 @@ def arithmetic_expression():
                     result = left
                 else:
                     result = left
-
+                print(result)
+                return result 
             else:
                 error("[Syntax Error] Invalid arithmetic operation", current_line)
         else:
