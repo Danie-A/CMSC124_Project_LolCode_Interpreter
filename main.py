@@ -560,6 +560,7 @@ def if_linebreak():
 def program():
     global current_token, current_line
     nodes = []
+    skip_empty_lines()
     if current_token.tokentype == "start_code_delimiter":
         nodes.append(("START",current_token))
         advance()
@@ -813,8 +814,8 @@ def expression():
         node = arithmetic_expression() 
     elif current_token.tokentype == "typecast_keyword":
         node = semi_typecast_expression()
-    # elif current_token.tokentype in comp_tokens:
-    #     node = compare_expression()
+    elif current_token.tokentype in comp_tokens:
+         node = compare_expression()
     # elif current_token.tokentype in bool_tokens:
     #     node = boolean_expression()
     return node
@@ -871,7 +872,7 @@ def arithmetic_expression():
                 left = typecast_string(variables[current_token.tokenvalue])
                 advance() # pass LEFT OPERAND
             else:
-                error("[Logic Error] Variable not found", current_line)
+                error("[Logic Error] Variable value not found", current_line)
         else:
             error("[Syntax Error] Invalid operand", current_line)
         
@@ -909,6 +910,12 @@ def arithmetic_expression():
                 error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
             elif operationType == "add_keyword": # ADD OPERATION
                 result = left + right
+                #print(result)
+            elif operationType == "subtract_keyword": # SUBTRACT OPERATION
+                result = left - right
+                #print(result)
+            elif operationType == "multiply_keyword": # MULTIPLY OPERATION
+                result = left * right
                 print(result)
                 # advance() # pass RIGHT OPERAND (?)
                 return result
@@ -926,7 +933,7 @@ def arithmetic_expression():
                 if right != 0:
                     result = left / right
                 else:
-                    error("[Arithmetic Error] cannot divide by zero", current_line)
+                    error("[Arithmetic Error] Cannot divide by zero", current_line)
                 print(result)
                 # advance() # pass RIGHT OPERAND (?)
                 return result
@@ -936,13 +943,99 @@ def arithmetic_expression():
             
         else:
             error("[Syntax Error] AN keyword not found", current_line)
-    
-    # SUBTRACTION 
-    
-    # MULTIPLICATION
     else:
         error("[Syntax Error] Incorrect Arithmetic Expression", current_line)
     
+def compare_expression():
+    global current_token, current_line
+    if current_token.tokentype in ["both_argument_equal_check_keyword", "both_argument_not_equal_check_keyword"]: 
+        comparisonType = current_token.tokentype #save comparison type
+        advance() # pass BOTH SAEM/DIFFRINT
+
+        # left operand # operand can be a variable, numbar, numbr, string, troof  
+        if current_token.tokentype in expression_tokens:
+            left = expression()
+        elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+            left = current_token.tokenvalue
+            left_type = current_token.tokentype
+        elif current_token.tokentype == "string_delimiter":
+            advance() # pass starting "
+            if current_token.tokentype == "string_literal":
+                left = typecast_string(current_token.tokenvalue)
+                advance() # pass string literal
+                if current_token.tokentype != "string_delimiter":
+                    error("[Syntax Error] String delimiter expected", current_line)
+            else:
+                error("[Syntax Error] Invalid string literal", current_line)
+        elif current_token.tokentype == "troof_literal":
+            left = typecast_troof(current_token.tokenvalue)
+        elif current_token.tokentype == "variable_identifier":
+            if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                left = typecast_string(variables[current_token.tokenvalue])
+            else:
+                error("[Logic Error] Variable not found", current_line)
+        else:
+            error("[Syntax Error] Invalid operand", current_line)
+
+        advance() # pass LEFT OPERAND or AN
+
+        
+        
+        if current_token.tokentype == "and_keyword":
+            advance() # pass AN
+            #right operand
+            if current_token.tokentype in expression_tokens:
+                right = expression()
+            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                right = current_token.tokenvalue
+                right_type = current_token.tokentype
+            elif current_token.tokentype == "string_delimiter":
+                advance() # pass starting "
+                if current_token.tokentype == "string_literal":
+                    right = typecast_string(current_token.tokenvalue)
+                    advance() # pass string literal
+                    if current_token.tokentype != "string_delimiter":
+                        error("[Syntax Error] String delimiter expected", current_line)
+                else:
+                    error("[Syntax Error] Invalid string literal", current_line)
+            elif current_token.tokentype == "troof_literal":
+                right = typecast_troof(current_token.tokenvalue)
+            elif current_token.tokentype == "variable_identifier":
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    right = typecast_string(variables[current_token.tokenvalue])
+                else:
+                    error("[Logic Error] Variable not found", current_line)
+            else:
+                error("[Syntax Error] Invalid operand", current_line)            
+           
+            if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
+                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
+            else:
+                error("[Syntax Error] Invalid arithmetic operation", current_line)
+            
+            if left_type != right_type and left is not None and right is not None: #checks if both left and right don't have the same type
+                result = "FAIL"
+                print(result)
+            else:
+                if comparisonType == "BOTH SAEM": # Equal to ==
+                    result = "WIN" if left == right else "FAIL"
+                    print(result)
+                elif comparisonType == "DIFFRINT": # Equal to !=
+                    result = "WIN" if left != right else "FAIL"
+                    print(result)
+            advance() # pass RIGHT OPERAND (?)
+            return ('EXPRESSION', result)
+        else:
+            error("[Syntax Error] AN keyword not found", current_line)
+    else:
+        error("[Syntax Error] Incorrect Arithmetic Expression", current_line)
+            
+
+
+            
+
+
+
 
 def handle_full_typecast(var_name, target_type, current_line):
     global current_token
@@ -1190,6 +1283,8 @@ def check_if_bool(ans):
         return "WIN"
     elif ans == False:
         return "FAIL"
+    elif ans == None:
+        return "NOOB"
     else:
         return ans
 
@@ -1500,9 +1595,9 @@ textEditor.bind("<Tab>", insert_spaces)
 
 root.mainloop()
 
-# if __name__ == '__main__':
-#     tokens = parse_terminal(sys.argv[1])
-#     print(tokens)
-#     parse_tree = syntax_analyzer()
-#     print(variables)
-#     print(("PROGRAM",parse_tree))
+if __name__ == '__main__':
+    tokens = parse_terminal(sys.argv[1])
+    print(tokens)
+    parse_tree = syntax_analyzer()
+    print(variables)
+    print(("PROGRAM",parse_tree))

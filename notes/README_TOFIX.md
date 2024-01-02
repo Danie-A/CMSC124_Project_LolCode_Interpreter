@@ -29,9 +29,9 @@ Switch-Case - Mart
 
 Operations
 [] Assignment (R) - DANIE
-[] Smoosh - Dan
-[] Arithmetic - Dan
-[] Comparison - Dan
+[] Smoosh - DAN
+[] Arithmetic - Dan - [] Nested
+[] Comparison - Mart
 [] Boolean - Dan
 
 Loops - Dan
@@ -56,6 +56,7 @@ Submission - January 5
 
 ### TO FIX:
 
+[] NOOB print ui not None
 [] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5
 
 ### CASES TO CONSIDER:
@@ -67,7 +68,11 @@ Submission - January 5
 
 ### TO CLARIFY:
 
+[] IT - boolean sa if-else, switch-case, function return, expr without var assignment
+
 [] Function Declaration Inside HAI or Outside HAI
+
+[] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
 
 ### UNNECESSARY CHORES:
 
