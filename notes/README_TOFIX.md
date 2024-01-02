@@ -56,7 +56,9 @@ Submission - January 5
 
 ### TO FIX:
 
-[] NOOB print ui not None
+[] KTHXBYE, BUHBYE not detected
+[] optional WAZZUP BUHBYE
+
 [] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5
 
 ### CASES TO CONSIDER:
@@ -79,6 +81,9 @@ Submission - January 5
 [] Dark BG Lexeme Symbol Table and Heading
 
 ### DONE:
+
+TO-FIX
+[/] NOOB print ui not None
 
 Typecasting - DANIE
 [/] MAEK
