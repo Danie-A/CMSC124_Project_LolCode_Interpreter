@@ -1609,11 +1609,11 @@ textEditor.bind("<Tab>", insert_spaces)
 
 # root.bind('<Configure>', on_resize) # flickering bug 
 
-# root.mainloop()
+root.mainloop()
 
-if __name__ == '__main__':
-    tokens = parse_terminal(sys.argv[1])
-    print(tokens)
-    parse_tree = syntax_analyzer()
-    print(variables)
-    print(("PROGRAM",parse_tree))
+# if __name__ == '__main__':
+#     tokens = parse_terminal(sys.argv[1])
+#     print(tokens)
+#     parse_tree = syntax_analyzer()
+#     print(variables)
+#     print(("PROGRAM",parse_tree))
