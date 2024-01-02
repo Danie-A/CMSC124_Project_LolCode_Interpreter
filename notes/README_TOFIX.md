@@ -28,10 +28,10 @@ Switch-Case - Mart
 [] GTFO
 
 Operations
-[] Assignment (R) - DANIE
+[/] Assignment (R) - DANIE
 [] Smoosh - DAN
-[] Arithmetic - Dan - [] Nested
-[] Comparison - Mart
+[/] Arithmetic - Dan - [/] Nested
+[/] Comparison - Mart
 [] Boolean - Dan
 
 Loops - Dan
@@ -67,6 +67,7 @@ Submission - January 5
 
 ...
 [] var declaration list not required in parser (? i forgot what this means)
+[]
 
 ### TO CLARIFY:
 

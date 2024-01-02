@@ -737,18 +737,25 @@ def statement():
 
         return ("INPUT", varident_)
     elif current_token.tokentype == "variable_identifier": #assignment statement
-        varidentDest = current_token.tokenvalue
-        advance() # pass varident
+        var_dest_token = varident()
         if current_token.tokentype == "variable_value_reassignment":
             advance() # pass R
             if current_token.tokentype == "variable_identifier": # var = var
-                varidentSrc = current_token
-                advance() # pass varident
-                return ("ASSIGN", varidentDest, varidentSrc)
-            elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-                literal_ = literal()
-                return ("ASSIGN", varidentDest, literal_)
+                var_src_token = varident()
+                variables[var_dest_token.tokenvalue] = variables[var_src_token.tokenvalue]
+                update_symbol_table()
+                return ("ASSIGN", var_dest_token, var_src_token)
+            elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]: # var = literal
+                lit_src_token = literal()
+                variables[var_dest_token.tokenvalue] = lit_src_token.tokenvalue
+                update_symbol_table()
+                return ("ASSIGN", var_dest_token, lit_src_token)
             #TODO: add expression
+            elif current_token.tokentype in expression_tokens: # var = expression
+                expr_val = expression()
+                variables[var_dest_token.tokenvalue] = expr_val
+                update_symbol_table()
+                return ("ASSIGN", var_dest_token, expr_val)
             else:
                 error("[SyntaxError] Invalid variable value reassignment", current_line)
         elif current_token.tokentype == "full_typecast_keyword": # changing the type of the variable
@@ -818,6 +825,7 @@ def expression():
          node = compare_expression()
     # elif current_token.tokentype in bool_tokens:
     #     node = boolean_expression()
+    # smoosh also an expr (x R SMOOSH x AN y; var = expr)
     return node
 
 def typecast_string(string):
@@ -971,7 +979,6 @@ def compare_expression():
             left = expression()
         elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
             left = current_token.tokenvalue
-            left_type = current_token.tokentype
             advance()
         elif current_token.tokentype == "string_delimiter":
             advance() # pass starting "
@@ -1004,7 +1011,6 @@ def compare_expression():
                 right = expression()
             elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
                 right = current_token.tokenvalue
-                right_type = current_token.tokentype
                 advance()
             elif current_token.tokentype == "string_delimiter":
                 advance() # pass starting "
@@ -1030,15 +1036,24 @@ def compare_expression():
            
             if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
                 error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
-            
-            elif left_type != right_type:
-                if comparisonType == "BOTH SAEM": # Equal to ==
+              
+            elif type(left) == type(right):
+                if comparisonType == "both_argument_equal_check_keyword": # Equal to ==
                     result = "WIN" if left == right else "FAIL"
-                    print(result)
-                elif comparisonType == "DIFFRINT": # Equal to !=
+                    print("RESULT", result)
+                    place_in_IT(result)
+                    return result
+                elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
                     result = "WIN" if left != right else "FAIL"
-                    print(result)
-                return result
+                    print("RESULT", result)
+                    place_in_IT(result)
+                    return result
+            elif type(left) != type(right):
+                result = "FAIL"
+                print("RESULT", result)
+                place_in_IT(result)
+                return result  
+
             else:
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
         else:
