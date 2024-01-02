@@ -2,8 +2,9 @@ HAI
     WAZZUP
         I HAS A var BTW uninitialized var
     BUHBYE
-    GIMMEH var
-    VISIBLE var
-    SUM OF WIN AN "WIN" 
-    SUM OF 3 AN 5
+    VISIBLE SUM OF WIN AN "WIN" 
+    VISIBLE SUM OF "WIN" AN WIN
+    VISIBLE SUM OF 3 AN 5
+    VISIBLE SUM OF SUM OF 3 AN 4 AN 5
+    VISIBLE SUM OF 3 AN SUM OF 4 AN 5
 KTHXBYE
