@@ -872,7 +872,7 @@ def arithmetic_expression():
                 left = typecast_string(variables[current_token.tokenvalue])
                 advance() # pass LEFT OPERAND
             else:
-                error("[Logic Error] Variable value not found", current_line)
+                error("[Logic Error] Variable not found", current_line)
         else:
             error("[Syntax Error] Invalid operand", current_line)
         
@@ -910,12 +910,6 @@ def arithmetic_expression():
                 error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
             elif operationType == "add_keyword": # ADD OPERATION
                 result = left + right
-                #print(result)
-            elif operationType == "subtract_keyword": # SUBTRACT OPERATION
-                result = left - right
-                #print(result)
-            elif operationType == "multiply_keyword": # MULTIPLY OPERATION
-                result = left * right
                 print(result)
                 # advance() # pass RIGHT OPERAND (?)
                 return result
@@ -943,6 +937,10 @@ def arithmetic_expression():
             
         else:
             error("[Syntax Error] AN keyword not found", current_line)
+    
+    # SUBTRACTION 
+    
+    # MULTIPLICATION
     else:
         error("[Syntax Error] Incorrect Arithmetic Expression", current_line)
     
@@ -958,6 +956,7 @@ def compare_expression():
         elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
             left = current_token.tokenvalue
             left_type = current_token.tokentype
+            advance()
         elif current_token.tokentype == "string_delimiter":
             advance() # pass starting "
             if current_token.tokentype == "string_literal":
@@ -965,22 +964,96 @@ def compare_expression():
                 advance() # pass string literal
                 if current_token.tokentype != "string_delimiter":
                     error("[Syntax Error] String delimiter expected", current_line)
+                advance() # pass closing "
             else:
                 error("[Syntax Error] Invalid string literal", current_line)
         elif current_token.tokentype == "troof_literal":
             left = typecast_troof(current_token.tokenvalue)
+            advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                 left = typecast_string(variables[current_token.tokenvalue])
+                advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
         else:
             error("[Syntax Error] Invalid operand", current_line)
 
-        advance() # pass LEFT OPERAND or AN
+
+
+        if current_token.tokentype == "and_keyword":
+            advance() # pass AN
+            #right operand
+            if current_token.tokentype in expression_tokens:
+                right = expression()
+            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                right = current_token.tokenvalue
+                right_type = current_token.tokentype
+                advance()
+            elif current_token.tokentype == "string_delimiter":
+                advance() # pass starting "
+                if current_token.tokentype == "string_literal":
+                    right = typecast_string(current_token.tokenvalue)
+                    advance() # pass string literal
+                    if current_token.tokentype != "string_delimiter":
+                        error("[Syntax Error] String delimiter expected", current_line)
+                    advance()
+                else:
+                    error("[Syntax Error] Invalid string literal", current_line)
+            elif current_token.tokentype == "troof_literal":
+                right = typecast_troof(current_token.tokenvalue)
+                advance()
+            elif current_token.tokentype == "variable_identifier":
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    right = typecast_string(variables[current_token.tokenvalue])
+                    advance()
+                else:
+                    error("[Logic Error] Variable not found", current_line)
+            else:
+                error("[Syntax Error] Invalid operand", current_line)            
+           
+            if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
+                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
+            
+            elif operationType == "add_keyword": # ADD OPERATION
+                result = left + right
+                print(result)
+                # advance() # pass RIGHT OPERAND (?)
+                return result
+            elif operationType == "subtract_keyword":
+                result = left - right
+                print(result)
+                # advance() # pass RIGHT OPERAND (?)
+                return result
+            elif operationType == "multiply_keyword":
+                result = left * right
+                print(result)
+                # advance() # pass RIGHT OPERAND (?)
+                return result
+            elif operationType == "divide_keyword":
+                if right != 0:
+                    result = left / right
+                else:
+                    error("[Arithmetic Error] Cannot divide by zero", current_line)
+                print(result)
+                # advance() # pass RIGHT OPERAND (?)
+                return result
+            else:
+                error("[Syntax Error] Invalid arithmetic operation", current_line)
+            
+            
+        else:
+            error("[Syntax Error] AN keyword not found", current_line)
+
+
+
+
+
+
+
 
         
-        
+ #OLD       
         if current_token.tokentype == "and_keyword":
             advance() # pass AN
             #right operand
@@ -1279,9 +1352,9 @@ def print_expression():
         error("[SyntaxError] Invalid print arguments", current_line)
 
 def check_if_bool(ans):
-    if ans == True:
+    if ans == True and ans != 1:
         return "WIN"
-    elif ans == False:
+    elif ans == False and ans != 0:
         return "FAIL"
     elif ans == None:
         return "NOOB"
@@ -1595,9 +1668,9 @@ textEditor.bind("<Tab>", insert_spaces)
 
 root.mainloop()
 
-if __name__ == '__main__':
-    tokens = parse_terminal(sys.argv[1])
-    print(tokens)
-    parse_tree = syntax_analyzer()
-    print(variables)
-    print(("PROGRAM",parse_tree))
+# if __name__ == '__main__':
+#     tokens = parse_terminal(sys.argv[1])
+#     print(tokens)
+#     parse_tree = syntax_analyzer()
+#     print(variables)
+#     print(("PROGRAM",parse_tree))
