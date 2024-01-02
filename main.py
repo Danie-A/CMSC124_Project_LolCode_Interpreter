@@ -253,7 +253,8 @@ def lexical_analyzer(contents):
         if lexeme:
             tokens.append(lexeme)  # append any remaining lexeme as a lexeme
             lexeme = '' # set lexeme to empty again
-            
+        
+        print(tokens)
         # add linebreak
         tokens.append("\n")
         
@@ -264,9 +265,8 @@ def lexical_analyzer(contents):
                 if num_quote == 2:
                     num_quote = 0
                 items.append(Token("string_delimiter", token))
-            elif j > 0 and j < len(tokens)-1 and tokens[j+1] == '"' and tokens[j-1] == '"':
-                if num_quote == 1:
-                    items.append(Token("string_literal", token))
+            elif j > 0 and j < len(tokens)-1 and num_quote == 1 and tokens[j+1] == '"' and tokens[j-1] == '"':
+                items.append(Token("string_literal", token))
             
             # Comments
             # If comment are seen, show error because it must already be deleted from the start of the program
@@ -493,7 +493,9 @@ expression_tokens = ["add_keyword",
                     "atleast_one_true_check_keyword", 
                     "all_true_check_keyword",
                     "both_argument_equal_check_keyword", 
-                    "both_argument_not_equal_check_keyword"]
+                    "both_argument_not_equal_check_keyword",
+                    "concatenation_keyword"
+                    ]
 
 arith_tokens = ["add_keyword", 
                 "subtract_keyword", 
@@ -794,16 +796,17 @@ def statement():
         else:
             error("[SyntaxError: Invalid typecast literal: Line", current_line)
     
-    elif current_token.tokentype == "concatenation_keyword": #SMOOSH
-        advance()
-        if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-            concatenated_string = ""
-            while current_token.tokentype != "linebreak":
-                node = literal()
-                concatenated_string.join(node.tokenvalue)
-            return concatenated_string
-        else:
-            error("[SyntaxError: Invalid literal: Line", current_line)
+    # elif current_token.tokentype == "concatenation_keyword": #SMOOSH
+    #     advance()
+    #     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
+    #         concatenated_string = ""
+    #         while current_token.tokentype != "linebreak":
+    #             node = literal()
+    #             concatenated_string = concatenated_string.join(node.tokenvalue)
+    #         print(concatenated_string)
+    #         return concatenated_string
+    #     else:
+    #         error("[SyntaxError: Invalid literal: Line", current_line)
     
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
@@ -831,6 +834,23 @@ def expression():
     # elif current_token.tokentype in bool_tokens:
     #     node = boolean_expression()
     # smoosh also an expr (x R SMOOSH x AN y; var = expr)
+    elif current_token.tokentype == "concatenation_keyword": #SMOOSH
+        advance()
+        if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
+            concatenated_string = ""
+            while current_token.tokentype != "linebreak":
+                node = literal()
+                concatenated_string = concatenated_string.join(node.tokenvalue)
+                if current_token.tokentype == "and_keyword":
+                    advance()
+                elif current_token.tokentype == "linebreak":
+                    break
+                else:
+                    error("[SyntaxError] : no AN keyword detected", current_line)
+            print(concatenated_string)
+            return concatenated_string
+        else:
+            error("[SyntaxError] Invalid literal: Line", current_line)
     return node
 
 def typecast_string(string):
