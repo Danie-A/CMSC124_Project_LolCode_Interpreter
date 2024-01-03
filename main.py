@@ -518,8 +518,6 @@ class Variable:
 variables = {'IT': None}
 var_assign_ongoing = False # checker for expressions if to be placed in IT
 
-active_loops = {}
-
 tokens = []
 
 token_idx = -1
@@ -534,12 +532,6 @@ def advance():
         token_idx += 1
         current_token = tokens[token_idx]
         print(current_token)
-
-def restore(saved_idx):
-    global token_idx, current_token
-    token_idx = saved_idx
-    current_token = tokens[token_idx]
-    print(current_token)
 
 class Error(Exception):
     def __init__(self, message=None):
@@ -880,8 +872,7 @@ def arithmetic_expression():
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                 if isinstance(variables[current_token.tokenvalue], str): # check if string
                     left = typecast_string(variables[current_token.tokenvalue])
-                else:
-                    left = variables[current_token.tokenvalue]
+                left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -913,8 +904,7 @@ def arithmetic_expression():
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                     if isinstance(variables[current_token.tokenvalue], str):
                         right = typecast_string(variables[current_token.tokenvalue])
-                    else:
-                        right = variables[current_token.tokenvalue]
+                    right = variables[current_token.tokenvalue]
                     advance()
                 else:
                     error("[Logic Error] Variable value not found", current_line)
@@ -1102,8 +1092,10 @@ def boolean_expression():
                 advance() # pass LEFT OPERAND
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    op = typecast_string(variables[current_token.tokenvalue])
+                    op = variables[current_token.tokenvalue]
                     if op == 0:
+                        new_value = "FAIL"
+                    elif op == "":
                         new_value = "FAIL"
                     else:
                         new_value = "WIN"
@@ -1158,8 +1150,10 @@ def boolean_expression():
                 advance() # pass LEFT OPERAND
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    left = typecast_string(variables[current_token.tokenvalue])
+                    left = variables[current_token.tokenvalue]
                     if left == 0:
+                        new_value = "FAIL"
+                    elif left == "":
                         new_value = "FAIL"
                     else:
                         new_value = "WIN"
@@ -1203,8 +1197,10 @@ def boolean_expression():
                     advance() # pass LEFT OPERAND
                 elif current_token.tokentype == "variable_identifier":
                     if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                        right = typecast_string(variables[current_token.tokenvalue])
+                        right = variables[current_token.tokenvalue]
                         if right == 0:
+                            new_value = "FAIL"
+                        elif right == "":
                             new_value = "FAIL"
                         else:
                             new_value = "WIN"
@@ -1277,8 +1273,10 @@ def boolean_expression():
                     advance() # pass LEFT OPERAND
                 elif current_token.tokentype == "variable_identifier":
                     if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                        output = typecast_string(variables[current_token.tokenvalue])
+                        output = variables[current_token.tokenvalue]
                         if output == 0:
+                            new_value = "FAIL"
+                        elif output == "":
                             new_value = "FAIL"
                         else:
                             new_value = "WIN"
@@ -1321,7 +1319,13 @@ def loop():
     if current_token.tokentype == "explicit_start_loop_keyword":
         advance()
         if current_token.tokentype == "variable_identifier":
-            loop_name = current_token.tokenvalue
+            loop_variable = current_token.tokenvalue
+            # check if value can be incremented or decremented and if it exists
+            if loop_variable in variables.keys():
+                if not isinstance(variables[loop_variable],(int, float)): 
+                    error("[Logic Error] Variable cannot be incremented or decremented", current_line)
+            else:
+                error("[Logic Error] Variable does not exist", current_line)
             advance()
             if current_token.tokentype == "increment_keyword": #UPPIN   
                 op_type = "increment"
@@ -1330,36 +1334,18 @@ def loop():
             else:
                 error("[Syntax Error] Loop operation not found", current_line)
             advance()
-            if current_token.tokentype == "concise_start_loop_keyword":
+            # optional TIL and WILE
+            if current_token.tokentype == "until_indicated_end_of_loop_keyword":
+                end_cond_type = "until"
                 advance()
-                if current_token.tokentype == "variable_identifier":
-                    loop_variable = current_token.tokenvalue
-                    # check if value can be incremented or decremented and if it exists
-                    if loop_variable in variables.keys():
-                        if not isinstance(variables[loop_variable],(int, float)): 
-                            error("[Logic Error] Variable cannot be incremented or decremented", current_line)
-                    else:
-                        error("[Logic Error] Variable does not exist", current_line)
-                    active_loops[loop_name] = loop_variable #save the loop name and associated variable to active loops
-                    advance()
-                    # optional TIL and WILE
-                    if current_token.tokentype == "until_indicated_end_of_loop_keyword":
-                        end_cond_type = "until"
-                        advance()
-                        savedpc = token_idx
-                        expr = expression()
-                        print(expr)
-                    elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
-                        end_cond_type = "while"
-                    elif current_token.tokentype == "linebreak": # infinite loop until GTFO
-                        end_cond_type = None
-                    else:
-                        error("[Syntax Error] Unknown loop condition type", current_line)
-                    # CODE BLOCK FOR LOOP
-                else:
-                    error("[Syntax Error] Variable identifier not found", current_line)
+
+            elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
+                end_cond_type = "while"
+            elif current_token.tokentype == "linebreak": # infinite loop until GTFO
+                end_cond_type = None
             else:
-                error("[Syntax Error] YR not found", current_line)
+                error("[Syntax Error] Unknown loop condition type", current_line)
+            # CODE BLOCK FOR LOOP
         else:
             error("[Syntax Error] Label for the loop not found", current_line)
     else:
