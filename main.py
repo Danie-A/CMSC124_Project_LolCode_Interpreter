@@ -780,6 +780,8 @@ def statement():
     elif current_token.tokentype in flow_control_tokens:  #FLOW CONTROL
         if current_token.tokentype == "explicit_start_loop_keyword": #IM IN YR
             node = loop()
+        elif current_token.tokentype == "if_keyword":
+            if_else_statement()
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
@@ -1000,7 +1002,7 @@ def compare_expression():
             advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                left = typecast_string(variables[current_token.tokenvalue])
+                left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -1030,7 +1032,7 @@ def compare_expression():
                 advance()
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    right = typecast_string(variables[current_token.tokenvalue])
+                    right = variables[current_token.tokenvalue]
                     advance()
                 else:
                     error("[Logic Error] Variable not found", current_line)
@@ -1362,6 +1364,34 @@ def loop():
             error("[Syntax Error] Label for the loop not found", current_line)
     else:
         error("[Syntax Error] Invalid Loop operation", current_line)
+
+
+def if_else_statement():
+    global current_token
+    if current_token.tokens_list == "if_keyword":
+        advance()
+        if variables["IT"] == "WIN":
+            if current_token.tokens_list == "if_true_keyword":
+                advance()
+                statement()
+            else:
+                error("[Syntax Error] Missing YA RLY", current_line)  
+        elif variables["IT"] == "FAIL":  
+            if current_token.tokens_list == "else_keyword":
+                advance()
+                statement()
+            else:
+                error("[Syntax Error] Missing NO WAI", current_line) 
+        advance()
+
+        if current_token.tokens_list == "end_of_if_block_keyword":
+            advance()
+        else:
+            error("[Syntax Error] Missing OIC", current_line)
+    else:
+        error("[Syntax Error] Missing O RLY?", current_line)
+
+
 
 def handle_full_typecast(var_name, target_type, current_line):
     global current_token
