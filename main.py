@@ -1094,42 +1094,106 @@ def compare_expression():
             error("[Syntax Error] AN keyword not found", current_line)
 
 
-
 def boolean_expression():
     global current_token, current_line
-    if current_token.tokentype in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword", "atleast_one_true_check_keyword", "all_true_check_keyword"]: 
-        operationType = current_token.tokentype #save boolean operation type
+    has_allOf_anyOf = 0
+    infinite_arr = []
+
+    if current_token.tokentype in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword", "atleast_one_true_check_keyword", "all_true_check_keyword"]:
+        operationType = current_token.tokentype #save boolean operation
+        print("CHECK",current_token.tokentype)
         advance()
-        
-        if operationType in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword"]:
+
+        #ALL OF and ANY OF existence check (since can't be nested into each other or themselves)
+        if operationType in ["atleast_one_true_check_keyword", "all_true_check_keyword"]: 
+            has_allOf_anyOf =+ 1
+
+        #NOT
+        if operationType in ["negate_keyword"]: 
+            if current_token.tokentype in expression_tokens:
+                op = expression()
+            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                op = current_token.tokenvalue
+                if op == 0:
+                    new_value = "FAIL"
+                else:
+                    new_value = "WIN"
+                op = new_value
+                advance()
+            elif current_token.tokentype == "string_delimiter":
+                advance()
+                if current_token.tokentype == "string_literal":
+                    op = current_token.tokenvalue
+                    if op == "":
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    op = new_value
+                    advance() #pass string literal
+                    if current_token.tokentype != "string_delimiter":
+                        error("[Syntax Error] String delimiter expected", current_line)
+                    advance()
+                else:
+                    error("[Syntax Error] Invalid string literal", current_line)
+            elif current_token.tokentype == "troof_literal":
+                op = current_token.tokenvalue
+                advance() # pass LEFT OPERAND
+            elif current_token.tokentype == "variable_identifier":
+                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                    op = typecast_string(variables[current_token.tokenvalue])
+                    if op == 0:
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    op = new_value
+                    advance()
+                else:
+                    error("[Logic Error] Variable not found", current_line)
+            else:
+                error("[Syntax Error] Invalid operand", current_line)
+
+
+            if op is None: # OPERAND NOT TYPECAST-ABLE
+                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
+            elif op == "WIN":
+                result = "FAIL"
+                return result
+            elif op == "FAIL":
+                result = "WIN"
+                return result
+            else:
+                error("[Syntax Error] Invalid Boolean operation", current_line)  
+
+        #BOTH OF, EITHER OF, WON OF
+        elif operationType in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword"]:
             if current_token.tokentype in expression_tokens:
                 left = expression()
             elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
                 left = current_token.tokenvalue
-
                 if left == 0:
                     new_value = "FAIL"
                 else:
                     new_value = "WIN"
-                
-                left = new_value   #Implicitly typecasting (NOT SURE) 
+                left = new_value
+                advance()
             elif current_token.tokentype == "string_delimiter":
-                advance() # pass starting "
+                advance()
                 if current_token.tokentype == "string_literal":
-                    if current_token.tokentype == "string_literal":
-                        left = current_token.tokenvalue
-                        if left == "":
-                            new_value = "FAIL"
-                        else:
-                            new_value = "WIN"
-                        left = new_value   #Implicitly typecasting (NOT SURE) 
-                        advance() # pass string literal
+                    left = current_token.tokenvalue
+                    if left == "":
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    left = new_value
+                    advance() #pass string literal
                     if current_token.tokentype != "string_delimiter":
                         error("[Syntax Error] String delimiter expected", current_line)
-                    advance() # pass closing "
+                    advance()
                 else:
                     error("[Syntax Error] Invalid string literal", current_line)
-                        
+            elif current_token.tokentype == "troof_literal":
+                left = current_token.tokenvalue
+                advance() # pass LEFT OPERAND
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                     left = typecast_string(variables[current_token.tokenvalue])
@@ -1138,91 +1202,156 @@ def boolean_expression():
                     else:
                         new_value = "WIN"
                     left = new_value
-                    advance() # pass LEFT OPERAND
+                    advance()
                 else:
                     error("[Logic Error] Variable not found", current_line)
             else:
                 error("[Syntax Error] Invalid operand", current_line)
-
-        if current_token.tokentype == "and_keyword":
-            advance() # pass AN
-            #right operand
-            if current_token.tokentype in expression_tokens:
-                right = expression()
-            elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
-                right = current_token.tokenvalue
-                if right == 0:
-                    new_value = "FAIL"
-                else:
-                    new_value = "WIN"
-                
-                right = new_value   #Implicitly typecasting (NOT SURE) 
-            elif current_token.tokentype == "string_delimiter":
-                advance() # pass starting "
-                if current_token.tokentype == "string_literal":
+            
+            if current_token.tokentype == "and_keyword":
+                advance() # pass AN
+                #right operand
+                if current_token.tokentype in expression_tokens:
+                    right = expression()
+                elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                    right = current_token.tokenvalue
+                    if right == 0:
+                        new_value = "FAIL"
+                    else:
+                        new_value = "WIN"
+                    right = new_value
+                    advance()
+                elif current_token.tokentype == "string_delimiter":
+                    advance()
                     if current_token.tokentype == "string_literal":
                         right = current_token.tokenvalue
                         if right == "":
                             new_value = "FAIL"
                         else:
                             new_value = "WIN"
-                        right = new_value   #Implicitly typecasting (NOT SURE) 
-                        advance() # pass string literal
-                    if current_token.tokentype != "string_delimiter":
-                        error("[Syntax Error] String delimiter expected", current_line)
-                    advance() # pass closing "
+                        right = new_value
+                        advance() #pass string literal
+                        if current_token.tokentype != "string_delimiter":
+                            error("[Syntax Error] String delimiter expected", current_line)
+                        advance()
+                    else:
+                        error("[Syntax Error] Invalid string literal", current_line)
+                elif current_token.tokentype == "troof_literal":
+                    right = current_token.tokenvalue
+                    advance() # pass LEFT OPERAND
+                elif current_token.tokentype == "variable_identifier":
+                    if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                        right = typecast_string(variables[current_token.tokenvalue])
+                        if right == 0:
+                            new_value = "FAIL"
+                        else:
+                            new_value = "WIN"
+                        right = new_value
+                        advance()
+                    else:
+                        error("[Logic Error] Variable not found", current_line)
                 else:
-                    error("[Syntax Error] Invalid string literal", current_line)
-                        
-            elif current_token.tokentype == "variable_identifier":
-                if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    right = typecast_string(variables[current_token.tokenvalue])
-                    if right == 0:
+                    error("[Syntax Error] Invalid operand", current_line)
+
+
+                if right is None: # OPERAND NOT TYPECAST-ABLE
+                    error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
+                elif operationType == "both_true_check_keyword": #BOTH OF (AND)
+                    if left == right == "WIN":
+                        result = "WIN"
+                    else:
+                        result = "FAIL"
+                    return result
+                elif operationType == "both_false_check_keyword": #EITHER OF (OR)
+                    if left == "WIN" or right == "WIN":
+                        result = "WIN"
+                    else:
+                        result = "FAIL"   
+                    return result
+                elif operationType == "exactly_one_is_true_check_keyword": #WON OF (XOR)
+                    if (left == "WIN" and right == "FAIL") or (left == "FAIL" and right == "WIN"):
+                        result = "WIN"
+                    else:
+                        result = "FAIL"
+                    return result
+                else:
+                    error("[Syntax Error] Invalid Boolean operation", current_line)  
+            else:
+                 error("[Syntax Error] Invalid Boolean operation", current_line) 
+        
+
+        elif operationType in ["atleast_one_true_check_keyword", "all_true_check_keyword"]:
+            if has_allOf_anyOf > 1:
+                error("[Syntax Error] ALL OF or ANY OF cannot be nested into each other and themselves", current_line) 
+
+            while current_token.tokentype != "end_of_assignment_keyword":
+                if current_token.tokentype in expression_tokens:
+                    infinite_arr.append(expression())
+                elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
+                    if current_token.tokenvalue == 0:
                         new_value = "FAIL"
                     else:
                         new_value = "WIN"
-                    l
+                    infinite_arr.append(new_value)
+                    advance() # pass numbr, numbar
+                elif current_token.tokentype == "string_delimiter":
+                    advance() #pass string delim
+                    if current_token.tokentype == "string_literal":
+                        if current_token.tokenvalue == "":
+                            new_value = "FAIL"
+                        else:
+                            new_value = "WIN"
+                        infinite_arr.append(new_value)
+                        advance() #pass string literal
+                        if current_token.tokentype != "string_delimiter":
+                            error("[Syntax Error] String delimiter expected", current_line)
+                        advance() #pass string delim
+                    else:
+                        error("[Syntax Error] Invalid string literal", current_line)
+                elif current_token.tokentype == "troof_literal":
+                    infinite_arr.append(current_token.tokenvalue)
                     advance() # pass LEFT OPERAND
+                elif current_token.tokentype == "variable_identifier":
+                    if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
+                        output = typecast_string(variables[current_token.tokenvalue])
+                        if output == 0:
+                            new_value = "FAIL"
+                        else:
+                            new_value = "WIN"
+                        output = new_value
+                        infinite_arr.append(output)
+                        print(infinite_arr.append)
+                        advance() 
+                    else:
+                        error("[Logic Error] Variable not found", current_line)
                 else:
-                    error("[Logic Error] Variable not found", current_line)
+                    error("[Syntax Error] Invalid operand", current_line)    
+
+                if current_token.tokentype == "and_keyword":
+                    advance() # pass AN
+                elif current_token.tokentype == "end_of_assignment_keyword":
+                    break
+                else:
+                    error("[Syntax Error] Missing AN or MKAY", current_line)
+            advance()
+            if operationType == "all_true_check_keyword": #infinite AND (ALL OF)
+                if "FAIL" in infinite_arr:
+                    result = "FAIL"
+                else:
+                    result = "WIN"
+                return result
+            elif operationType == "atleast_one_true_check_keyword": #infinite OR (ANY OF)
+                if "WIN" in infinite_arr:
+                    result = "WIN"
+                else:
+                    result = "FAIL"
+                return result
             else:
-                error("[Syntax Error] Invalid operand", current_line)       
-
-            if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
-                error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)     
-
-            elif operationType == "both_true_check_keyword":
-                # run lang me
-                # left 
-                pass
-            elif type(left) == type(right):
-                if comparisonType == "both_argument_equal_check_keyword": # Equal to ==
-                    result = "WIN" if left == right else "FAIL"
-                    print("RESULT", result)
-                    place_in_IT(result)
-                    return result
-                elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
-                    result = "WIN" if left != right else "FAIL"
-                    print("RESULT", result)
-                    place_in_IT(result)
-                    return result
-            elif type(left) != type(right):
-                result = "FAIL"
-                print("RESULT", result)
-                place_in_IT(result)
-                return result  
-
-            else:
-                error("[Syntax Error] Invalid Comparison operation", current_line)  
+                error("[Syntax Error] Invalid Boolean operation", current_line)  
         else:
-            error("[Syntax Error] AN keyword not found", current_line)
-       
-            
-
-
-            
-
-
+            error("[Syntax Error] Invalid Boolean operation", current_line) 
+    else: 
+        error("[Syntax Error] Invalid Boolean operation", current_line) 
 
 
 def handle_full_typecast(var_name, target_type, current_line):
