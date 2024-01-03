@@ -1319,13 +1319,7 @@ def loop():
     if current_token.tokentype == "explicit_start_loop_keyword":
         advance()
         if current_token.tokentype == "variable_identifier":
-            loop_variable = current_token.tokenvalue
-            # check if value can be incremented or decremented and if it exists
-            if loop_variable in variables.keys():
-                if not isinstance(variables[loop_variable],(int, float)): 
-                    error("[Logic Error] Variable cannot be incremented or decremented", current_line)
-            else:
-                error("[Logic Error] Variable does not exist", current_line)
+            loop_name = current_token.tokenvalue
             advance()
             if current_token.tokentype == "increment_keyword": #UPPIN   
                 op_type = "increment"
@@ -1334,18 +1328,37 @@ def loop():
             else:
                 error("[Syntax Error] Loop operation not found", current_line)
             advance()
-            # optional TIL and WILE
-            if current_token.tokentype == "until_indicated_end_of_loop_keyword":
-                end_cond_type = "until"
+            if current_token.tokentype == "concise_start_loop_keyword":
                 advance()
-
-            elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
-                end_cond_type = "while"
-            elif current_token.tokentype == "linebreak": # infinite loop until GTFO
-                end_cond_type = None
+                if current_token.tokentype == "variable_identifier":
+                    loop_variable = current_token.tokenvalue
+                    # check if value can be incremented or decremented and if it exists
+                    if loop_variable in variables.keys():
+                        if not isinstance(variables[loop_variable],(int, float)): 
+                            error("[Logic Error] Variable cannot be incremented or decremented", current_line)
+                    else:
+                        error("[Logic Error] Variable does not exist", current_line)
+                    active_loops[loop_name] = loop_variable #save the loop name and associated variable to active loops
+                    advance()
+                    # optional TIL and WILE
+                    if current_token.tokentype == "until_indicated_end_of_loop_keyword":
+                        end_cond_type = "until"
+                        advance()
+                        savedpc = token_idx
+                        expr = expression()
+                        print(expr)
+                    elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
+                        end_cond_type = "while"
+                    elif current_token.tokentype == "linebreak": # infinite loop until GTFO
+                        end_cond_type = None
+                    else:
+                        error("[Syntax Error] Unknown loop condition type", current_line)
+                    # CODE BLOCK FOR LOOP
+                    advance()
+                else:
+                    error("[Syntax Error] Variable identifier not found", current_line)
             else:
-                error("[Syntax Error] Unknown loop condition type", current_line)
-            # CODE BLOCK FOR LOOP
+                error("[Syntax Error] YR not found", current_line)
         else:
             error("[Syntax Error] Label for the loop not found", current_line)
     else:
@@ -1564,6 +1577,16 @@ def function_statement_list():
     global current_token, current_line
     nodes = []
     while current_token.tokentype != "end_of_function_keyword":
+        node = statement()
+        if node is not None:
+            nodes.append(node)
+        if_linebreak()
+    return nodes
+
+def loop_statement_list():
+    global current_token, current_line
+    nodes = []
+    while current_token.tokentype != "break_loop_keyword":
         node = statement()
         if node is not None:
             nodes.append(node)
