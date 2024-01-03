@@ -518,6 +518,8 @@ class Variable:
 variables = {'IT': None}
 var_assign_ongoing = False # checker for expressions if to be placed in IT
 
+active_loops = {}
+
 tokens = []
 
 token_idx = -1
@@ -532,6 +534,12 @@ def advance():
         token_idx += 1
         current_token = tokens[token_idx]
         print(current_token)
+
+def restore(saved_token_idx, saved_curr_line):
+    global token_idx, current_token, current_line
+    token_idx = saved_token_idx
+    current_token = tokens[token_idx]
+    current_line = saved_curr_line
 
 class Error(Exception):
     def __init__(self, message=None):
@@ -1346,6 +1354,7 @@ def loop():
                         advance()
                         savedpc = token_idx
                         expr = expression()
+                        #TODO: check if expr is troof
                         print(expr)
                     elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
                         end_cond_type = "while"
@@ -1355,6 +1364,10 @@ def loop():
                         error("[Syntax Error] Unknown loop condition type", current_line)
                     # CODE BLOCK FOR LOOP
                     advance()
+                    code_block = loop_statement_list()
+                    if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                        advance()
+
                 else:
                     error("[Syntax Error] Variable identifier not found", current_line)
             else:
@@ -1587,6 +1600,8 @@ def loop_statement_list():
     global current_token, current_line
     nodes = []
     while current_token.tokentype != "break_loop_keyword":
+        if current_token.tokentype == "end_code_delimiter":
+            error("[Syntax Error] OUTTA YR not found",current_line)
         node = statement()
         if node is not None:
             nodes.append(node)
