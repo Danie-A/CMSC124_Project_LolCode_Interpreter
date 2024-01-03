@@ -14,22 +14,11 @@ Submission: January 8
 
 ### TO-DO HURDLES:
 
-[] IT - Danie (Check Along the Way)
-[/] place in IT if statement
-OR expression(var_assign is False)
-[/] var_assign true: reassignment AND var_declaration AND full typecast / AND input (no_need)
-
-### change IT:
-
+Change IT - Danie (Check Along the Way)
 [] if-else
 [] switch-case
 [] function return
-expressions
-[] visible
-[] smoosh
-[] arithmetic
-[] comparison
-[] boolean
+[/] expressions
 
 > return value
 > every latest operation
@@ -105,6 +94,9 @@ wAT if x = Wag NA
 ### DONE:
 
 DONE-FIX
+[/] place in IT if statement
+OR expression(var_assign is False)
+[/] var_assign true: reassignment AND var_declaration AND full typecast / AND input (no_need)
 [/] NOOB print ui not None
 [/] fix visible WIN shows True - Danie
 [/] "Hello" AN "World" - AN not included in Lexer
