@@ -502,6 +502,10 @@ bool_tokens =  ["both_true_check_keyword",
 comp_tokens =  ["both_argument_equal_check_keyword", 
                 "both_argument_not_equal_check_keyword"]
 
+flow_control_tokens = ["explicit_start_loop_keyword",
+                       "if_keyword",
+                       "switch_keyword"]
+
 class Variable:
     def __init__(self, name, value, valuetype_ = None):
         self.name = name
@@ -763,8 +767,12 @@ def statement():
                 error("[SyntaxError] Invalid typecast literal", current_line)
         else:
             error("[SyntaxError] Invalid variable value reassignment. R not found. ", current_line)
-    # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
+    
+    elif current_token.tokentype in flow_control_tokens:  #FLOW CONTROL
+        if current_token.tokentype == "explicit_start_loop_keyword": #IM IN YR
+            node = loop()
+    # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
     
@@ -1295,6 +1303,41 @@ def boolean_expression():
     else: 
         error("[Syntax Error] Invalid Boolean operation", current_line) 
 
+def loop():
+    if current_token.tokentype == "explicit_start_loop_keyword":
+        advance()
+        if current_token.tokentype == "variable_identifier":
+            loop_variable = current_token.tokenvalue
+            # check if value can be incremented or decremented and if it exists
+            if loop_variable in variables.keys():
+                if not isinstance(variables[loop_variable],(int, float)): 
+                    error("[Logic Error] Variable cannot be incremented or decremented", current_line)
+            else:
+                error("[Logic Error] Variable does not exist", current_line)
+            advance()
+            if current_token.tokentype == "increment_keyword": #UPPIN   
+                op_type = "increment"
+            elif current_token.tokentype == "decrement_keyword": #NERFIN
+                op_type = "decrement"
+            else:
+                error("[Syntax Error] Loop operation not found", current_line)
+            advance()
+            # optional TIL and WILE
+            if current_token.tokentype == "until_indicated_end_of_loop_keyword":
+                end_cond_type = "until"
+                advance()
+
+            elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
+                end_cond_type = "while"
+            elif current_token.tokentype == "linebreak": # infinite loop until GTFO
+                end_cond_type = None
+            else:
+                error("[Syntax Error] Unknown loop condition type", current_line)
+            # CODE BLOCK FOR LOOP
+        else:
+            error("[Syntax Error] Label for the loop not found", current_line)
+    else:
+        error("[Syntax Error] Invalid Loop operation", current_line)
 
 def handle_full_typecast(var_name, target_type, current_line):
     global current_token
@@ -1486,7 +1529,6 @@ def function_statement_list():
             nodes.append(node)
         if_linebreak()
     return nodes
-
 
 def print_expression():
     global current_token, outputText
