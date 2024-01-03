@@ -1056,7 +1056,7 @@ def boolean_expression():
 
         #ALL OF and ANY OF existence check (since can't be nested into each other or themselves)
         if operationType in ["atleast_one_true_check_keyword", "all_true_check_keyword"]: 
-            has_allOf_anyOf =+ 1
+            has_allOf_anyOf += 1
 
         #NOT
         if operationType in ["negate_keyword"]: 
@@ -1231,8 +1231,10 @@ def boolean_expression():
         
 
         elif operationType in ["atleast_one_true_check_keyword", "all_true_check_keyword"]:
-            if has_allOf_anyOf > 1:
-                error("[Syntax Error] ALL OF or ANY OF cannot be nested into each other and themselves", current_line) 
+            if current_token.tokentype in ["all_true_check_keyword", "atleast_one_true_check_keyword"]: #checks if more than 1 ALL OF OR ANY OF
+                has_allOf_anyOf += 1
+                if has_allOf_anyOf > 1:
+                    error("[Syntax Error] ALL OF or ANY OF cannot be nested into each other and themselves", current_line)
 
             while current_token.tokentype != "end_of_assignment_keyword":
                 if current_token.tokentype in expression_tokens:
