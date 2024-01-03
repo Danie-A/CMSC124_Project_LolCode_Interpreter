@@ -1,4 +1,12 @@
-# CMSC 124 Project To-Do
+# CMSC 124 LEC:
+
+Submission - January 5
+[] Submit to GClass
+[] Peer Eval
+[/] Change Format
+[/] Submit to Publisher
+
+# CMSC 124 LAB Project To-Do
 
 Submission: January 8
 
@@ -7,6 +15,21 @@ Submission: January 8
 ### TO-DO HURDLES:
 
 [] IT - Danie (Check Along the Way)
+[/] place in IT if statement
+OR expression(var_assign is False)
+[/] var_assign true: reassignment AND var_declaration AND full typecast / AND input (no_need)
+
+### change IT:
+
+[] if-else
+[] switch-case
+[] function return
+expressions
+[] visible
+[] smoosh
+[] arithmetic
+[] comparison
+[] boolean
 
 > return value
 > every latest operation
@@ -16,42 +39,44 @@ Variables - DANIE
 [] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
 
 User Output - Mart / Danie
-[] VISIBLE Expression
-[] VISIBLE IT
+[/] VISIBLE Expression
+[/] VISIBLE IT - IT vs "IT"
 [] VISIBLE + - DANIE
 
 If-Else - Mart
+[] Syntax
 [] YA RLY
 [] NO WAI
 
 Switch-Case - Mart
+[] Syntax
 [] OMG
 [] OMGWTF
 [] GTFO
 
-Operations
-[/] Assignment (R) - DANIE
-[/] Smoosh - DAN
-[/] Arithmetic - Dan - [/] Nested - [] check_if_bool_expr (created separate function)
-[/] Comparison - Mart
-[] Boolean - Mart
-
 Loops - Dan
+[] Syntax
 [] Delimiter
 [] Uppin/Nerfin
 [] TIL
 [] WILE
 
 Functions - DANIE
+[] Syntax
 [] Definition
 [] Return
 [] Calling
 
+Operations
+[/] Assignment (R) - DANIE
+[/] Smoosh - DAN -
+[/] Arithmetic - Dan - [/] Nested - [/] check_if_bool_expr (created separate function)
+[/] Comparison - Mart
+[/] Boolean - Mart
+
 ### TO FIX:
 
-[] "Hello" AN "World" - AN not included in Lexer
-[] tkinter console prints parse tree (t.lol)
-var R MAEK var TROOF (prints parse tree)
+[] SMOOSH semi-typecasting (Danie)
 
 [] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
@@ -60,11 +85,10 @@ var R MAEK var TROOF (prints parse tree)
 
 ### CASES TO CONSIDER:
 
-[] VISIBLE var IS NOW A NUMBAR (?) - not in test case
-
-...
-[] var declaration list not required in parser (? i forgot what this means)
-[]
+wAT if x = Wag NA
+[x] literal only in single line (e.g. 5)-- Online LolCode Not an Error
+[x] place VISIBLE 10 in IT? IT = 10 ?
+[x] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so no need)
 
 ### TO CLARIFY:
 
@@ -74,23 +98,18 @@ var R MAEK var TROOF (prints parse tree)
 
 [] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
 
-### 124 LEC:
-
-Submission - January 5
-[] Submit to GClass
-[] Peer Eval
-[/] Change Format
-[/] Submit to Publisher
-
 ### UNNECESSARY CHORES:
 
-[]
+[] print console error the whole line based on line number
 
 ### DONE:
 
 DONE-FIX
 [/] NOOB print ui not None
 [/] fix visible WIN shows True - Danie
+[/] "Hello" AN "World" - AN not included in Lexer
+[/] tkinter console prints parse tree (t.lol)
+var R MAEK var TROOF (prints parse tree)
 
 Typecasting - DANIE
 [/] MAEK

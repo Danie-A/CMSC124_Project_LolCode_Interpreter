@@ -42,9 +42,7 @@ def find_tldr(i,line):
     else:
         # Check if TLDR is not found
         if re.search(r'\bTLDR\b', line):
-            print("\nCommentError: Words exist after TLDR.")
-            print(f"\n\tLine {i+1}: {line}\n")
-            sys.exit()        
+            error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)    
         else:
             return False
 
@@ -81,9 +79,7 @@ def lexical_analyzer(contents):
             # Check if there are words before "OBTW"
             if words_before_obtw:
                 
-                print("\nCommentError: Words exist before OBTW:", words_before_obtw)
-                print(f"\n\tLine {i+1}: {line}\n")
-                sys.exit()
+                error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)
             else:
                 obtwFound = True
                 # change line to empty string
@@ -273,24 +269,16 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"BTW", token):
                 # items.append(Token("line_comment_delimiter", token))
                 # show error message and end program
-                print(f"\nCommentError: Wrong BTW Comment Format Detected.\n\tLine {i+1}: {line}\n")
-                # end program
-                sys.exit()
+                error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)
 
             elif re.fullmatch(r"OBTW", token):
                 # items.append(Token("start_block_comment", token))
                 # show error message and end program
-                print(f"\nCommentError: Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}\n")
-                # end program
-                sys.exit()
-                
+                error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)  
             elif re.fullmatch(r"TLDR", token):
                 # items.append(Token("end_block_comment", token))
                 # show error message and end program
-                print(f"\nCommentError: Wrong OBTW TLDR Comment Format Detected.\n\tLine {i+1}: {line}\n")
-                # end program
-                sys.exit()
-            
+                error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)            
             elif re.fullmatch(r"WIN|FAIL", token):
                 items.append(Token("troof_literal", token))
             elif re.fullmatch(r"NOOB|NUMBR|NUMBAR|YARN|TROOF", token):
@@ -429,8 +417,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r".*", token):
                 items.append(Token("any", token))
             else:
-                print(f"InvalidTokenError: Invalid Token Detected.\n\tLine {i+1}: {line}\n\tToken: {token}")
-                sys.exit()    
+                error(f"[LexerError] Invalid Token Detected. {line}", i+1)
 
     # print items separated by newline
     for item in items:
@@ -525,6 +512,7 @@ class Variable:
         return f"({self.type}, \"{self.value}\", {self.valuetype})"
 
 variables = {'IT': None}
+var_assign_ongoing = False # checker for expressions if to be placed in IT
 
 tokens = []
 
@@ -532,6 +520,7 @@ token_idx = -1
 current_token = None
 current_line = 1
 errorMessage = ""
+
     
 def advance():
     global token_idx, current_token
@@ -614,7 +603,8 @@ def var_declaration_list():
     return nodes
 
 def var_declaration():
-    global current_token, current_line
+    global current_token, current_line, var_assign_ongoing
+    var_assign_ongoing = True # assignment ongoing
     if current_token.tokentype == "variable_declaration": # I HAS A
         advance() # pass I HAS A
         if current_token.tokentype == "variable_identifier": # var
@@ -630,6 +620,7 @@ def var_declaration():
                     variables[varident] = variables[current_token.tokenvalue]
                     node = ("VARIABLE", varident, current_token)
                     advance()
+                    var_assign_ongoing = False # set back to false
                     return node
                 else: 
                     literal_ = literal() 
@@ -645,9 +636,12 @@ def var_declaration():
                         else:
                             var_value = False
                     variables[varident] = var_value
-                    return ("VARIABLE", varident, literal_)                
+                    var_assign_ongoing = False # set back to false
+                    return ("VARIABLE", varident, literal_)      
+            # [] to add expressions (arith)   
             elif current_token.tokentype == "linebreak": # I HAS A var (only, no ITZ) - untyped or uninitialized variable
                 variables[varident] = None # null value
+                var_assign_ongoing = False # set back to false
                 return ("VARIABLE", varident, "NOOB") # place untyped or uninitialized variable inside nodes list
             else:
                 error("[SyntaxError] Invalid variable assignment", current_line)
@@ -655,6 +649,7 @@ def var_declaration():
             error("[SyntaxError] Invalid variable identifier", current_line)
     else:
         error("[SyntaxError] Invalid variable declaration", current_line)
+
 
 def varident():
     global current_token
@@ -702,33 +697,6 @@ def place_in_IT(value):
     variables["IT"] = value
     update_symbol_table()
     
-# def semi_typecast_expression():
-#     new_value = None
-#     advance() # pass MAEK
-#     varident_ = varident() # var
-#     # may or may not include A typecast_prefix
-#     if current_token.tokentype == "typecast_prefix":
-#         advance() # pass A
-#         if current_token.tokentype == "type_literal":
-#             type_literal_ = current_token
-#             new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-#             place_in_IT(new_value) # place in IT
-#             advance() # pass NUMBAR/NUMBR/TROOF/YARN
-#             #return ("TYPECAST", new_value, varident_, type_literal_)
-#         else:
-#             error("[SyntaxError: Invalid typecast literal: Line", current_line)
-#     elif current_token.tokentype == "type_literal":
-#         type_literal_ = current_token
-#         new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-#         place_in_IT(new_value) # place in IT
-#         advance() # pass NUMBAR/NUMBR/TROOF/YARN        
-#     else:
-#         error("[SyntaxError: Invalid typecast literal: Line", current_line)
-#     return new_value  # to not print parse tree in var R MAEK var TYPE 
-
-"""
-try to reverse
-"""
 def semi_typecast_expression():
     new_value = None
     advance() # pass MAEK
@@ -739,13 +707,12 @@ def semi_typecast_expression():
     else:
         if current_token.tokentype == "typecast_prefix":
             advance() # pass A
-        new_value = handle_semi_typecast(var_token, current_token.tokenvalue, current_line)
-        place_in_IT(new_value) # place in IT
+        new_value = handle_semi_typecast(var_token.tokenvalue, current_token.tokenvalue, current_line)
         advance() # pass NUMBAR/NUMBR/TROOF/YARN              
     return new_value  # to not print parse tree in var R MAEK var TYPE
 
 def statement():
-    global current_token
+    global current_token, var_assign_ongoing
     if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
         advance() # pass VISIBLE
         expr_ = print_expression()
@@ -759,6 +726,7 @@ def statement():
 
         return ("INPUT", varident_)
     elif current_token.tokentype == "variable_identifier": #assignment statement
+        var_assign_ongoing = True # variable assignment ongoing
         var_dest_token = varident()
         if current_token.tokentype == "variable_value_reassignment":
             advance() # pass R
@@ -766,17 +734,19 @@ def statement():
                 var_src_token = varident()
                 variables[var_dest_token.tokenvalue] = variables[var_src_token.tokenvalue]
                 update_symbol_table()
+                var_assign_ongoing = False # set back to false, variable reassignment done
                 return ("ASSIGN", var_dest_token, var_src_token)
             elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]: # var = literal
                 lit_src_token = literal()
                 variables[var_dest_token.tokenvalue] = lit_src_token.tokenvalue
                 update_symbol_table()
+                var_assign_ongoing = False # set back to false, variable reassignment done
                 return ("ASSIGN", var_dest_token, lit_src_token)
-            #TODO: add expression
             elif current_token.tokentype in expression_tokens: # var = expression
                 expr_val = expression()
                 variables[var_dest_token.tokenvalue] = expr_val
                 update_symbol_table()
+                var_assign_ongoing = False # set back to false, variable reassignment done
                 return ("ASSIGN", var_dest_token, expr_val)
             else:
                 error("[SyntaxError] Invalid variable value reassignment", current_line)
@@ -786,41 +756,19 @@ def statement():
                 type_literal_ = current_token
                 handle_full_typecast(varidentDest, type_literal_.tokenvalue, current_line)
                 advance() # pass NUMBAR/NUMBR/TROOF/YARN
+                update_symbol_table()
+                var_assign_ongoing = False # set back to false, variable reassignment done
                 return("FULL_TYPECAST", varidentDest, type_literal_)
             else:
                 error("[SyntaxError] Invalid typecast literal", current_line)
         else:
             error("[SyntaxError] Invalid variable value reassignment. R not found. ", current_line)
-
-    elif current_token.tokentype == "typecast_keyword": # SEMI TYPECAST
-        advance() # pass MAEK
-        varident_ = varident() # var
-        # may or may not include A typecast_prefix
-        if current_token.tokentype == "typecast_prefix":
-            advance() # pass A
-            if current_token.tokentype == "type_literal":
-                type_literal_ = current_token
-                new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-                place_in_IT(new_value) # place in IT
-                advance() # pass NUMBAR/NUMBR/TROOF/YARN
-                return ("TYPECAST", varident_, type_literal_)
-            else:
-                error("[SyntaxError: Invalid typecast literal: Line", current_line)
-        elif current_token.tokentype == "type_literal":
-            type_literal_ = current_token
-            new_value = handle_semi_typecast(varident_, type_literal_.tokenvalue, current_line)
-            place_in_IT(new_value) # place in IT
-            advance() # pass NUMBAR/NUMBR/TROOF/YARN
-            return ("TYPECAST", varident_, type_literal_)
-        else:
-            error("[SyntaxError: Invalid typecast literal: Line", current_line)
-    
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
     
-    # else check if expression
+    # else check if expression (can also be a statement)
     else:
         if current_token.tokentype in expression_tokens:
             expression_ = expression()
@@ -830,35 +778,38 @@ def statement():
             error("[SyntaxError] Invalid statement", current_line)
 
 def expression():
-    global current_token, current_line
-    node = None
+    global current_token, current_line, var_assign_ongoing
+    ans = None
     if current_token.tokentype in arith_tokens:
-        node = arithmetic_expression() 
+        ans = arithmetic_expression() 
     elif current_token.tokentype == "typecast_keyword":
-        node = semi_typecast_expression()
+        ans = semi_typecast_expression()
     elif current_token.tokentype in comp_tokens:
-        node = compare_expression()
+        ans = compare_expression()
     elif current_token.tokentype in bool_tokens:
-        node = boolean_expression()
+        ans = boolean_expression()
     # smoosh also an expr (x R SMOOSH x AN y; var = expr)
     elif current_token.tokentype == "concatenation_keyword": #SMOOSH
         advance()
         if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-            concatenated_string = ""
+            ans = ""
             while current_token.tokentype != "linebreak":
-                node = literal()
-                concatenated_string = concatenated_string + node.tokenvalue
+                lit_token = literal()
+                ans = ans + lit_token.tokenvalue
                 if current_token.tokentype == "and_keyword":
                     advance()
                 elif current_token.tokentype == "linebreak":
                     break
                 else:
                     error("[SyntaxError] : no AN keyword detected", current_line)
-            print(concatenated_string)
-            return concatenated_string
+            print(ans)
         else:
             error("[SyntaxError] Invalid literal: Line", current_line)
-    return node
+    print("var_assign_ongoing is:", var_assign_ongoing)
+    if var_assign_ongoing == False: # place in IT variable if not a variable assignment statement
+        print("THIS IS RUNNNNNNNNNNNINGGGGGGGGGGGGGG")
+        place_in_IT(ans)
+    return ans
 
 def typecast_string(string):
     numbr_pattern = r"-?([1-9][0-9]*|0)"
@@ -1074,15 +1025,11 @@ def compare_expression():
             elif comparisonType == "both_argument_equal_check_keyword": # Equal to ==
                 result = "WIN" if left == right and type(left) == type(right) else "FAIL"
                 print("RESULT", result)
-                place_in_IT(result)
                 return result
             elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
                 result = "WIN" if left != right else "FAIL"
                 print("RESULT", result)
-                place_in_IT(result)
-                return result
-
-
+                return result  
             else:
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
         else:
@@ -1426,7 +1373,6 @@ def handle_full_typecast(var_name, target_type, current_line):
         variables[var_name] = None
     else:
         error(f"[RuntimeError] Failed to convert '{var_value}'", current_line)
-    update_symbol_table()
 
 def handle_semi_typecast(var_name, target_type, current_line):
     global current_token
@@ -1437,22 +1383,22 @@ def handle_semi_typecast(var_name, target_type, current_line):
     
     #perfrom type conversion based on target type
     if target_type == "NUMBR":
-        if var_value == "WIN":   #Note: consider string literals WIN and FAIL, not just troof
+        if var_value == "WIN" or (var_value == True and isinstance(var_value, bool)):   #Note: consider string literals WIN and FAIL, not just troof
             new_value = 1
-        elif var_value == "FAIL":
+        elif var_value == "FAIL" or (var_value == False and isinstance(var_value, bool)):
             new_value = 0
         elif isinstance(var_value, str):
             # test yarn_pattern
-            if re.fullmatch(yarn_pattern, var_value):
+            if re.fullmatch(yarn_pattern, var_value): # check if string is a number
                 print("var_value:", var_value)
                 var_value = re.sub(r'\.\d+', '', var_value)
-                new_value = int(var_value)
+                new_value = int(var_value) # change to integer
             else:
                 error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBR", current_line)
         elif isinstance(var_value, float):
-            new_value = int(var_value)
+            new_value = int(var_value) # change float to integer
         elif isinstance(var_value, int):
-            new_value = var_value
+            new_value = var_value # still same
         else: # for None
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
 
