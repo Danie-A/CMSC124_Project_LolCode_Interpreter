@@ -1019,7 +1019,7 @@ def compare_expression():
         elif current_token.tokentype == "string_delimiter":
             advance() # pass starting "
             if current_token.tokentype == "string_literal":
-                left = typecast_string(current_token.tokenvalue)
+                left = current_token.tokenvalue
                 advance() # pass string literal
                 if current_token.tokentype != "string_delimiter":
                     error("[Syntax Error] String delimiter expected", current_line)
@@ -1027,7 +1027,7 @@ def compare_expression():
             else:
                 error("[Syntax Error] Invalid string literal", current_line)
         elif current_token.tokentype == "troof_literal":
-            left = typecast_troof(current_token.tokenvalue)
+            left = current_token.tokenvalue
             advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
@@ -1049,7 +1049,7 @@ def compare_expression():
             elif current_token.tokentype == "string_delimiter":
                 advance() # pass starting "
                 if current_token.tokentype == "string_literal":
-                    right = typecast_string(current_token.tokenvalue)
+                    right = current_token.tokenvalue
                     advance() # pass string literal
                     if current_token.tokentype != "string_delimiter":
                         error("[Syntax Error] String delimiter expected", current_line)
@@ -1057,7 +1057,7 @@ def compare_expression():
                 else:
                     error("[Syntax Error] Invalid string literal", current_line)
             elif current_token.tokentype == "troof_literal":
-                right = typecast_troof(current_token.tokenvalue)
+                right = current_token.tokenvalue
                 advance()
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
@@ -1071,22 +1071,17 @@ def compare_expression():
             if left is None or right is None: # OPERAND NOT TYPECAST-ABLE
                 error("[Runtime Error] Cannot perform operation. Invalid operand.", current_line)
               
-            elif type(left) == type(right):
-                if comparisonType == "both_argument_equal_check_keyword": # Equal to ==
-                    result = "WIN" if left == right else "FAIL"
-                    print("RESULT", result)
-                    place_in_IT(result)
-                    return result
-                elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
-                    result = "WIN" if left != right else "FAIL"
-                    print("RESULT", result)
-                    place_in_IT(result)
-                    return result
-            elif type(left) != type(right):
-                result = "FAIL"
+            elif comparisonType == "both_argument_equal_check_keyword": # Equal to ==
+                result = "WIN" if left == right and type(left) == type(right) else "FAIL"
                 print("RESULT", result)
                 place_in_IT(result)
-                return result  
+                return result
+            elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
+                result = "WIN" if left != right else "FAIL"
+                print("RESULT", result)
+                place_in_IT(result)
+                return result
+
 
             else:
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
