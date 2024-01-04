@@ -31,10 +31,10 @@ If-Else - Mart
 [/] NO WAI
 
 Switch-Case - Mart
-[] Syntax
-[] OMG
-[] OMGWTF
-[] GTFO
+[/] Syntax
+[/] OMG
+[/] OMGWTF
+[/] GTFO
 
 Loops - Dan
 [] Syntax
