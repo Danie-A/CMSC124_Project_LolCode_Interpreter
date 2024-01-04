@@ -843,6 +843,10 @@ def convert_to_string():
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
         lit_token = literal()
         value = subconvert_to_string(lit_token.tokenvalue)
+    elif current_token.tokentype in expression_tokens:
+        ans = expression()
+        ans = check_if_bool(ans)
+        value = subconvert_to_string(ans)
     return value
         
 def expression():
@@ -886,7 +890,8 @@ def typecast_string(string):
     elif re.fullmatch(numbar_pattern, string):
         return float(string)
     else:
-        return None 
+        error(f"[RuntimeError] Invalid String. Cannot convert '{string}' to NUMBR/NUMBAR", current_line)
+        # return None # prev
 
 def typecast_troof(troof):
     # typecast troof to numbr or numbar
@@ -938,7 +943,7 @@ def arithmetic_expression():
                 right = expression()
             elif current_token.tokentype in ["numbr_literal","numbar_literal"]:
                 right = current_token.tokenvalue
-                advance()
+                advance() # pass numbr/numbar literal
             elif current_token.tokentype == "string_delimiter":
                 advance() # pass starting "
                 if current_token.tokentype == "string_literal":

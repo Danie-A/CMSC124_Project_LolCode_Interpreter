@@ -1,11 +1,3 @@
-# CMSC 124 LEC:
-
-Submission - January 5
-[] Group Peer Eval
-[/] Submit to GClass
-[/] Change Format
-[/] Submit to Publisher
-
 # CMSC 124 LAB Project To-Do
 
 [] Submission: January 8
@@ -34,9 +26,9 @@ User Output Edit - Danie
 [/] VISIBLE + - DANIE
 
 If-Else - Mart
-[] Syntax
-[] YA RLY
-[] NO WAI
+[/] Syntax
+[/] YA RLY
+[/] NO WAI
 
 Switch-Case - Mart
 [] Syntax
@@ -66,6 +58,7 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
+[] SUM OF IT AN 4 (IT = "LOL") only terminal error
 [] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
 
@@ -75,12 +68,20 @@ Operations
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
-[] SMOOSH expr (?)
+[] expr with None (recheck)
 [] redefinition of variable should not be allowed (e.g., dobleng I HAS A var) -- acc to lolcode
-[/] literal only in single line (e.g. 5)-- Online LolCode Not an Error
 
-[/] place VISIBLE 10 in IT? IT = 10 ?
 [x] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so i guess no need)
+
+### BONUS (TRY TO HAGGLE EXTRA POINTS):
+
+[-] Khaki UI
+[-] Special Characters in Strings (?)
+[-] SMOOSH expr
+[-] VISIBLE expr not only arith
+[-] Literal Only on Single Line Possible
+[-] SUM OF expr not only arith
+[ ] SUM OF IT AN 5
 
 ### TO CLARIFY:
 
@@ -96,9 +97,15 @@ Operations
 
 [] print console error the whole line based on line number
 
+[] Save text editor button
+
 ### DONE:
 
 DONE-FIX
+[/] literal only in single line (e.g. 5)-- Online LolCode Not an Error
+[/] SMOOSH expr (?)
+[/] place VISIBLE 10 in IT? IT = 10 ?
+
 [/] typecast None to bool - None => False - typecast None to string None => "None" (see NOOB specs)
 [/] comparison boolean - typecast_string (Mart)
 [/] SMOOSH semi-typecasting (Danie)
@@ -164,3 +171,11 @@ TYPECAST:
 VISIBLE:
 [/] Symbol Table True - Should be WIN
 [/] Visible True - Should be WIN
+
+# CMSC 124 LEC:
+
+Submission - January 5
+[/] Group Peer Eval
+[/] Submit to GClass
+[/] Change Format
+[/] Submit to Publisher

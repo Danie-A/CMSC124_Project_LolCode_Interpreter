@@ -2,7 +2,6 @@ DANIE
 January 4
 [/] VISIBLE +
 [/] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
-[] Switch-Case Syntax
 [] Functions Syntax
 
 January 5
@@ -14,4 +13,4 @@ Function Semantics
 January 6
 
 FIX
-[] SMOOSH SUM OF 1 AN 1 AN 10 = '210'
+[] SMOOSH SUM OF IT AN 1 AN 10 => ERROR if IT="RAWR"
