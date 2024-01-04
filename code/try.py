@@ -34,15 +34,17 @@
 # num = ("a", "b", "c", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 # print("numis ", num[1])
 
-ans = True
-if ans == True and ans != 1:
-    print("true")
-if ans == True:
-    print("true na yarn")
-elif ans == False and ans != 0:
-    print("false")
-else:
-    print("hala ka")
+# ans = True
+# if ans == True and ans != 1:
+#     print("true")
+# if ans == True:
+#     print("true na yarn")
+# elif ans == False and ans != 0:
+#     print("false")
+# else:
+#     print("hala ka")
 
-ans = True + False
-print(ans)
+# ans = True + False
+# print(ans)
+a = None
+print(str(a)+"b")

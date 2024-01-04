@@ -8,9 +8,10 @@ Submission - January 5
 
 # CMSC 124 LAB Project To-Do
 
-Submission: January 8
+[] Submission: January 8
 
-[/] RESERVE Presentation Schedule
+Presentation Schedule:
+[] January 10 - 3:30-3:45 PM
 
 ### TO-DO HURDLES:
 
@@ -27,7 +28,7 @@ Change IT - Danie (Check Along the Way)
 Variables - DANIE
 [] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
 
-User Output - Mart / Danie
+User Output Edit - Danie
 [/] VISIBLE Expression
 [/] VISIBLE IT - IT vs "IT"
 [] VISIBLE + - DANIE
@@ -58,14 +59,14 @@ Functions - DANIE
 
 Operations
 [/] Assignment (R) - DANIE
-[/] Smoosh - DAN -
+[/] Smoosh - DAN - [/] semi-typecasting - Danie
 [/] Arithmetic - Dan - [/] Nested - [/] check_if_bool_expr (created separate function)
 [/] Comparison - Mart
 [/] Boolean - Mart
 
 ### TO FIX:
 
-[] SMOOSH semi-typecasting (Danie)
+[/] comparison boolean - typecast_string (Mart)
 
 [] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
@@ -87,13 +88,18 @@ wAT if x = Wag NA
 
 [] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
 
-### UNNECESSARY CHORES:
+[] typecast None to bool - None => False (ako yes) typecast None to string None => "None"
+
+### EFFICIENCY CHORES:
+
+[] remove current_line in error parameter (global var already)
 
 [] print console error the whole line based on line number
 
 ### DONE:
 
 DONE-FIX
+[/] SMOOSH semi-typecasting (Danie)
 [/] place in IT if statement
 OR expression(var_assign is False)
 [/] var_assign true: reassignment AND var_declaration AND full typecast / AND input (no_need)
