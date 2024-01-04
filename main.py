@@ -795,7 +795,7 @@ def statement():
         if current_token.tokentype == "explicit_start_loop_keyword": #IM IN YR
             node = loop()
         elif current_token.tokentype == "if_keyword":
-            if_else_statement()
+            node = if_else_statement()
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
@@ -1412,28 +1412,60 @@ def loop():
 
 def if_else_statement():
     global current_token
-    if current_token.tokens_list == "if_keyword":
-        advance()
-        if variables["IT"] == "WIN":
-            if current_token.tokens_list == "if_true_keyword":
-                advance()
-                statement()
-            else:
-                error("[Syntax Error] Missing YA RLY", current_line)  
-        elif variables["IT"] == "FAIL":  
-            if current_token.tokens_list == "else_keyword":
-                advance()
-                statement()
-            else:
-                error("[Syntax Error] Missing NO WAI", current_line) 
-        advance()
+    has_YA_RLY = False
 
-        if current_token.tokens_list == "end_of_if_block_keyword":
-            advance()
+    if current_token.tokentype == "if_keyword":
+        print("EXECUTED O RLY?")
+        advance() #pass O RLY?
+        if current_token.tokentype == "linebreak":
+            advance() #pass linebreak
+            print("CURRENT TOKEN:", current_token.tokentype)
+            print("VARIABLES IT: ", variables["IT"])
+
+            if current_token.tokentype == "if_true_keyword":
+                advance() #pass YA RLY
+                if variables["IT"] == "WIN":
+                    print("EXECUTED YA RLY")
+                    has_YA_RLY = True
+                    print("CURRENT TOKEN:", current_token.tokentype)              
+                    if current_token.tokentype == "linebreak":
+                        advance() #pass linebreak
+                        statement()
+                        while current_token.tokentype != "end_of_if_block_keyword": #pass entire NO WAI block
+                            advance()
+                        print("CURRENT TOKEN:", current_token.tokentype)
+                    else: 
+                        error("[Syntax Error] Expected linebreak after YA RLY", current_line)
+
+                elif variables["IT"] == "FAIL":
+                    if not has_YA_RLY:
+                        while current_token.tokentype != "else_keyword": #to pass entire YA RLY block
+                            advance()
+                    
+                    if current_token.tokentype == "else_keyword":
+                        print("EXECUTED NO WAI")
+                        advance() #pass NO WAI
+                        if current_token.tokentype == "linebreak":
+                            advance() #pass linebreak
+                            statement()
+                            advance() #pass statement of NO WAI
+                        else:
+                            error("[Syntax Error] Expected linebreak after NO WAI", current_line) 
+
+                if current_token.tokentype == "end_of_if_block_keyword":
+                    advance() #pass OIC 
+                else:
+                    error("[Syntax Error] Expected OIC", current_line)  
+            else:
+                error("[Syntax Error] Expected YA RLY", current_line) 
         else:
-            error("[Syntax Error] Missing OIC", current_line)
+            error("[Syntax Error] Expected linebreak after O RLY?", current_line) 
     else:
-        error("[Syntax Error] Missing O RLY?", current_line)
+        error("[Syntax Error] Expected O RLY?", current_line) 
+
+
+
+ 
 
 
 

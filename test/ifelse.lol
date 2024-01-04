@@ -3,7 +3,7 @@ HAI
     I HAS A VAR ITZ 0
     BUHBYE
 
-    BOTH SAEM 3 AN 2
+    BOTH SAEM 3 AN 3
     O RLY?
         YA RLY
             VISIBLE "Hello World"
