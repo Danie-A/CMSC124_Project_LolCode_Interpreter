@@ -34,9 +34,9 @@ User Output Edit - Danie
 [/] VISIBLE + - DANIE
 
 If-Else - Mart
-[] Syntax
-[] YA RLY
-[] NO WAI
+[/] Syntax
+[/] YA RLY
+[/] NO WAI
 
 Switch-Case - Mart
 [] Syntax
