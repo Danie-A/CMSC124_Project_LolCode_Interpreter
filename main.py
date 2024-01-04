@@ -804,6 +804,8 @@ def statement():
             node = loop()
         elif current_token.tokentype == "if_keyword":
             node = if_else_statement()
+        elif current_token.tokentype == "switch_keyword":
+            node = switch_statement()
     
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
         lit_token = literal()
@@ -1447,7 +1449,9 @@ def if_else_statement():
                     print("CURRENT TOKEN:", current_token.tokentype)              
                     if current_token.tokentype == "linebreak":
                         advance() #pass linebreak
-                        statement()
+                        while current_token.tokentype != "else_keyword": #multiple statements in code block
+                            statement()
+                            advance() #pass linebreak
                         while current_token.tokentype != "end_of_if_block_keyword": #pass entire NO WAI block
                             advance()
                         print("CURRENT TOKEN:", current_token.tokentype)
@@ -1464,8 +1468,9 @@ def if_else_statement():
                         advance() #pass NO WAI
                         if current_token.tokentype == "linebreak":
                             advance() #pass linebreak
-                            statement()
-                            advance() #pass statement of NO WAI
+                            while current_token.tokentype != "end_of_if_block_keyword": #multiple statements in code block
+                                statement()
+                                advance() #pass linebreak
                         else:
                             error("[Syntax Error] Expected linebreak after NO WAI", current_line) 
 
@@ -1480,6 +1485,44 @@ def if_else_statement():
     else:
         error("[Syntax Error] Expected O RLY?", current_line) 
 
+
+def switch_statement():
+    global current_token
+
+    if current_token.tokentype == "switch_keyword":
+        advance() #pass WTF?
+        if current_token.tokentype == "linebreak":
+            advance() #pass linebreak
+            if current_token.tokentype == "switch_case_keyword":
+                advance()
+                while current_token.tokentype != "switch_default_keyword":
+                    if current_token.tokentype == ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
+                        if variables["IT"] == current_token.tokenvalue:
+                            advance() #pass value literal
+                            if current_token.tokentype == "linebreak":
+                                advance() #pass linebreak
+                         
+
+
+                                break #terminate loop if IT and current token has same value
+                            else:
+                                error("[Syntax Error] Expected linebreak after value literal", current_line)                                      
+                        else:
+                            while current_token.tokenvalue != "switch_case_keyword":
+                                advance() #pass value literal
+                    else:
+                        error("[Syntax Error] Expected value literal", current_line)                         
+                
+
+            else:
+                error("[Syntax Error] Expected OMG", current_line)
+
+
+
+        else:
+            error("[Syntax Error] Expected linebreak after WTF?", current_line)            
+    else:
+        error("[Syntax Error] Expected WTF?", current_line)       
 
 
  
