@@ -652,7 +652,7 @@ def var_declaration():
                     variables[varident] = var_value
                     var_assign_ongoing = False # set back to false
                     return ("VARIABLE", varident, literal_)      
-            # [] to add expressions (arith)   
+                # [] to add expressions (arith)   
             elif current_token.tokentype == "linebreak": # I HAS A var (only, no ITZ) - untyped or uninitialized variable
                 variables[varident] = None # null value
                 var_assign_ongoing = False # set back to false
@@ -729,9 +729,20 @@ def statement():
     global current_token, var_assign_ongoing
     if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
         advance() # pass VISIBLE
-        expr_ = print_expression()
-        # print("expr_ is: ", expr_)
-        return ("PRINT", expr_)  
+        ans = "" # initialize empty string
+        while current_token.tokentype != "linebreak":
+            operand = print_expression()
+            ans = str(ans) + str(operand)
+            if current_token.tokentype == "print_concatenation_keyword":
+                advance() # advance +
+            elif current_token.tokentype == "linebreak":
+                break
+            else:
+                error("[SyntaxError] : no + keyword detected", current_line)
+        # ans = print_expression()
+        print(ans)
+        insert_output(ans) # show final value in tkinter
+        return ("PRINT", ans)  
     elif current_token.tokentype == "input_keyword":
         advance() # pass GIMMEH
         varident_ = varident()
@@ -1647,28 +1658,20 @@ def print_expression():
         print(ans)
     """
     global current_token
-    
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
-        node = current_token
+        literal_value = current_token.tokenvalue
         advance() # pass literal
         # print the value of the literal
-        literal_value = node.tokenvalue
-        print(literal_value)
-        # show literal_value in outputText tkinter
-        insert_output(literal_value)
-        return node
+        return literal_value
     elif current_token.tokentype == "string_delimiter": # string literal
         advance() # pass opening "
         if current_token.tokentype == "string_literal":
-            node = current_token
+            string_value = current_token.tokenvalue
             advance() #string delimiter
             if current_token.tokentype == "string_delimiter":
                 advance()  # pass closing "
                 #extract/print value of string literal 
-                string_value = node.tokenvalue
-                print(string_value)
-                insert_output(string_value) # show in tkinter console
-                return node
+                return string_value
             else:
                 error("[SyntaxError] String delimiter expected", current_line)
         else:
@@ -1681,20 +1684,17 @@ def print_expression():
         variable_value = variables[current_token.tokenvalue]
         # change variable value to WIN or FAIL
         variable_value = check_if_bool(variable_value)
-        print(variable_value)
-        insert_output(variable_value) # show in tkinter console
+        check_if_none(variable_value)
         advance() # pass varident
         # next should be linebreak or AN, else error
         if current_token.tokentype == "linebreak" or current_token.tokentype == "print_concatenation_keyword":
-            return node
+            return variable_value
         else:
             error("[SyntaxError] Invalid print arguments", current_line)
     elif current_token.tokentype in expression_tokens:
         node = expression()
         ans = check_if_bool(node)
-        print(ans)
-        insert_output(ans) # show in tkinter console
-        return node
+        return ans
     else:
         error("[SyntaxError] Invalid print arguments", current_line)
 
@@ -1703,11 +1703,13 @@ def check_if_bool(ans):
         return "WIN"
     elif isinstance(ans, bool) and ans == False: # False similar to 0
         return "FAIL"
-    elif ans == None:
-        return "NOOB"
     else:
         return ans
 
+def check_if_none(ans):
+    if ans == None:
+        error("[RuntimeError] Value is NOOB", current_line)
+    
 def syntax_analyzer():
     global current_token,token_idx
     print("\nSYNTAX ANALYZER:")
