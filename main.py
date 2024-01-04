@@ -414,8 +414,10 @@ def lexical_analyzer(contents):
                 items.append(Token("linebreak", "\\n"))
             elif re.fullmatch(r"", token):
                 items.append(Token("epsilon", token))
-            elif re.fullmatch(r".*", token):
-                items.append(Token("any", token))
+            # elif re.fullmatch(r".*", token):
+            #     items.append(Token("any", token))
+            elif re.fullmatch(r"\+", token):
+                items.append(Token("print_concatenation_keyword", token))
             else:
                 error(f"[LexerError] Invalid Token Detected. {line}", i+1)
 
@@ -728,6 +730,7 @@ def statement():
     if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
         advance() # pass VISIBLE
         expr_ = print_expression()
+        # print("expr_ is: ", expr_)
         return ("PRINT", expr_)  
     elif current_token.tokentype == "input_keyword":
         advance() # pass GIMMEH
@@ -766,11 +769,11 @@ def statement():
             advance() # pass IS NOW A
             if current_token.tokentype == "type_literal":
                 type_literal_ = current_token
-                handle_full_typecast(varidentDest, type_literal_.tokenvalue, current_line)
+                handle_full_typecast(var_dest_token.tokenvalue, type_literal_.tokenvalue, current_line)
                 advance() # pass NUMBAR/NUMBR/TROOF/YARN
                 update_symbol_table()
                 var_assign_ongoing = False # set back to false, variable reassignment done
-                return("FULL_TYPECAST", varidentDest, type_literal_)
+                return("FULL_TYPECAST", var_dest_token, type_literal_)
             else:
                 error("[SyntaxError] Invalid typecast literal", current_line)
         else:
@@ -1432,10 +1435,10 @@ def handle_full_typecast(var_name, target_type, current_line):
 
     #perfrom type conversion based on target type
     if target_type == "NUMBR":
-        if var_value == "WIN":   #Note: consider string literals WIN and FAIL, not just troof
+        if var_value == "WIN" or (var_value == True and isinstance(var_value, bool)):   #Note: consider string literals WIN and FAIL, not just troof
             new_value = 1
             variables[var_name] = new_value
-        elif var_value == "FAIL":
+        elif var_value == "FAIL" or (var_value == False and isinstance(var_value, bool)):
             new_value = 0
             variables[var_name] = new_value
         elif isinstance(var_value, str):
@@ -1456,13 +1459,11 @@ def handle_full_typecast(var_name, target_type, current_line):
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
             
     elif target_type == "NUMBAR":
-        if var_value == True:   #Note: consider string literals WIN and FAIL, not just troof
-            new_value = 1
-            float(new_value)
+        if var_value == True or var_value=="WIN":   #Note: consider string literals WIN and FAIL, not just troof
+            new_value = 1.0
             variables[var_name] = new_value
-        elif var_value == False:
-            new_value = 0
-            float(new_value)
+        elif var_value == False or var_value=="FAIL":
+            new_value = 0.0
             variables[var_name] = new_value
         elif isinstance(var_value, str):
             if re.fullmatch(yarn_pattern, var_value):
@@ -1478,14 +1479,12 @@ def handle_full_typecast(var_name, target_type, current_line):
         else:
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBAR", current_line)
     elif target_type == "TROOF":
-            if var_value == "" or var_value == None:
+            if var_value == "" or var_value == None or var_value==0: # None to False allowed
                 new_value = False # will print FAIL in Symbol Table
             elif var_value == "WIN":
                 new_value = True # equivalent to WIN troof_literal
             elif var_value == "FAIL":
                 new_value = False # equivalent to FAIL troof_literal
-            elif var_value == 0:
-                new_value = False # equivalent to FAIL
             else:
                 new_value = True # equivalent to WIN
         
@@ -1533,9 +1532,9 @@ def handle_semi_typecast(var_name, target_type, current_line):
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBR", current_line)
 
     elif target_type == "NUMBAR":
-        if var_value == True:   #Note: consider string literals WIN and FAIL, not just troof
+        if var_value == True or var_value=="WIN":   #Note: consider string literals WIN and FAIL, not just troof
             new_value = 1.0
-        elif var_value == False:
+        elif var_value == False or var_value=="FAIL":
             new_value = 0.0
         elif isinstance(var_value, str):
             if re.fullmatch(yarn_pattern, var_value):
@@ -1550,7 +1549,7 @@ def handle_semi_typecast(var_name, target_type, current_line):
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBAR", current_line)
     
     elif target_type == "TROOF":
-        if var_value == "" or var_value == 0 or var_value == None:
+        if var_value == "" or var_value == 0 or var_value == None: # implicit typecasting of None to False
             new_value = False # will print FAIL in Symbol Table
         elif var_value == "WIN":
             new_value = True # equivalent to WIN troof_literal
@@ -1568,7 +1567,7 @@ def handle_semi_typecast(var_name, target_type, current_line):
             new_value = "WIN"
         elif isinstance(var_value, bool) and var_value == False:
             new_value = "FAIL"
-        elif var_value == None:
+        elif var_value == None: # none to string only in explicit typecasting
             error(f"[RuntimeError] Cannot convert uninitialized value to YARN", current_line)
         new_value = str(var_value)
     elif target_type == "NOOB": # var IS NOW A NOOB # typecase a variable to NOOB
@@ -1647,7 +1646,8 @@ def print_expression():
                 error("[SyntaxError] : no AN keyword detected", current_line)
         print(ans)
     """
-    global current_token, outputText
+    global current_token
+    
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
         node = current_token
         advance() # pass literal
@@ -1658,12 +1658,12 @@ def print_expression():
         insert_output(literal_value)
         return node
     elif current_token.tokentype == "string_delimiter": # string literal
-        advance()
+        advance() # pass opening "
         if current_token.tokentype == "string_literal":
             node = current_token
             advance() #string delimiter
             if current_token.tokentype == "string_delimiter":
-                advance() 
+                advance()  # pass closing "
                 #extract/print value of string literal 
                 string_value = node.tokenvalue
                 print(string_value)
@@ -1684,7 +1684,11 @@ def print_expression():
         print(variable_value)
         insert_output(variable_value) # show in tkinter console
         advance() # pass varident
-        return node
+        # next should be linebreak or AN, else error
+        if current_token.tokentype == "linebreak" or current_token.tokentype == "print_concatenation_keyword":
+            return node
+        else:
+            error("[SyntaxError] Invalid print arguments", current_line)
     elif current_token.tokentype in expression_tokens:
         node = expression()
         ans = check_if_bool(node)

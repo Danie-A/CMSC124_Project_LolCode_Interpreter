@@ -48,3 +48,8 @@
 # print(ans)
 a = None
 print(str(a)+"b")
+
+a = 1.0
+if (a==True):
+    print("true")
+else: print("false")

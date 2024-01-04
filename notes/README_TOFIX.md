@@ -73,12 +73,15 @@ Operations
 
 [] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5
 
+[] Expression -
+
 ### CASES TO CONSIDER:
 
 wAT if x = Wag NA
-[x] literal only in single line (e.g. 5)-- Online LolCode Not an Error
-[x] place VISIBLE 10 in IT? IT = 10 ?
-[x] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so no need)
+[] place VISIBLE 10 in IT? IT = 10 ?
+[] literal only in single line (e.g. 5)-- Online LolCode Not an Error
+[] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so no need)
+[] shows an error (terminal) when executing empty code
 
 ### TO CLARIFY:
 

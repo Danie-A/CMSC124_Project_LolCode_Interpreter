@@ -2,6 +2,7 @@ DANIE
 January 4
 [] VISIBLE +
 [] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
+[] Switch-Case Syntax
 [] Functions Syntax
 
 January 5
