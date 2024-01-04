@@ -1,8 +1,8 @@
 # CMSC 124 LEC:
 
 Submission - January 5
-[] Submit to GClass
-[] Peer Eval
+[] Group Peer Eval
+[/] Submit to GClass
 [/] Change Format
 [/] Submit to Publisher
 
@@ -26,12 +26,12 @@ Change IT - Danie (Check Along the Way)
 > latest calculation
 
 Variables - DANIE
-[] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
+[/] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
 
 User Output Edit - Danie
 [/] VISIBLE Expression
 [/] VISIBLE IT - IT vs "IT"
-[] VISIBLE + - DANIE
+[/] VISIBLE + - DANIE
 
 If-Else - Mart
 [] Syntax
@@ -64,9 +64,7 @@ Operations
 [/] Comparison - Mart
 [/] Boolean - Mart
 
-### TO FIX:
-
-[/] comparison boolean - typecast_string (Mart)
+### TO FIX (MORE IMPORTANT):
 
 [] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
@@ -75,13 +73,14 @@ Operations
 
 [] Expression -
 
-### CASES TO CONSIDER:
+### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
-wAT if x = Wag NA
-[] place VISIBLE 10 in IT? IT = 10 ?
-[] literal only in single line (e.g. 5)-- Online LolCode Not an Error
-[] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so no need)
-[] shows an error (terminal) when executing empty code
+[] SMOOSH expr (?)
+[] redefinition of variable should not be allowed (e.g., dobleng I HAS A var) -- acc to lolcode
+[/] literal only in single line (e.g. 5)-- Online LolCode Not an Error
+
+[/] place VISIBLE 10 in IT? IT = 10 ?
+[x] VISIBLE var IS NOW A NUMBAR (?) - not in test case (? var is assigned so i guess no need)
 
 ### TO CLARIFY:
 
@@ -90,8 +89,6 @@ wAT if x = Wag NA
 [] Function Declaration Inside HAI or Outside HAI
 
 [] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
-
-[] typecast None to bool - None => False (ako yes) typecast None to string None => "None"
 
 ### EFFICIENCY CHORES:
 
@@ -102,6 +99,8 @@ wAT if x = Wag NA
 ### DONE:
 
 DONE-FIX
+[/] typecast None to bool - None => False - typecast None to string None => "None" (see NOOB specs)
+[/] comparison boolean - typecast_string (Mart)
 [/] SMOOSH semi-typecasting (Danie)
 [/] place in IT if statement
 OR expression(var_assign is False)

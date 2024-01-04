@@ -636,6 +636,13 @@ def var_declaration():
                     advance()
                     var_assign_ongoing = False # set back to false
                     return node
+                elif current_token.tokentype in expression_tokens:
+                    ans = expression()
+                    ans = check_if_bool(ans)
+                    variables[varident] = ans
+                    node = ("VARIABLE", varident, ans)
+                    var_assign_ongoing = False # set back to false
+                    return node
                 else: 
                     literal_ = literal() 
                     # typecast string according to token type
@@ -741,6 +748,7 @@ def statement():
                 error("[SyntaxError] : no + keyword detected", current_line)
         # ans = print_expression()
         print(ans)
+        place_in_IT(ans) # place in IT variable
         insert_output(ans) # show final value in tkinter
         return ("PRINT", ans)  
     elif current_token.tokentype == "input_keyword":
@@ -796,6 +804,11 @@ def statement():
             node = loop()
         elif current_token.tokentype == "if_keyword":
             if_else_statement()
+    
+    elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
+        lit_token = literal()
+        ans = lit_token.tokenvalue
+        place_in_IT(ans) # place in IT variable
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
@@ -856,7 +869,6 @@ def expression():
             else:
                 error("[SyntaxError] : no AN keyword detected", current_line)
         print(ans)
-
     if var_assign_ongoing == False: # place in IT variable if not a variable assignment statement
         place_in_IT(ans)
     return ans
@@ -1642,21 +1654,6 @@ def loop_statement_list():
     return nodes
 
 def print_expression():
-    """
-    elif current_token.tokentype == "concatenation_keyword": # SMOOSH
-        advance() # pass SMOOSH
-        ans = "" # initialize empty string
-        while current_token.tokentype != "linebreak":
-            operand = convert_to_string() # convert to string
-            ans = ans + operand
-            if current_token.tokentype == "and_keyword":
-                advance() # pass AN
-            elif current_token.tokentype == "linebreak":
-                break
-            else:
-                error("[SyntaxError] : no AN keyword detected", current_line)
-        print(ans)
-    """
     global current_token
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
         literal_value = current_token.tokenvalue

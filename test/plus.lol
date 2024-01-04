@@ -9,4 +9,9 @@ HAI
     VAR IS NOW A TROOF
     VAR IS NOW A NUMBAR
     VISIBLE VAR
+    15
+    15.15
+    WIN
+    FAIL
+    "LOL"
 KTHXBYE
