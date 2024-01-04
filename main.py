@@ -1486,48 +1486,100 @@ def if_else_statement():
         error("[Syntax Error] Expected O RLY?", current_line) 
 
 
+
 def switch_statement():
     global current_token
+    has_gtfo = False
 
     if current_token.tokentype == "switch_keyword":
         advance() #pass WTF?
         if current_token.tokentype == "linebreak":
             advance() #pass linebreak
-            if current_token.tokentype == "switch_case_keyword":
-                advance()
-                while current_token.tokentype != "switch_default_keyword":
-                    if current_token.tokentype == ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
-                        if variables["IT"] == current_token.tokenvalue:
+            while current_token.tokentype != "end_of_if_block_keyword":
+                if current_token.tokentype == "switch_case_keyword":
+                    advance() #pass OMG
+                    if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
+                        if variables["IT"] == current_token.tokenvalue: #when a case is satisfied
                             advance() #pass value literal
-                            if current_token.tokentype == "linebreak":
+                            advance() #pass line break
+                            if current_token.tokentype == "general_purpose_break_keyword":
+                                has_gtfo = True
+                                advance() #pass GTFO
                                 advance() #pass linebreak
-                         
-
-
-                                break #terminate loop if IT and current token has same value
                             else:
-                                error("[Syntax Error] Expected linebreak after value literal", current_line)                                      
-                        else:
-                            while current_token.tokenvalue != "switch_case_keyword":
-                                advance() #pass value literal
+                                if current_token.tokentype != "switch_case_keyword":
+                                    while current_token.tokentype != "general_purpose_break_keyword":
+                                        statement()
+                                        advance() #pass linebreak
+                                        if current_token.tokentype == "general_purpose_break_keyword":
+                                            has_gtfo = True
+                                            advance() #pass GTFO
+                                            advance() #pass linebreak
+                                            print("YOU'RE HERE", current_token.tokenvalue)
+                                            break
+                                        elif current_token.tokentype == "switch_default_keyword":
+                                            print("CHECK")
+                                            advance() #pass OMGWTF
+                                            advance() #linebreak
+                                            if has_gtfo:
+                                                while current_token.tokentype != "end_of_if_block_keyword":
+                                                    advance() #pass entire OMGWTF block
+                                                    if current_token.tokentype == "general_purpose_break_keyword":
+                                                        error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
+                                            else:
+                                                while current_token.tokentype != "end_of_if_block_keyword":
+                                                    statement() 
+                                                    advance() #pass linebreak
+                                                    if current_token.tokentype == "general_purpose_break_keyword":
+                                                        error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
+                                            break
+                                        elif current_token.tokentype == "switch_case_keyword":
+                                            print("YYAYYYSTSY", current_token.tokenvalue)
+                                            break
+                                        elif current_token.tokentype == "end_of_if_block_keyword":
+                                            break
+                                    print("CHECKINGGGGGG")
+                                else:
+                                    error("[Logic Error] Missing code block for this case", current_line)
+                        else: 
+                            print("NOT ACCEPTED", current_token.tokenvalue)
+                            while current_token.tokentype != "switch_case_keyword":
+                                advance() #pass entire OMG block
+                                if current_token.tokentype == "switch_default_keyword":
+                                    break
+                            print("CHECK THIS OUT")
+
                     else:
-                        error("[Syntax Error] Expected value literal", current_line)                         
-                
-
-            else:
-                error("[Syntax Error] Expected OMG", current_line)
-
-
+                        error("[Logic Error] Invalid value literal", current_line) 
+                elif current_token.tokentype == "switch_default_keyword":
+                    print("HEY YOU'RE HERE BITCH", current_token.tokenvalue)
+                    advance() #pass OMGWTF
+                    advance() # pass linebreak
+                    if has_gtfo:
+                        while current_token.tokentype != "end_of_if_block_keyword":
+                            advance()
+                            if current_token.tokentype == "general_purpose_break_keyword":
+                                error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
+                    else:
+                        while current_token.tokentype != "end_of_if_block_keyword":
+                            statement()
+                            advance() #pass linebreak
+                            if current_token.tokentype == "general_purpose_break_keyword":
+                                error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
+                    
+                else:
+                    error("[Syntax Error] Expected OMG", current_line)
 
         else:
-            error("[Syntax Error] Expected linebreak after WTF?", current_line)            
+            error("[Syntax Error] Expected linebreak", current_line) 
     else:
-        error("[Syntax Error] Expected WTF?", current_line)       
+        error("[Syntax Error] Expected WTF?", current_line)
 
-
- 
-
-
+    if current_token.tokentype == "end_of_if_block_keyword":
+        advance() #pass OIC
+    else:
+        error("[Syntax Error] Expected OIC?", current_line) 
+        
 
 def handle_full_typecast(var_name, target_type, current_line):
     global current_token
