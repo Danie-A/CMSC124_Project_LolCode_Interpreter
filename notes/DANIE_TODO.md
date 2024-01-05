@@ -10,12 +10,15 @@ save variables list
 make variables empty
 run statements()
 
+save the start func body and end func body of function
+
 FUNCTIONS SYNTAX
-[] Function Definition
+[-] Function Definition
 
 ---
 
 Fix
+[] wouldn't check syntax of statements before it is called - copy paste all without execution ? :'>
 
 ---
 

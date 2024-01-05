@@ -579,10 +579,17 @@ def program():
         nodes.append(("START",current_token))
         advance()
         if_linebreak()
-        check_function_def()
-        # [] functions
+        
+        if current_token.tokentype =="define_function_keyword":
+            while current_token.tokentype == "define_function_keyword":
+                # if not yet wazzup or if may HOW IZ I parin or if linebreaks palang 
+                check_function_def()
+                if_linebreak() # pass linebreak
+        
         # VARIABLE DECLARATION
         if current_token.tokentype == "start_var_declaration_delimiter": # WAZZUP
+            # can only be at the start of the code
+            
             advance() # pass wazzup
             if_linebreak()
             varDeclarationList = var_declaration_list()
@@ -647,19 +654,8 @@ def var_declaration():
                     var_assign_ongoing = False # set back to false
                     return node
                 else: 
-                    literal_ = literal() 
-                    # typecast string according to token type
-                    var_value = literal_.tokenvalue
-                    if literal_.tokentype == "numbr_literal":
-                        var_value = int(literal_.tokenvalue)
-                    elif literal_.tokentype == "numbar_literal":
-                        var_value = float(literal_.tokenvalue)
-                    elif literal_.tokentype == "troof_literal":
-                        if literal_.tokenvalue == "WIN":
-                            var_value = True
-                        else:
-                            var_value = False
-                    variables[varident] = var_value
+                    lit_value = literal() 
+                    variables[varident] = lit_value
                     var_assign_ongoing = False # set back to false
                     return ("VARIABLE", varident, literal_)      
                 # [] to add expressions (arith)   
@@ -708,60 +704,58 @@ functions = [] # list of functions
 # functions = {"funcname": {funcbody:[], funcvars:{"x": 1, "y": 2, "z": 3}}}
 
 # saved_main = {tokens: None, token_idx: None, current_line: None}
+# save variables: tokens, token_idx, current_token, current_line
 
 # only the syntax --- to edit
-# save variables: tokens, current_token, current_line
 def check_function_def():
     global current_token, current_line
-    if current_token.tokentype == "define_function_keyword": # function definition else do nothing because optional
-        advance() # pass HOW IZ I
-        if current_token.tokentype == "variable_identifier":
-            funcname = current_token.tokenvalue
-            advance() # pass function name
-            
-            # FUNCTION PARAMETERS
-            # funcname var YR x AN YR y AN YR z
-            while current_token.tokentype != "linebreak":
-                if current_token.tokentype == "parameter_separator_keyword":
-                    advance() # pass YR (first parameter)
+    advance() # pass HOW IZ I
+    if current_token.tokentype == "variable_identifier":
+        funcname = current_token.tokenvalue
+        advance() # pass function name
+        
+        # FUNCTION PARAMETERS
+        # funcname var YR x AN YR y AN YR z
+        while current_token.tokentype != "linebreak":
+            if current_token.tokentype == "parameter_separator_keyword":
+                advance() # pass YR (for first parameter)
+                if current_token.tokentype != "variable_identifier":
+                    error("[SyntaxError] Invalid function parameter", current_line)
+                else:
+                    # [] place in funcvar
+                    advance() # pass parameter name
+            elif current_token.tokentype == "and_keyword":
+                advance() # pass AN
+                if current_token.tokentype != "parameter_separator_keyword":
+                    error("[SyntaxError] Invalid function parameter (YR not found)", current_line)
+                else:
+                    advance() # pass YR
                     if current_token.tokentype != "variable_identifier":
                         error("[SyntaxError] Invalid function parameter", current_line)
                     else:
                         # [] place in funcvar
                         advance() # pass parameter name
-                elif current_token.tokentype == "and_keyword":
-                    advance() # pass AN
-                    if current_token.tokentype != "parameter_separator_keyword":
-                        error("[SyntaxError] Invalid function parameter (YR not found)", current_line)
-                    else:
-                        advance() # pass YR
-                        if current_token.tokentype != "variable_identifier":
-                            error("[SyntaxError] Invalid function parameter", current_line)
-                        else:
-                            # [] place in funcvar
-                            advance() # pass parameter name
-                else:
-                    error("[SyntaxError] Invalid function parameter", current_line)
-
-            advance() # pass linebreak
-            current_line += 1 # increment line number
-            
-            # FUNCTION BODY
-            funcbody = []
-            while current_token.tokentype != "end_of_function_keyword": # save the succeeding tokens until IF U SAY SO is found
-                funcbody.append(current_token)
-                if current_token.tokentype == "linebreak":
-                    current_line += 1 # increment line number 
-                advance() # go to next token 
-            
-            # [] edit, should be in Class
-            functions[funcname] = funcbody # function name: list of tokens
-            advance() # pass IF U SAY SO     
-            
-            return ("FUNCTION", functions)
-        else:
-            error("[SyntaxError] Invalid function name", current_line)
-    # no else (function is optional)
+            else:
+                error("[SyntaxError] Invalid function parameter", current_line)
+        # linebreak?
+        # FUNCTION BODY
+        funcbody = []
+        while current_token.tokentype != "end_of_function_keyword": # save the succeeding tokens until IF U SAY SO is found
+            # funcbody.append(current_token)
+            if current_token.tokentype == "linebreak":
+                current_line += 1 # increment line number 
+                # NOT CHECKING STATEMENT VALIDITY YET
+            advance() # go to next token 
+            print("TOKEN IS ", current_token)
+            print("AM I HERE?")
+        # [] edit, should be in Class
+        # functions[funcname] = funcbody # function name: list of tokens
+        advance() # pass IF U SAY SO     
+        print("RETURNING NOW....")
+        print("current token is ", current_token)
+        return ("FUNCTION", functions)
+    else:
+        error("[SyntaxError] Invalid function name", current_line)
     
 def place_in_IT(value):
     global variables
@@ -782,9 +776,57 @@ def semi_typecast_expression():
         advance() # pass NUMBAR/NUMBR/TROOF/YARN              
     return new_value  # to not print parse tree in var R MAEK var TYPE
 
+# for FUNCTIONS (reusable)
+def get_op_value():
+    if current_token.tokentype in expression_tokens:
+        ans = expression() # pass expression
+    elif current_token.tokentype == "variable_identifier":
+        var_token = varident() # pass variable
+        ans = variables[var_token.tokenvalue]
+    elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
+        ans = literal() # pass literal
+    else:
+        error("[SyntaxError] Invalid expression", current_line)
+    return ans
+
 def statement():
     global current_token, var_assign_ongoing
-    if current_token.tokentype == "print_keyword": # to add + in VISIBLE (concatenation)
+    if current_token.tokentype == "function_call":
+        advance() # pass I IZ
+        if current_token.tokentype != "variable_identifier":
+            error("[SyntaxError] Invalid function name", current_line)
+        else:
+            # FUNCTION PARAMETERS
+            # funcname YR SUM OF 1 AN 2 AN YR 10
+            funcname = current_token.tokenvalue
+            # [] check if funcname is in functions
+            advance() # pass funcname
+            # [] place in a parameter list
+            params = []
+            # FUNCTION ARGUMENTS
+            while current_token.tokentype != "linebreak":
+                if current_token.tokentype == "parameter_separator_keyword":
+                    advance() # pass YR (for first parameter)
+                    param_val = get_op_value()
+                    params.append(param_val)
+                elif current_token.tokentype == "and_keyword":
+                    advance() # pass AN
+                    if current_token.tokentype != "parameter_separator_keyword":
+                        error("[SyntaxError] Invalid function parameter (YR not found)", current_line)
+                    else:
+                        advance() # pass YR
+                        param_val = get_op_value()
+                        params.append(param_val)
+                else:
+                    error("[SyntaxError] Invalid function argument", current_line)
+            
+            print("PARAMS DONE! CUR TOKEN IS: ", current_token, params)
+            # [] check total number of parameters if same with number of arguments 
+            # [] save_main_values
+            # [] run the function using class ?
+            
+            
+    elif current_token.tokentype == "print_keyword": 
         advance() # pass VISIBLE
         ans = "" # initialize empty string
         while current_token.tokentype != "linebreak":
@@ -821,17 +863,8 @@ def statement():
                 var_assign_ongoing = False # set back to false, variable reassignment done
                 return ("ASSIGN", var_dest_token, var_src_token)
             elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]: # var = literal
-                lit_src_token = literal()
-                if lit_src_token.tokentype == "numbr_literal":
-                    lit_src_token.tokenvalue = int(lit_src_token.tokenvalue)
-                elif lit_src_token.tokentype == "numbar_literal":
-                    lit_src_token.tokenvalue = float(lit_src_token.tokenvalue)
-                elif lit_src_token.tokentype == "troof_literal":
-                    if lit_src_token.tokenvalue == "WIN":
-                        lit_src_token.tokenvalue = True
-                    else:
-                        lit_src_token.tokenvalue = False
-                variables[var_dest_token.tokenvalue] = lit_src_token.tokenvalue
+                lit_value = literal()
+                variables[var_dest_token.tokenvalue] = lit_value
                 update_symbol_table()
                 var_assign_ongoing = False # set back to false, variable reassignment done
                 return ("ASSIGN", var_dest_token, lit_src_token)
@@ -867,8 +900,7 @@ def statement():
             node = switch_statement()
     
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-        lit_token = literal()
-        ans = lit_token.tokenvalue
+        ans = literal() # returns literal value
         place_in_IT(ans) # place in IT variable
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
@@ -902,8 +934,8 @@ def convert_to_string():
         value = variables[var_token.tokenvalue]
         value = subconvert_to_string(value)        
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
-        lit_token = literal()
-        value = subconvert_to_string(lit_token.tokenvalue)
+        lit_value = literal()
+        value = subconvert_to_string(lit_value)
     elif current_token.tokentype in expression_tokens:
         ans = expression()
         ans = check_if_bool(ans)
@@ -1801,19 +1833,31 @@ def handle_semi_typecast(var_name, target_type, current_line):
     return new_value
 
 
+
+                            
 def literal():
     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal"]:
-        node = current_token
+        type = current_token.tokentype
+        value = current_token.tokenvalue
+        if type == "numbr_literal":
+            final_value = int(value)
+        elif type == "numbar_literal":
+            final_value = float(value)
+        elif type == "troof_literal":
+            if value == "WIN":
+                final_value = True
+            else:
+                final_value = False
         advance() # pass literal value
-        return node
+        return final_value
     elif current_token.tokentype == "string_delimiter": # string literal
         advance() # pass "
         if current_token.tokentype == "string_literal":
-            node = current_token
+            final_value = current_token.tokenvalue
             advance() # pass string value
             if current_token.tokentype == "string_delimiter":
                 advance() # pass "
-                return node
+                return final_value
             else:
                 error("[SyntaxError] String delimiter expected", current_line)
         else:

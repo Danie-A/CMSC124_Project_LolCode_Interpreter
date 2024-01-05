@@ -1,15 +1,15 @@
 HAI
 
-    HOW IZ I addNum x y
+    HOW IZ I addNum YR x AN YR y
         FOUND YR SUM OF x an y
     IF U SAY SO
 
-    HOW IZ I printName person
+    HOW IZ I printName YR person
         VISIBLE "Hello, " + person
         GTFO
     IF U SAY SO
 
-    HOW IZ I printNum x
+    HOW IZ I printNum YR x
         FOUND YR x
     IF U SAY SO
 
