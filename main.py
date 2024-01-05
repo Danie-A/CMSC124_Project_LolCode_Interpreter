@@ -568,6 +568,7 @@ def if_linebreak():
         current_line += 1
         advance()
         skip_empty_lines()
+        print("Current line")
     else:
         error("[SyntaxError] Linebreak expected after statement", current_line)
         
@@ -1143,7 +1144,10 @@ def compare_expression():
             advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                left = variables[current_token.tokenvalue]
+                if isinstance(variables[current_token.tokenvalue], str): # check if string
+                    left = typecast_string(variables[current_token.tokenvalue])
+                else: 
+                    left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -1173,7 +1177,10 @@ def compare_expression():
                 advance()
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    right = variables[current_token.tokenvalue]
+                    if isinstance(variables[current_token.tokenvalue], str): # check if string
+                        right = typecast_string(variables[current_token.tokenvalue])
+                    else: 
+                        right = variables[current_token.tokenvalue]
                     advance()
                 else:
                     error("[Logic Error] Variable not found", current_line)
@@ -1525,14 +1532,11 @@ def if_else_statement():
     global current_token
     has_YA_RLY = False
 
-    if current_token.tokentype == "if_keyword":
-        print("EXECUTED O RLY?")
+    if current_token.tokentype == "if_keyword": #O RLY
         advance() #pass O RLY?
         if current_token.tokentype == "linebreak":
-            advance() #pass linebreak
-            print("CURRENT TOKEN:", current_token.tokentype)
-            print("VARIABLES IT: ", variables["IT"])
-
+            # advance() #pass linebreak
+            if_linebreak()
             if current_token.tokentype == "if_true_keyword":
                 advance() #pass YA RLY
                 if variables["IT"] == "WIN":
@@ -1540,12 +1544,16 @@ def if_else_statement():
                     has_YA_RLY = True
                     print("CURRENT TOKEN:", current_token.tokentype)              
                     if current_token.tokentype == "linebreak":
-                        advance() #pass linebreak
+                        if_linebreak() #pass linebreak
                         while current_token.tokentype != "else_keyword": #multiple statements in code block
                             statement()
-                            advance() #pass linebreak
+                            if_linebreak() #pass linebreak
                         while current_token.tokentype != "end_of_if_block_keyword": #pass entire NO WAI block
                             advance()
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak()
+                                print("CURRENT LINE", current_line)
+                            
                         print("CURRENT TOKEN:", current_token.tokentype)
                     else: 
                         error("[Syntax Error] Expected linebreak after YA RLY", current_line)
@@ -1554,15 +1562,21 @@ def if_else_statement():
                     if not has_YA_RLY:
                         while current_token.tokentype != "else_keyword": #to pass entire YA RLY block
                             advance()
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak()
+                                print("CURRENT LINE", current_line)
                     
                     if current_token.tokentype == "else_keyword":
                         print("EXECUTED NO WAI")
                         advance() #pass NO WAI
                         if current_token.tokentype == "linebreak":
-                            advance() #pass linebreak
+                            if_linebreak() #pass linebreak
                             while current_token.tokentype != "end_of_if_block_keyword": #multiple statements in code block
                                 statement()
-                                advance() #pass linebreak
+                                if current_token.tokentype == "linebreak":
+                                    if_linebreak()
+                                    print("CURRENT LINE", current_line)
+                   
                         else:
                             error("[Syntax Error] Expected linebreak after NO WAI", current_line) 
 
@@ -1588,7 +1602,7 @@ def switch_statement():
     if current_token.tokentype == "switch_keyword":
         advance() #pass WTF?
         if current_token.tokentype == "linebreak":
-            advance() #pass linebreak
+            if_linebreak() #pass linebreak
             while current_token.tokentype != "end_of_if_block_keyword":
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
@@ -1596,20 +1610,22 @@ def switch_statement():
                         if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
                             has_omg_match = True
                             advance() #pass value literal
-                            advance() #pass line break
+                            if_linebreak() #pass line break
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 has_gtfo = True
                                 advance() #pass GTFO
-                                advance() #pass linebreak
+                                if_linebreak() #pass linebreak
                             else:
                                 if current_token.tokentype != "switch_case_keyword":
                                     while current_token.tokentype != "general_purpose_break_keyword":
                                         statement()
-                                        advance() #pass linebreak
+                                        if current_token.tokentype == "linebreak":
+                                            if_linebreak()
                                         if current_token.tokentype == "general_purpose_break_keyword":
                                             has_gtfo = True
                                             advance() #pass GTFO
-                                            advance() #pass linebreak
+                                            if current_token.tokentype == "linebreak":
+                                                if_linebreak()
                                             print("YOU'RE HERE", current_token.tokenvalue)
                                             break
                                         elif current_token.tokentype == "switch_default_keyword":
@@ -1632,7 +1648,7 @@ def switch_statement():
                                         elif current_token.tokentype == "switch_case_keyword":
                                             advance() #pass omg
                                             advance() #pass value literal
-                                            advance() #pass linebreak
+                                            if_linebreak() #pass linebreak
                                             
                                         elif current_token.tokentype == "end_of_if_block_keyword":
                                             break
@@ -1645,6 +1661,8 @@ def switch_statement():
                             print("NOT ACCEPTED", current_token.tokenvalue)
                             while current_token.tokentype != "switch_case_keyword":
                                 advance() #pass entire OMG block
+                                if current_token.tokentype == "linebreak":
+                                    if_linebreak()
                                 if current_token.tokentype == "switch_default_keyword":
                                     break
                             print("CHECK THIS OUT")
@@ -1654,16 +1672,19 @@ def switch_statement():
                 elif current_token.tokentype == "switch_default_keyword":
                     print("HEY YOU'RE HERE BITCH", current_token.tokenvalue)
                     advance() #pass OMGWTF
-                    advance() # pass linebreak
+                    if_linebreak() # pass linebreak
                     if has_gtfo or has_omg_match:
                         while current_token.tokentype != "end_of_if_block_keyword":
                             advance()
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak() #pass linebreak
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
                     else:
                         while current_token.tokentype != "end_of_if_block_keyword":
                             statement()
-                            advance() #pass linebreak
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak() #pass linebreak
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
                     
