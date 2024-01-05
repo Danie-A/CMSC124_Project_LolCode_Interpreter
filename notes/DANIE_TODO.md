@@ -19,6 +19,11 @@ FUNCTIONS SYNTAX
 ---
 
 Fix
+FUNCTIONS
+[] no return value to IT yet
+[] main symbol table should not be updated
+[] check syntax in function def before it is called
+
 [] wouldn't check syntax of statements before it is called - copy paste all without execution ? :'>
 
 ---

@@ -954,9 +954,14 @@ def statement():
                 return("FULL_TYPECAST", var_dest_token, type_literal_)
             else:
                 error("[SyntaxError] Invalid typecast literal", current_line)
+        
+        elif current_token.tokentype == "linebreak": # var only as statement
+            # get the value of variable and place in IT
+            value = variables[var_dest_token.tokenvalue]
+            place_in_IT(value) # place in IT variable
+            return ("VARIABLE", var_dest_token, value)
         else:
             error("[SyntaxError] Invalid variable value reassignment. R not found. ", current_line)
-
     
     elif current_token.tokentype in flow_control_tokens:  #FLOW CONTROL
         if current_token.tokentype == "explicit_start_loop_keyword": #IM IN YR
@@ -969,6 +974,7 @@ def statement():
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
         ans = literal() # returns literal value
         place_in_IT(ans) # place in IT variable
+        return ("LITERAL", ans)
     # elif current_token.tokentype == "general_purpose_break_token": #GTFO
 
     # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
