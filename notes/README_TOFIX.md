@@ -60,11 +60,15 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
-[] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
-[] switch-case - should still run even if not equal (without break)
+[] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
+
+[] switch-case - should still run even if not equal (without break) - [] same case not allowed
+
 [] optional WAZZUP BUHBYE
+
 [-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
 [/] KTHXBYE, BUHBYE not detected
+[/] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
