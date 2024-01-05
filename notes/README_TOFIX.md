@@ -60,6 +60,8 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
+[] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
+
 [] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
 
 [] switch-case - should still run even if not equal (without break) - [] same case not allowed

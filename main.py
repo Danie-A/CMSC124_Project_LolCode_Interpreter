@@ -775,6 +775,15 @@ def statement():
                 return ("ASSIGN", var_dest_token, var_src_token)
             elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]: # var = literal
                 lit_src_token = literal()
+                if lit_src_token.tokentype == "numbr_literal":
+                    lit_src_token.tokenvalue = int(lit_src_token.tokenvalue)
+                elif lit_src_token.tokentype == "numbar_literal":
+                    lit_src_token.tokenvalue = float(lit_src_token.tokenvalue)
+                elif lit_src_token.tokentype == "troof_literal":
+                    if lit_src_token.tokenvalue == "WIN":
+                        lit_src_token.tokenvalue = True
+                    else:
+                        lit_src_token.tokenvalue = False
                 variables[var_dest_token.tokenvalue] = lit_src_token.tokenvalue
                 update_symbol_table()
                 var_assign_ongoing = False # set back to false, variable reassignment done

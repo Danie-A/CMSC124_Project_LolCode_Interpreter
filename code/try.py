@@ -53,3 +53,6 @@ a = 1.0
 if (a==True):
     print("true")
 else: print("false")
+
+a = False and False
+print(a)
