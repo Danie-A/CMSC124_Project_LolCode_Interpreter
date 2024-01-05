@@ -60,8 +60,10 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
+[] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
+[] switch-case - should still run even if not equal (without break)
 [] optional WAZZUP BUHBYE
-[] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5
+[-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
 [/] KTHXBYE, BUHBYE not detected
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
@@ -83,6 +85,7 @@ Operations
 
 ### TO CLARIFY:
 
+[] Is it possible to print NOOB?
 [] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
 
 [] Function Declaration Inside HAI or Outside HAI

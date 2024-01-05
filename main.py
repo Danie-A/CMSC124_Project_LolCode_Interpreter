@@ -909,7 +909,7 @@ def arithmetic_expression():
     global current_token, current_line
     if current_token.tokentype in ["add_keyword","subtract_keyword","multiply_keyword","divide_keyword","modulo_keyword", "return_larger_number_keyword", "return_smaller_number_keyword"]:
         operationType = current_token.tokentype # save operation type
-        advance() # pass SUM OF
+        advance() # pass keyword
         
         # left operand # operand can be a variable, numbar, numbr, string, troof  
         if current_token.tokentype in expression_tokens:
@@ -934,7 +934,8 @@ def arithmetic_expression():
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                 if isinstance(variables[current_token.tokenvalue], str): # check if string
                     left = typecast_string(variables[current_token.tokenvalue])
-                left = variables[current_token.tokenvalue]
+                else: 
+                    left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -966,7 +967,7 @@ def arithmetic_expression():
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
                     if isinstance(variables[current_token.tokenvalue], str):
                         right = typecast_string(variables[current_token.tokenvalue])
-                    right = variables[current_token.tokenvalue]
+                    else: right = variables[current_token.tokenvalue]
                     advance()
                 else:
                     error("[Logic Error] Variable value not found", current_line)
@@ -1816,7 +1817,8 @@ def print_expression():
         variable_value = variables[current_token.tokenvalue]
         # change variable value to WIN or FAIL
         variable_value = check_if_bool(variable_value)
-        check_if_none(variable_value)
+        if variable_value == None:
+            variable_value = "NOOB"
         advance() # pass varident
         # next should be linebreak or AN, else error
         if current_token.tokentype == "linebreak" or current_token.tokentype == "print_concatenation_keyword":
@@ -1840,7 +1842,10 @@ def check_if_bool(ans):
 
 def check_if_none(ans):
     if ans == None:
-        error("[RuntimeError] Value is NOOB", current_line)
+        # error("[RuntimeError] Value is NOOB", current_line)
+        return "NOOB"
+    else: 
+        return ans
     
 def syntax_analyzer():
     global current_token,token_idx
@@ -1967,6 +1972,8 @@ def update_symbol_table():
     for key, value in variables.items():
         # if value is True or False, should show WIN or FAIL
         value = check_if_bool(value)
+        if value == None:
+            value = "NOOB"
         symbolTable.insert("", "end", values=(key, value))
 
 def reset_symbol_table():
