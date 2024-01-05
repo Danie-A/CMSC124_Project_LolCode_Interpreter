@@ -532,10 +532,13 @@ errorMessage = ""
     
 def advance():
     global token_idx, current_token
-    if token_idx < len(tokens):
+    if token_idx < len(tokens): # trying to fix index out of range error (added minus 1)
         token_idx += 1
-        current_token = tokens[token_idx]
-        print(current_token)
+        if token_idx < len(tokens):
+            current_token = tokens[token_idx]
+            print(current_token)
+        else:
+            error("[SyntaxError] End of file reached with incorrect ending syntax", current_line)
 
 def restore(saved_token_idx, saved_curr_line):
     global token_idx, current_token, current_line
@@ -554,6 +557,12 @@ def error(msg, line):
     insert_output(errorMessage)
     raise Error(errorMessage)
 
+def skip_empty_lines():
+    global current_token, current_line
+    while current_token.tokentype == "empty_line":
+        advance() # skip empty lines
+        current_line += 1
+        
 def if_linebreak():
     global current_token, current_line
     if current_token.tokentype == "linebreak":
@@ -598,12 +607,6 @@ def program():
         error("[SyntaxError] Start code delimiter (HAI) not found", current_line)
 
     return nodes
-
-def skip_empty_lines():
-    global current_token, current_line
-    while current_token.tokentype == "empty_line":
-        advance() # skip empty lines
-        current_line += 1
 
 def var_declaration_list(): 
     global current_token, current_line
@@ -832,7 +835,7 @@ def subconvert_to_string(value):
         else:
             return "FAIL"
     elif value == None:
-        error("[LogicError] Cannot implicitly typecast null value to string", current_line)
+        error("[ConcatenationError] Cannot implicitly typecast null value to string", current_line)
     else:
         return str(value)
 
@@ -892,7 +895,7 @@ def typecast_string(string):
     elif re.fullmatch(numbar_pattern, string):
         return float(string)
     else:
-        error(f"[RuntimeError] Invalid String. Cannot convert '{string}' to NUMBR/NUMBAR", current_line)
+        error(f"[ArithmeticError] Invalid String. Cannot convert '{string}' to NUMBR/NUMBAR", current_line)
         # return None # prev
 
 def typecast_troof(troof):
@@ -1524,11 +1527,6 @@ def switch_statement():
     else:
         error("[Syntax Error] Expected WTF?", current_line)       
 
-
- 
-
-
-
 def handle_full_typecast(var_name, target_type, current_line):
     global current_token
     yarn_pattern = r"^-?(0|[1-9][0-9]*)(\.[0-9]+)?$"
@@ -1990,7 +1988,7 @@ style.configure("Custom.Treeview", background=dark4, fieldbackground=dark4)
 # Text Editor
 textEditorFrame = tk.Frame(topFrame, width=400,bg=dark0)
 openfileUI = tk.Frame(textEditorFrame, bg=dark0)
-filepathText = tk.Text(openfileUI, height = 1, width=54, bg=dark1, fg="white", selectbackground=dark2, selectforeground="white")
+filepathText = tk.Text(openfileUI, height = 1, width=54, bg=dark1, fg="white", selectbackground=dark2, selectforeground="white", padx=5)
 openfileButton = tk.Button(openfileUI, text="Open", command=open_file, bg=dark1, fg="white", font=labelFont, activebackground=dark0, activeforeground="white")
 filepathText.configure(state=tk.DISABLED)
 

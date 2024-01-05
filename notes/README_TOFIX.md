@@ -1,11 +1,13 @@
 # CMSC 124 LAB Project To-Do
 
-[] Submission: January 8
+[] Submission: January 8 - 11:59 PM
 
 Presentation Schedule:
 [] January 10 - 3:30-3:45 PM
 
 ### TO-DO HURDLES:
+
+[] Check Test Cases
 
 Change IT - Danie (Check Along the Way)
 [] if-else
@@ -58,13 +60,9 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
-[] SUM OF IT AN 4 (IT = "LOL") only terminal error
-[] KTHXBYE, BUHBYE not detected
 [] optional WAZZUP BUHBYE
-
 [] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5
-
-[] Expression -
+[/] KTHXBYE, BUHBYE not detected
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
@@ -102,6 +100,7 @@ Operations
 ### DONE:
 
 DONE-FIX
+[/] SUM OF IT AN 4 (IT = "LOL") only terminal error
 [/] literal only in single line (e.g. 5)-- Online LolCode Not an Error
 [/] SMOOSH expr (?)
 [/] place VISIBLE 10 in IT? IT = 10 ?

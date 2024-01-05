@@ -13,4 +13,4 @@ Function Semantics
 January 6
 
 FIX
-[] SMOOSH SUM OF IT AN 1 AN 10 => ERROR if IT="RAWR"
+[/] SMOOSH SUM OF IT AN 1 AN 10 => ERROR if IT="RAWR"
