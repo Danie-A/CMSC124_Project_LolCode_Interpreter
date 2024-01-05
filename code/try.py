@@ -46,13 +46,21 @@
 
 # ans = True + False
 # print(ans)
-a = None
-print(str(a)+"b")
+# a = None
+# print(str(a)+"b")
 
-a = 1.0
-if (a==True):
-    print("true")
-else: print("false")
+# a = 1.0
+# if (a==True):
+#     print("true")
+# else: print("false")
 
-a = False and False
-print(a)
+# a = False and False
+# print(a)
+
+# print(None)
+def eme():
+    print("eme2")
+def eme():
+    print("eme")
+
+eme()

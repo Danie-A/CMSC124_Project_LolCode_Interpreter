@@ -1,16 +1,30 @@
 DANIE
-January 4
-[/] VISIBLE +
-[/] ITZ expr (arithmetic, boolean, comparison, smoosh) - allowed
-[] Functions Syntax
-
 January 5
-Function Semantics
+
+~ Thinking of Function Algorithm ~
+[] save PC
+save current_token
+save current_line
+save variables list
+
+make variables empty
+run statements()
+
+FUNCTIONS SYNTAX
 [] Function Definition
+
+---
+
+Fix
+
+---
+
+January 6
 [] Function Return
 [] Function Calling
 
-January 6
+January 7
+[] Bug Fixing
 
-FIX
-[/] SMOOSH SUM OF IT AN 1 AN 10 => ERROR if IT="RAWR"
+January 8
+[] SUBMISSION

@@ -378,7 +378,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"NERFIN", token):
                 items.append(Token("decrement_keyword", token))   
             elif re.fullmatch(r"YR", token):
-                items.append(Token("concise_start_loop_keyword", token))   
+                items.append(Token("parameter_separator_keyword", token))   
             elif re.fullmatch(r"TIL", token):
                 items.append(Token("until_indicated_end_of_loop_keyword", token))
             elif re.fullmatch(r"WILE", token):
@@ -429,9 +429,8 @@ def lexical_analyzer(contents):
 
 # parse function for terminal-based
 def parse_terminal(file):
-    # reset variables
-    
     contents = open(file, 'r').read()
+    contents.replace('\t', '    ') # change tabs to 4 spaces
     # print(repr(contents)) # printable representation of contents
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
     
@@ -580,6 +579,7 @@ def program():
         nodes.append(("START",current_token))
         advance()
         if_linebreak()
+        check_function_def()
         # [] functions
         # VARIABLE DECLARATION
         if current_token.tokentype == "start_var_declaration_delimiter": # WAZZUP
@@ -592,8 +592,8 @@ def program():
                 if_linebreak()
             else:
                 error("[SyntaxError] End variable declaration delimiter (BUHBYE) not found", current_line)
-        else:
-            error("[SyntaxError] Start variable declaration delimiter (WAZZUP) not found", current_line)
+        # else: # remove so that it is optional only
+            #error("[SyntaxError] Start variable declaration delimiter (WAZZUP) not found", current_line)
         
         # STATEMENTS_LIST
         statementList = statement_list()
@@ -697,25 +697,72 @@ def popup_input(varident_):
     update_symbol_table()
     print("User input:", user_input)
 
+class Function: # function class
+    def __init__(self, name, body, vars):
+        self.name = name # string
+        self.body = body # list
+        self.vars = vars # dictionary
+
+functions = [] # list of functions
+
+# functions = {"funcname": {funcbody:[], funcvars:{"x": 1, "y": 2, "z": 3}}}
+
+# saved_main = {tokens: None, token_idx: None, current_line: None}
 
 # only the syntax --- to edit
-def function_call():
-    global current_token
-    if current_token.tokentype == "define_function_keyword":
+# save variables: tokens, current_token, current_line
+def check_function_def():
+    global current_token, current_line
+    if current_token.tokentype == "define_function_keyword": # function definition else do nothing because optional
         advance() # pass HOW IZ I
         if current_token.tokentype == "variable_identifier":
+            funcname = current_token.tokenvalue
             advance() # pass function name
-            statementList = statement_list()
-            if current_token.tokentype == "end_of_function_keyword":
-                advance() # pass IF U SAY SO     
-                return ("FUNCTION", statementList)
-            else:
-                error("[SyntaxError] Invalid end of function (IF U SAY SO)", current_line)
+            
+            # FUNCTION PARAMETERS
+            # funcname var YR x AN YR y AN YR z
+            while current_token.tokentype != "linebreak":
+                if current_token.tokentype == "parameter_separator_keyword":
+                    advance() # pass YR (first parameter)
+                    if current_token.tokentype != "variable_identifier":
+                        error("[SyntaxError] Invalid function parameter", current_line)
+                    else:
+                        # [] place in funcvar
+                        advance() # pass parameter name
+                elif current_token.tokentype == "and_keyword":
+                    advance() # pass AN
+                    if current_token.tokentype != "parameter_separator_keyword":
+                        error("[SyntaxError] Invalid function parameter (YR not found)", current_line)
+                    else:
+                        advance() # pass YR
+                        if current_token.tokentype != "variable_identifier":
+                            error("[SyntaxError] Invalid function parameter", current_line)
+                        else:
+                            # [] place in funcvar
+                            advance() # pass parameter name
+                else:
+                    error("[SyntaxError] Invalid function parameter", current_line)
+
+            advance() # pass linebreak
+            current_line += 1 # increment line number
+            
+            # FUNCTION BODY
+            funcbody = []
+            while current_token.tokentype != "end_of_function_keyword": # save the succeeding tokens until IF U SAY SO is found
+                funcbody.append(current_token)
+                if current_token.tokentype == "linebreak":
+                    current_line += 1 # increment line number 
+                advance() # go to next token 
+            
+            # [] edit, should be in Class
+            functions[funcname] = funcbody # function name: list of tokens
+            advance() # pass IF U SAY SO     
+            
+            return ("FUNCTION", functions)
         else:
             error("[SyntaxError] Invalid function name", current_line)
-    else:
-        error("[SyntaxError] Invalid function call (HOW IZ I)", current_line)
-
+    # no else (function is optional)
+    
 def place_in_IT(value):
     global variables
     variables["IT"] = value
@@ -1400,8 +1447,8 @@ def loop():
             else:
                 error("[Syntax Error] Loop operation not found", current_line)
             advance()
-            if current_token.tokentype == "concise_start_loop_keyword":
-                advance()
+            if current_token.tokentype == "parameter_separator_keyword":
+                advance() # pass YR
                 if current_token.tokentype == "variable_identifier":
                     loop_variable = current_token.tokenvalue
                     # check if value can be incremented or decremented and if it exists
@@ -1417,35 +1464,20 @@ def loop():
                         end_cond_type = "until"
                         advance()
                         savedpc = token_idx
-                        savedcurrline = current_line
-
-                        condition = expression()
-                        print("this runs")
-
-
-
-
-                        # while expression() == False:
-                        #     #TODO: check if expr is troof
-                        #     print(expr)
-                        #     # CODE BLOCK FOR LOOP
-                        #     print("this runs lol")
-                        #     code_block = loop_statement_list()
-                        #     print("this runs")
-                        #     # if current_token.tokentype == "break_loop_keyword": #OUTTA YR
-                        #     #     advance()
-                        #     #     if current_token.tokentype == "variable_identifier":
-                        #     #         if current_token.tokenvalue == loop_name:
-                        #     #             restore(savedpc,savedcurrline)
-                        #     # else:
-                        #     #     error("[Syntax Error] Break loop keyword not found", current_line)
+                        expr = expression()
+                        #TODO: check if expr is troof
+                        print(expr)
                     elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
                         end_cond_type = "while"
                     elif current_token.tokentype == "linebreak": # infinite loop until GTFO
                         end_cond_type = None
                     else:
                         error("[Syntax Error] Unknown loop condition type", current_line)
-                    
+                    # CODE BLOCK FOR LOOP
+                    advance()
+                    code_block = loop_statement_list()
+                    if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                        advance()
 
                 else:
                     error("[Syntax Error] Variable identifier not found", current_line)
@@ -1806,7 +1838,7 @@ def loop_statement_list():
     nodes = []
     while current_token.tokentype != "break_loop_keyword":
         if current_token.tokentype == "end_code_delimiter":
-            error("[Syntax Error] IM OUTTA YR not found",current_line)
+            error("[Syntax Error] OUTTA YR not found",current_line)
         node = statement()
         if node is not None:
             nodes.append(node)
@@ -1820,6 +1852,12 @@ def print_expression():
         advance() # pass literal
         # print the value of the literal
         return literal_value
+    elif current_token.tokentype == "type_literal":
+        if current_token.tokenvalue == "NOOB":
+            advance() # pass NOOB
+            return "NOOB"
+        else:
+            error("[PrintError] Cannot print a type literal", current_line)
     elif current_token.tokentype == "string_delimiter": # string literal
         advance() # pass opening "
         if current_token.tokentype == "string_literal":
@@ -1863,13 +1901,6 @@ def check_if_bool(ans):
         return "FAIL"
     else:
         return ans
-
-def check_if_none(ans):
-    if ans == None:
-        # error("[RuntimeError] Value is NOOB", current_line)
-        return "NOOB"
-    else: 
-        return ans
     
 def syntax_analyzer():
     global current_token,token_idx
@@ -1902,7 +1933,7 @@ def do_parse_tree(tokens_list):
 ──────────────────────────────────────────────────────────────────────────────────────
 """
 
-# Global Vairables ===
+# Global Variables ===
 fileLoaded = False
 file_path = ""
 tokens = []
@@ -1973,6 +2004,8 @@ def execute_lexical():
     global tokens
     # get text from text editor
     text = textEditor.get("1.0", tk.END)
+    print("TEXT IS: ", repr(text))
+    text = text.replace('\t', '    ') # change tabs to 4 spaces
     
     # print("text is:\n", text)
     if text:

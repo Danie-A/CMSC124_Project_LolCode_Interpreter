@@ -60,8 +60,6 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
-[] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
-
 [] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
 
 [] switch-case - should still run even if not equal (without break) - [] same case not allowed
@@ -71,6 +69,8 @@ Operations
 [-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
 [/] KTHXBYE, BUHBYE not detected
 [/] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
+[/] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
+[/] VISIBLE NOOB
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
@@ -91,7 +91,9 @@ Operations
 
 ### TO CLARIFY:
 
-[] Is it possible to print NOOB?
+[] For numbers lang ba comparison: BOTH SAEM 1 AN 2, or pwede rin BOTH SAEM "a" AN "a"?
+
+[] Is it possible to print NOOB? VISIBLE NOOB
 [] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
 
 [] Function Declaration Inside HAI or Outside HAI
@@ -109,6 +111,7 @@ Operations
 ### DONE:
 
 DONE-FIX
+[/] not required function declaration no else in WAZZUP....
 [/] SUM OF IT AN 4 (IT = "LOL") only terminal error
 [/] literal only in single line (e.g. 5)-- Online LolCode Not an Error
 [/] SMOOSH expr (?)
