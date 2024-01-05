@@ -658,7 +658,7 @@ def var_declaration():
                     lit_value = literal() 
                     variables[varident] = lit_value
                     var_assign_ongoing = False # set back to false
-                    return ("VARIABLE", varident, literal_)      
+                    return ("VARIABLE", varident, lit_value)      
                 # [] to add expressions (arith)   
             elif current_token.tokentype == "linebreak": # I HAS A var (only, no ITZ) - untyped or uninitialized variable
                 variables[varident] = None # null value
@@ -700,12 +700,13 @@ class Function: # function class
         self.body = body # list
         self.vars = vars # dictionary
 
-functions = [] # list of functions
+functions = {} # list of functions
 
-# functions = {"funcname": {funcbody:[], funcvars:{"x": 1, "y": 2, "z": 3}}}
-
+# functions = {"funcname": {funcbody:[], token_start_idx:10, funcvars:{"x": 1, "y": 2, "z": 3}}}
+# end marker - if u say so
 # saved_main = {tokens: None, token_idx: None, current_line: None}
 # save variables: tokens, token_idx, current_token, current_line
+
 
 # only the syntax --- to edit
 def check_function_def():
@@ -715,6 +716,8 @@ def check_function_def():
         funcname = current_token.tokenvalue
         advance() # pass function name
         
+        # initialize function variables
+        funcvars = {}
         # FUNCTION PARAMETERS
         # funcname var YR x AN YR y AN YR z
         while current_token.tokentype != "linebreak":
@@ -723,7 +726,8 @@ def check_function_def():
                 if current_token.tokentype != "variable_identifier":
                     error("[SyntaxError] Invalid function parameter", current_line)
                 else:
-                    # [] place in funcvar
+                    # place current_token.tokenvalue in funcvars
+                    funcvars[current_token.tokenvalue] = None
                     advance() # pass parameter name
             elif current_token.tokentype == "and_keyword":
                 advance() # pass AN
@@ -734,26 +738,47 @@ def check_function_def():
                     if current_token.tokentype != "variable_identifier":
                         error("[SyntaxError] Invalid function parameter", current_line)
                     else:
-                        # [] place in funcvar
+                        funcvars[current_token.tokenvalue] = None
                         advance() # pass parameter name
             else:
                 error("[SyntaxError] Invalid function parameter", current_line)
-        # linebreak?
+        
+        if_linebreak() # pass linebreak ?
+        
+        # save starting token idx and current line
+        tokenidx = token_idx
+        currentline = current_line
         # FUNCTION BODY
         funcbody = []
         while current_token.tokentype != "end_of_function_keyword": # save the succeeding tokens until IF U SAY SO is found
-            # funcbody.append(current_token)
+            # get the token idx and current line
+            funcbody.append(current_token)
+            
+            # NOT CHECKING STATEMENT VALIDITY YET
+            # run in another process to check if it will result in an error
             if current_token.tokentype == "linebreak":
-                current_line += 1 # increment line number 
-                # NOT CHECKING STATEMENT VALIDITY YET
-            advance() # go to next token 
-            print("TOKEN IS ", current_token)
-            print("AM I HERE?")
+                current_line += 1
+                advance() # go to next token
+                skip_empty_lines()
+            else:
+                advance() # go to next token 
+
         # [] edit, should be in Class
+        # functions = {"funcname": {funcbody:[], tokenidx:20, currentline:5, funcvars:{"x": 1, "y": 2, "z": 3}}}
+        # put in functions list
+        functions[funcname] = {
+            "funcbody": funcbody, 
+            "tokenidx": tokenidx, 
+            "currentline":currentline, 
+            "funcvars": funcvars
+            }
+    
         # functions[funcname] = funcbody # function name: list of tokens
+        
         advance() # pass IF U SAY SO     
-        print("RETURNING NOW....")
-        print("current token is ", current_token)
+        
+        # print("RETURNING NOW....")
+        # print("current token is ", current_token)
         return ("FUNCTION", functions)
     else:
         error("[SyntaxError] Invalid function name", current_line)
@@ -790,26 +815,31 @@ def get_op_value():
         error("[SyntaxError] Invalid expression", current_line)
     return ans
 
+saved_main = {"tokens": [], "token_idx": -1, "current_line": 1, "variables": {"IT":None}, "var_assign_ongoing": False}
+function_on = False # checker if function is on (if function is on, the symbol table should print the saved main NOT the function variables)
 def statement():
-    global current_token, var_assign_ongoing
-    if current_token.tokentype == "function_call":
+    global current_token, var_assign_ongoing, tokens, token_idx, current_line, variables, saved_main
+    if current_token.tokentype == "function_call": # [] no function nesting
         advance() # pass I IZ
+        print("RUNNING I IZ")
         if current_token.tokentype != "variable_identifier":
             error("[SyntaxError] Invalid function name", current_line)
         else:
             # FUNCTION PARAMETERS
             # funcname YR SUM OF 1 AN 2 AN YR 10
             funcname = current_token.tokenvalue
-            # [] check if funcname is in functions
+            # check if funcname is in functions
+            if funcname not in functions:
+                error("[SyntaxError] Function not yet declared", current_line)
             advance() # pass funcname
-            # [] place in a parameter list
-            params = []
+            
+            args = [] # parameter arguments list
             # FUNCTION ARGUMENTS
             while current_token.tokentype != "linebreak":
                 if current_token.tokentype == "parameter_separator_keyword":
                     advance() # pass YR (for first parameter)
                     param_val = get_op_value()
-                    params.append(param_val)
+                    args.append(param_val)
                 elif current_token.tokentype == "and_keyword":
                     advance() # pass AN
                     if current_token.tokentype != "parameter_separator_keyword":
@@ -817,16 +847,52 @@ def statement():
                     else:
                         advance() # pass YR
                         param_val = get_op_value()
-                        params.append(param_val)
+                        args.append(param_val)
                 else:
                     error("[SyntaxError] Invalid function argument", current_line)
             
-            print("PARAMS DONE! CUR TOKEN IS: ", current_token, params)
-            # [] check total number of parameters if same with number of arguments 
-            # [] save_main_values
-            # [] run the function using class ?
+            # print("CURRTOKEN AND ARGS ARE: ", current_token, " ", args)
+            # check total number of parameters if same with number of arguments 
+            numParams = len(functions[funcname]["funcvars"])
+            if numParams != len(args):
+                error(f"[FunctionError] Does not meet required number of arguments ({numParams}) in {funcname} function", current_line)
             
+            funcvars = functions[funcname]["funcvars"]
             
+            # update function's funcvars with the arguments
+            params = list(funcvars.keys())
+
+            for i in range(numParams):
+                funcvars[params[i]] = args[i]
+            # add IT
+            funcvars["IT"] = None
+            
+            # save main details (PC)
+            saved_main = {"token_idx": token_idx, "current_line": current_line, "variables": variables, "var_assign_ongoing": var_assign_ongoing}
+        
+            # update main details with function details
+            # functions = {"funcname": {funcbody:[], token_start_idx:10, funcvars:{"x": 1, "y": 2, "z": 3}}}
+            token_idx = functions[funcname]["tokenidx"]
+            current_line = functions[funcname]["currentline"]
+            variables = functions[funcname]["funcvars"]
+            var_assign_ongoing = False # initialize to false first
+            current_token = tokens[token_idx]
+            print("TOKENIDX IS ", token_idx)
+            print("NEXT TOKEN IS ", tokens[token_idx+1])
+            print("CURRTOKEN IS ", current_token)
+            # run functionbody
+            while current_token.tokentype != "end_of_function_keyword":
+                statement()
+                if_linebreak()
+            
+            # restore main details (PC)
+            token_idx = saved_main["token_idx"]
+            current_token = tokens[token_idx]
+            current_line = saved_main["current_line"]
+            variables = saved_main["variables"]
+            var_assign_ongoing = saved_main["var_assign_ongoing"]
+            
+            return ("FUNCTION_CALL", funcname, args)
     elif current_token.tokentype == "print_keyword": 
         advance() # pass VISIBLE
         ans = "" # initialize empty string
@@ -868,7 +934,7 @@ def statement():
                 variables[var_dest_token.tokenvalue] = lit_value
                 update_symbol_table()
                 var_assign_ongoing = False # set back to false, variable reassignment done
-                return ("ASSIGN", var_dest_token, lit_src_token)
+                return ("ASSIGN", var_dest_token, lit_value)
             elif current_token.tokentype in expression_tokens: # var = expression
                 expr_val = expression()
                 variables[var_dest_token.tokenvalue] = expr_val

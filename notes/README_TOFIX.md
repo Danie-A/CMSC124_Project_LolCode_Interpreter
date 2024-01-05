@@ -46,7 +46,7 @@ Loops - Dan
 [] WILE
 
 Functions - DANIE
-[] Syntax
+[-] Syntax
 [] Definition
 [] Return
 [] Calling
@@ -60,13 +60,11 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
-[] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
-
 [] switch-case - should still run even if not equal (without break) - [] same case not allowed
-
-[] optional WAZZUP BUHBYE
+[] recheck all return (changed return tokens to return actual values)
 
 [-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
+[/] optional WAZZUP BUHBYE
 [/] KTHXBYE, BUHBYE not detected
 [/] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
 [/] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
@@ -111,6 +109,7 @@ Operations
 ### DONE:
 
 DONE-FIX
+[/] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
 [/] not required function declaration no else in WAZZUP....
 [/] SUM OF IT AN 4 (IT = "LOL") only terminal error
 [/] literal only in single line (e.g. 5)-- Online LolCode Not an Error

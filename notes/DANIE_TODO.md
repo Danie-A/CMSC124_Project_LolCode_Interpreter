@@ -14,6 +14,7 @@ save the start func body and end func body of function
 
 FUNCTIONS SYNTAX
 [-] Function Definition
+[-] Function Calling
 
 ---
 
