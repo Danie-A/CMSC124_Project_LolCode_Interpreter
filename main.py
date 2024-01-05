@@ -1417,20 +1417,35 @@ def loop():
                         end_cond_type = "until"
                         advance()
                         savedpc = token_idx
-                        expr = expression()
-                        #TODO: check if expr is troof
-                        print(expr)
+                        savedcurrline = current_line
+
+                        condition = expression()
+                        print("this runs")
+
+
+
+
+                        # while expression() == False:
+                        #     #TODO: check if expr is troof
+                        #     print(expr)
+                        #     # CODE BLOCK FOR LOOP
+                        #     print("this runs lol")
+                        #     code_block = loop_statement_list()
+                        #     print("this runs")
+                        #     # if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                        #     #     advance()
+                        #     #     if current_token.tokentype == "variable_identifier":
+                        #     #         if current_token.tokenvalue == loop_name:
+                        #     #             restore(savedpc,savedcurrline)
+                        #     # else:
+                        #     #     error("[Syntax Error] Break loop keyword not found", current_line)
                     elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
                         end_cond_type = "while"
                     elif current_token.tokentype == "linebreak": # infinite loop until GTFO
                         end_cond_type = None
                     else:
                         error("[Syntax Error] Unknown loop condition type", current_line)
-                    # CODE BLOCK FOR LOOP
-                    advance()
-                    code_block = loop_statement_list()
-                    if current_token.tokentype == "break_loop_keyword": #OUTTA YR
-                        advance()
+                    
 
                 else:
                     error("[Syntax Error] Variable identifier not found", current_line)
@@ -1791,7 +1806,7 @@ def loop_statement_list():
     nodes = []
     while current_token.tokentype != "break_loop_keyword":
         if current_token.tokentype == "end_code_delimiter":
-            error("[Syntax Error] OUTTA YR not found",current_line)
+            error("[Syntax Error] IM OUTTA YR not found",current_line)
         node = statement()
         if node is not None:
             nodes.append(node)
