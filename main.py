@@ -1518,6 +1518,8 @@ def if_else_statement():
 def switch_statement():
     global current_token
     has_gtfo = False
+    statement_value = variables["IT"]
+    has_omg_match = False
 
     if current_token.tokentype == "switch_keyword":
         advance() #pass WTF?
@@ -1527,7 +1529,8 @@ def switch_statement():
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
                     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
-                        if variables["IT"] == current_token.tokenvalue: #when a case is satisfied
+                        if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
+                            has_omg_match = True
                             advance() #pass value literal
                             advance() #pass line break
                             if current_token.tokentype == "general_purpose_break_keyword":
@@ -1569,6 +1572,8 @@ def switch_statement():
                                     print("CHECKINGGGGGG")
                                 else:
                                     error("[Logic Error] Missing code block for this case", current_line)
+                        elif statement_value == current_token.tokenvalue and has_omg_match:
+                            error("[Syntax Error] OMG literal must be unique at", current_line)
                         else: 
                             print("NOT ACCEPTED", current_token.tokenvalue)
                             while current_token.tokentype != "switch_case_keyword":
