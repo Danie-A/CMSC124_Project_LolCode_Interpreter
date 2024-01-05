@@ -1112,7 +1112,10 @@ def compare_expression():
             advance() # pass LEFT OPERAND
         elif current_token.tokentype == "variable_identifier":
             if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                left = variables[current_token.tokenvalue]
+                if isinstance(variables[current_token.tokenvalue], str): # check if string
+                    left = typecast_string(variables[current_token.tokenvalue])
+                else: 
+                    left = variables[current_token.tokenvalue]
                 advance() # pass LEFT OPERAND
             else:
                 error("[Logic Error] Variable not found", current_line)
@@ -1142,7 +1145,10 @@ def compare_expression():
                 advance()
             elif current_token.tokentype == "variable_identifier":
                 if current_token.tokenvalue in variables.keys() and variables[current_token.tokenvalue] is not None:
-                    right = variables[current_token.tokenvalue]
+                    if isinstance(variables[current_token.tokenvalue], str): # check if string
+                        right = typecast_string(variables[current_token.tokenvalue])
+                    else: 
+                        right = variables[current_token.tokenvalue]
                     advance()
                 else:
                     error("[Logic Error] Variable not found", current_line)
