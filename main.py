@@ -1564,7 +1564,7 @@ def switch_statement():
     if current_token.tokentype == "switch_keyword":
         advance() #pass WTF?
         if current_token.tokentype == "linebreak":
-            advance() #pass linebreak
+            if_linebreak() #pass linebreak
             while current_token.tokentype != "end_of_if_block_keyword":
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
@@ -1572,20 +1572,22 @@ def switch_statement():
                         if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
                             has_omg_match = True
                             advance() #pass value literal
-                            advance() #pass line break
+                            if_linebreak() #pass line break
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 has_gtfo = True
                                 advance() #pass GTFO
-                                advance() #pass linebreak
+                                if_linebreak() #pass linebreak
                             else:
                                 if current_token.tokentype != "switch_case_keyword":
                                     while current_token.tokentype != "general_purpose_break_keyword":
                                         statement()
-                                        advance() #pass linebreak
+                                        if current_token.tokentype == "linebreak":
+                                            if_linebreak()
                                         if current_token.tokentype == "general_purpose_break_keyword":
                                             has_gtfo = True
                                             advance() #pass GTFO
-                                            advance() #pass linebreak
+                                            if current_token.tokentype == "linebreak":
+                                                if_linebreak()
                                             print("YOU'RE HERE", current_token.tokenvalue)
                                             break
                                         elif current_token.tokentype == "switch_default_keyword":
@@ -1608,7 +1610,7 @@ def switch_statement():
                                         elif current_token.tokentype == "switch_case_keyword":
                                             advance() #pass omg
                                             advance() #pass value literal
-                                            advance() #pass linebreak
+                                            if_linebreak() #pass linebreak
                                             
                                         elif current_token.tokentype == "end_of_if_block_keyword":
                                             break
@@ -1621,6 +1623,8 @@ def switch_statement():
                             print("NOT ACCEPTED", current_token.tokenvalue)
                             while current_token.tokentype != "switch_case_keyword":
                                 advance() #pass entire OMG block
+                                if current_token.tokentype == "linebreak":
+                                    if_linebreak()
                                 if current_token.tokentype == "switch_default_keyword":
                                     break
                             print("CHECK THIS OUT")
@@ -1630,16 +1634,19 @@ def switch_statement():
                 elif current_token.tokentype == "switch_default_keyword":
                     print("HEY YOU'RE HERE BITCH", current_token.tokenvalue)
                     advance() #pass OMGWTF
-                    advance() # pass linebreak
+                    if_linebreak() # pass linebreak
                     if has_gtfo or has_omg_match:
                         while current_token.tokentype != "end_of_if_block_keyword":
                             advance()
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak() #pass linebreak
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
                     else:
                         while current_token.tokentype != "end_of_if_block_keyword":
                             statement()
-                            advance() #pass linebreak
+                            if current_token.tokentype == "linebreak":
+                                if_linebreak() #pass linebreak
                             if current_token.tokentype == "general_purpose_break_keyword":
                                 error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
                     
