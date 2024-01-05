@@ -9,6 +9,10 @@ HAI
             VISIBLE "1"
         OMG 3
             VISIBLE "HELLLO"
+        OMG 2
+            VISIBLE "HEY"
+        OMG 5
+            VISIBLE "HI"
         OMGWTF
             VISIBLE "3"
     OIC
