@@ -21,6 +21,8 @@ import subprocess as sub
 ─██████████████─██████████████─████████──████████─██████████████─██████──██████████─
 ────────────────────────────────────────────────────────────────────────────────────
 """
+lines = [] # contains strings per line of code
+
 class Token:
     def __init__(self, tokentype, tokenvalue, valuetype_ = None):
         self.tokentype = tokentype
@@ -47,6 +49,7 @@ def find_tldr(i,line):
             return False
 
 def lexical_analyzer(contents):
+    global lines
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
     # print("lines are:", lines)
     lexeme = ""
@@ -427,6 +430,8 @@ def lexical_analyzer(contents):
                     
     return items
 
+
+
 # parse function for terminal-based
 def parse_terminal(file):
     contents = open(file, 'r').read()
@@ -551,8 +556,10 @@ class Error(Exception):
         super().__init__(message)
         
 def error(msg, line):
+    global errorMessage
     # use Error class
-    errorMessage = "{} : Line {}".format(msg,line)
+    code = get_line()
+    errorMessage = f"{msg} \n{code}  :  Line {line}"
     insert_output(errorMessage)
     raise Error(errorMessage)
 
@@ -763,7 +770,6 @@ def check_function_def():
             else:
                 advance() # go to next token 
 
-        # [] edit, should be in Class
         # functions = {"funcname": {funcbody:[], tokenidx:20, currentline:5, funcvars:{"x": 1, "y": 2, "z": 3}}}
         # put in functions list
         functions[funcname] = {
@@ -815,18 +821,29 @@ def get_op_value():
         error("[SyntaxError] Invalid expression", current_line)
     return ans
 
+# show the line based on the current_line
+def get_line():
+    global lines, current_line 
+    return lines[current_line-1]
+
+# 🌍 GLOBAL VARIABLES FOR FUNCTIONS    
 saved_main = {"tokens": [], "token_idx": -1, "current_line": 1, "variables": {"IT":None}, "var_assign_ongoing": False}
-function_on = False # checker if function is on (if function is on, the symbol table should print the saved main NOT the function variables)
+function_on = 0 # checker if function is running (if function is on, the symbol table should print the saved main NOT the function variables)
+
 def statement():
-    global current_token, var_assign_ongoing, tokens, token_idx, current_line, variables, saved_main
+    global function_on, current_token, var_assign_ongoing, tokens, token_idx, current_line, variables, saved_main
     if current_token.tokentype == "function_call": # [] no function nesting
+        print("FUNCTION IZ RUNNINGG")
+        print("function_on is: ", function_on)
+        if function_on == 1:
+            error("[SyntaxError] Function nesting is not allowed or implementable", current_line)
         advance() # pass I IZ
         print("RUNNING I IZ")
         if current_token.tokentype != "variable_identifier":
             error("[SyntaxError] Invalid function name", current_line)
         else:
             # FUNCTION PARAMETERS
-            # funcname YR SUM OF 1 AN 2 AN YR 10
+            # funcname YR SUM OF 1 AN 2 AN YR <expr/lit/var>
             funcname = current_token.tokenvalue
             # check if funcname is in functions
             if funcname not in functions:
@@ -864,8 +881,8 @@ def statement():
 
             for i in range(numParams):
                 funcvars[params[i]] = args[i]
-            # add IT
-            funcvars["IT"] = None
+            funcvars["IT"] = None # place IT in dictionary
+            # print("FUNCTION VARIABLES ARE: ", funcvars)
             
             # save main details (PC)
             saved_main = {"token_idx": token_idx, "current_line": current_line, "variables": variables, "var_assign_ongoing": var_assign_ongoing}
@@ -880,8 +897,13 @@ def statement():
             print("TOKENIDX IS ", token_idx)
             print("NEXT TOKEN IS ", tokens[token_idx+1])
             print("CURRTOKEN IS ", current_token)
-            # run functionbody
+
+            function_on = 1 # run function
+            # RUN FUNCTION BODY
             while current_token.tokentype != "end_of_function_keyword":
+                # check if function is off, break
+                if function_on == 0:
+                    break
                 statement()
                 if_linebreak()
             
@@ -892,6 +914,7 @@ def statement():
             variables = saved_main["variables"]
             var_assign_ongoing = saved_main["var_assign_ongoing"]
             
+            function_on = 0 # set function off (only one function at a time, no nesting)
             return ("FUNCTION_CALL", funcname, args)
     elif current_token.tokentype == "print_keyword": 
         advance() # pass VISIBLE
@@ -975,10 +998,27 @@ def statement():
         ans = literal() # returns literal value
         place_in_IT(ans) # place in IT variable
         return ("LITERAL", ans)
-    # elif current_token.tokentype == "general_purpose_break_token": #GTFO
-
-    # elif cuurent_token.tokentype == "return keyword": #FOUND YR    
     
+    # to check if conflicting with switch-case
+    elif current_token.tokentype == "general_purpose_break_keyword": # GTFO
+        if function_on == 0:
+            error("[SyntaxError] GTFO found outside function", current_line)
+        else:
+            advance() # pass GTFO
+            # make NOOB in IT main
+            saved_main["variables"]["IT"] = None
+            function_on == 0 # set function off
+            return ("BREAK", None)
+    elif current_token.tokentype == "return_keyword": #FOUND YR    
+        if function_on == 0:
+            error("[SyntaxError] Return keyword not allowed outside function", current_line)
+        else:
+            advance() # pass FOUND YR
+            ans = get_op_value() # pass var, literal, or expression
+            # place in IT variable in saved_main
+            saved_main["variables"]["IT"] = ans
+            function_on == 0 # set function off
+            return ("RETURN", ans)
     # else check if expression (can also be a statement)
     else:
         if current_token.tokentype in expression_tokens:
@@ -986,6 +1026,7 @@ def statement():
             return expression_
 
         else:
+            print("CURRENT TOKEN IS ", current_token)
             error("[SyntaxError] Invalid statement", current_line)
 
 # FOR SMOOSH TYPECASTING
@@ -2171,6 +2212,7 @@ def update_symbol_table():
     for i in symbolTable.get_children():
         symbolTable.delete(i)
     # add variables again to the table
+    print("VARIABLES are 💯", variables)
     for key, value in variables.items():
         # if value is True or False, should show WIN or FAIL
         value = check_if_bool(value)
@@ -2220,9 +2262,22 @@ def execute_code():
     pass
 
 def insert_output(output):
+    color = "white"
+    if errorMessage != "":
+        color = "#f59393"
+    print("COLOR IS ", color)
     outputText.configure(state=tk.NORMAL) # make outputText editable
+    start_index = outputText.index('end') # get the index before inserting the text
     outputText.insert('end', str(output) + "\n") # show new output in tkinter console
+    end_index = outputText.index('end') # get the index after inserting the text
+    outputText.tag_configure(color, foreground=color) # configure a tag for red text
+    outputText.tag_add(color, start_index, end_index) # apply the tag to the inserted text
     outputText.configure(state=tk.DISABLED) # make outputText uneditable again
+    
+# def insert_output(output):
+#     outputText.configure(state=tk.NORMAL) # make outputText editable
+#     outputText.insert('end', str(output) + "\n") # show new output in tkinter console
+#     outputText.configure(state=tk.DISABLED) # make outputText uneditable again
 
 root = tk.Tk()
 root.title("The Lords of the Strings LOLCODE Interpreter")

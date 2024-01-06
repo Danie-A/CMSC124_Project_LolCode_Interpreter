@@ -47,9 +47,9 @@ Loops - Dan
 
 Functions - DANIE
 [-] Syntax
-[] Definition
+[-] Definition
 [] Return
-[] Calling
+[-] Calling
 
 Operations
 [/] Assignment (R) - DANIE
@@ -97,6 +97,8 @@ Operations
 [] Function Declaration Inside HAI or Outside HAI
 
 [] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
+
+[-] double function name not allowed ? (pwede pero maooverwrite ung past same func)
 
 ### EFFICIENCY CHORES:
 
