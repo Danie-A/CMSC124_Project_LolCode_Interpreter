@@ -1,19 +1,17 @@
+HOW IZ I addNum YR x AN YR y
+    FOUND YR SUM OF x AN y
+IF U SAY SO
+
+HOW IZ I printName YR person
+    VISIBLE "Hello, " + person
+    GTFO
+IF U SAY SO
+
+HOW IZ I printNum YR x
+    FOUND YR x
+IF U SAY SO
+
 HAI
-
-    HOW IZ I addNum YR x AN YR y
-        FOUND YR SUM OF x AN y
-    IF U SAY SO
-
-    HOW IZ I printName YR person
-        VISIBLE "Hello, " + person
-        GTFO
-    IF U SAY SO
-
-    HOW IZ I printNum YR x
-        FOUND YR x
-    IF U SAY SO
-
-
     WAZZUP
         I HAS A name
         I HAS A num1
@@ -30,7 +28,7 @@ HAI
     I IZ printName YR name
     VISIBLE IT
 
-    I IZ printNum SUM OF x AN 2
+    I IZ printNum YR SUM OF 10 AN 2
     VISIBLE IT
 
 KTHXBYE

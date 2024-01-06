@@ -58,9 +58,9 @@
 # print(a)
 
 # print(None)
-def eme():
-    print("eme2")
-def eme():
-    print("eme")
+# def eme():
+#     print("eme2")
+# def eme():
+#     print("eme")
 
-eme()
+

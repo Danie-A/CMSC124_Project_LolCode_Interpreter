@@ -23,29 +23,34 @@ FUNCTIONS SYNTAX
 
 Minor Efficiency and Creativity
 [/] show line in current_line
-[] linebreak expected after {tokenvalue}
-[] pop up color
-[] save button
+[/] linebreak expected after {tokenvalue}
+[] save button for text editor
+[/] print user input in console
 
-Fix
-FUNCTIONS
-[] NO FOUND YR and GTFO - IT = NOOB
-[] GTFO - IT = Noob
+### FIX FUNCTIONS
+
+func defs
+[-] function before hai (walang after kthxbye)
+[-] function anywhere in between statements
+
+[-] NO FOUND YR and
+[-] GTFO - IT = NOOB
+[-] GTFO - IT = Noob
 [/] no return value to IT yet
 [-] main symbol table - still seen - should not be updated (?)
-[] check syntax in function def before it is called
-[] function before hai, after kthxbye, anywhere in between
 
 mej di ko magawa
-[] wouldn't check syntax of statements before it is called - copy paste all without execution ? :'>
-[] IT nasa unahan sa symbol table pag inside function
+[] wouldn't check syntax of statements sa function before it is called: solution-> [] copy paste all without execution ? :'> (gawa syntax analyzer)
+[] function after kthxbye - di kaya, needed separate and syntax at semantics - [-] nilagyan ko pero no use kasi hindi pa defined ung function pag-nagrun ung statements sa loob
+[] pop up input color not khaki
+[-] IT nasa unahan sa symbol table pag inside function - di naman kita (tuwing may error lang sa loob ng func when running)
 
 ---
 
 January 6
-[] Function Return
-[/] Function Calling
 [] Help Loops Syntax
+[/] Function Return
+[/] Function Calling
 
 January 7
 [] Bug Fixing

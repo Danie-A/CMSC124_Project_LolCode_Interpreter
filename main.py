@@ -577,12 +577,18 @@ def if_linebreak():
         skip_empty_lines()
         print("Current line")
     else:
-        error("[SyntaxError] Linebreak expected after statement", current_line)
+        error(f"[SyntaxError] Linebreak expected after token: {tokens[token_idx-1].tokenvalue}", current_line)
         
 def program():
     global current_token, current_line
     nodes = []
     skip_empty_lines()
+    
+    # check for function definitions outside hai
+    if current_token.tokentype == "define_function_keyword":
+        while current_token.tokentype == "define_function_keyword":
+            check_function_def()
+            if_linebreak()
     if current_token.tokentype == "start_code_delimiter":
         nodes.append(("START",current_token))
         advance()
@@ -590,7 +596,6 @@ def program():
         
         if current_token.tokentype =="define_function_keyword":
             while current_token.tokentype == "define_function_keyword":
-                # if not yet wazzup or if may HOW IZ I parin or if linebreaks palang 
                 check_function_def()
                 if_linebreak() # pass linebreak
         
@@ -615,7 +620,7 @@ def program():
         nodes.append(("STAT_LIST", statementList))
         if current_token.tokentype == "end_code_delimiter":
             nodes.append(("END",current_token))
-            advance()
+            advance() # pass KTHXBYE
         else:
             error("[SyntaxError] End code delimiter (KTHXBYE) not found", current_line)
     else: 
@@ -696,8 +701,10 @@ def popup_input(varident_):
     user_input = simpledialog.askstring("Input", f"GIMMEH {varident_.tokenvalue}:")
     if user_input is None:
         variables[varident_.tokenvalue] = ""
+        user_input = ""
     else:
         variables[varident_.tokenvalue] = user_input
+    insert_output(user_input)
     update_symbol_table()
     print("User input:", user_input)
 
@@ -731,7 +738,7 @@ def check_function_def():
             if current_token.tokentype == "parameter_separator_keyword":
                 advance() # pass YR (for first parameter)
                 if current_token.tokentype != "variable_identifier":
-                    error("[SyntaxError] Invalid function parameter", current_line)
+                    error("[SyntaxError] Invalid function parameter (parameter name not found)", current_line)
                 else:
                     # place current_token.tokenvalue in funcvars
                     funcvars[current_token.tokenvalue] = None
@@ -743,12 +750,12 @@ def check_function_def():
                 else:
                     advance() # pass YR
                     if current_token.tokentype != "variable_identifier":
-                        error("[SyntaxError] Invalid function parameter", current_line)
+                        error("[SyntaxError] Invalid function parameter (YR not found)", current_line)
                     else:
                         funcvars[current_token.tokenvalue] = None
                         advance() # pass parameter name
             else:
-                error("[SyntaxError] Invalid function parameter", current_line)
+                error("[SyntaxError] Invalid function parameter (YR / AN YR not found)", current_line)
         
         if_linebreak() # pass linebreak ?
         
@@ -785,7 +792,7 @@ def check_function_def():
         
         # print("RETURNING NOW....")
         # print("current token is ", current_token)
-        return ("FUNCTION", functions)
+        return ("FUNCTION", functions[funcname])
     else:
         error("[SyntaxError] Invalid function name", current_line)
     
@@ -829,28 +836,31 @@ def get_line():
 # 🌍 GLOBAL VARIABLES FOR FUNCTIONS    
 saved_main = {"tokens": [], "token_idx": -1, "current_line": 1, "variables": {"IT":None}, "var_assign_ongoing": False}
 function_on = 0 # checker if function is running (if function is on, the symbol table should print the saved main NOT the function variables)
+has_return = 0 # checker for found yr
 
 def statement():
-    global function_on, current_token, var_assign_ongoing, tokens, token_idx, current_line, variables, saved_main
-    if current_token.tokentype == "function_call": # [] no function nesting
-        print("FUNCTION IZ RUNNINGG")
-        print("function_on is: ", function_on)
-        if function_on == 1:
-            error("[SyntaxError] Function nesting is not allowed or implementable", current_line)
+    global function_on, has_return, current_token, var_assign_ongoing, tokens, token_idx, current_line, variables, saved_main
+    if current_token.tokentype == "define_function_keyword": # checks for function definitions after var_declaration and before kthxbye
+        func_details = check_function_def()
+        return ("FUNCTION_DEF", func_details)
+    elif current_token.tokentype == "function_call": # [] no function nesting
+        # print("FUNCTION IZ RUNNINGG")
+        # print("function_on is: ", function_on)
         advance() # pass I IZ
-        print("RUNNING I IZ")
+        # print("RUNNING I IZ")
         if current_token.tokentype != "variable_identifier":
             error("[SyntaxError] Invalid function name", current_line)
         else:
             # FUNCTION PARAMETERS
             # funcname YR SUM OF 1 AN 2 AN YR <expr/lit/var>
             funcname = current_token.tokenvalue
-            # check if funcname is in functions
-            if funcname not in functions:
+
+            if funcname not in functions: # check if funcname is in functions
                 error("[SyntaxError] Function not yet declared", current_line)
             advance() # pass funcname
             
             args = [] # parameter arguments list
+            
             # FUNCTION ARGUMENTS
             while current_token.tokentype != "linebreak":
                 if current_token.tokentype == "parameter_separator_keyword":
@@ -898,15 +908,21 @@ def statement():
             print("NEXT TOKEN IS ", tokens[token_idx+1])
             print("CURRTOKEN IS ", current_token)
 
+            if function_on == 1:
+                error("[SyntaxError] Function nesting is not allowed or implementable", current_line)
             function_on = 1 # run function
             # RUN FUNCTION BODY
             while current_token.tokentype != "end_of_function_keyword":
                 # check if function is off, break
-                if function_on == 0:
+                if function_on == 0:                   
                     break
                 statement()
                 if_linebreak()
             
+            if has_return == 0: # no return value; IT in main is still NOOB
+                saved_main["variables"]["IT"] = None
+                print("break on is 0, IT IS NOOB")
+
             # restore main details (PC)
             token_idx = saved_main["token_idx"]
             current_token = tokens[token_idx]
@@ -1017,6 +1033,8 @@ def statement():
             ans = get_op_value() # pass var, literal, or expression
             # place in IT variable in saved_main
             saved_main["variables"]["IT"] = ans
+            has_return = 1 # set has_return to 1 so IT would not be NOOB when it goes back to the function call running
+            print("placed answer in IT: ", ans)
             function_on == 0 # set function off
             return ("RETURN", ans)
     # else check if expression (can also be a statement)

@@ -8,6 +8,8 @@ Presentation Schedule:
 ### TO-DO HURDLES:
 
 [] Check Test Cases
+[] Do Bonus na kaya (because not fully working ang syntax natin)
+[]
 
 Change IT - Danie (Check Along the Way)
 [] if-else
@@ -48,7 +50,7 @@ Loops - Dan
 Functions - DANIE
 [-] Syntax
 [-] Definition
-[] Return
+[-] Return
 [-] Calling
 
 Operations
