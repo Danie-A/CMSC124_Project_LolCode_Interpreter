@@ -655,7 +655,7 @@ def var_declaration():
                 if current_token.tokentype == "variable_identifier":
                     # if not yet in variables then throw error
                     if current_token.tokenvalue not in variables:
-                        error("[SyntaxError] Variable not yet declared", current_line)
+                        error(f"[SyntaxError] Variable {current_token.tokenvalue} not yet declared", current_line)
                     # else, get the value of the variable and assign it to the new variable
                     variables[varident] = variables[current_token.tokenvalue]
                     node = ("VARIABLE", varident, current_token)
@@ -691,7 +691,7 @@ def varident():
     global current_token
     if current_token.tokentype == "variable_identifier": # check if variable identifier
         if current_token.tokenvalue not in variables:
-            error("[SyntaxError] Variable not yet declared", current_line)
+            error(f"[SyntaxError] Variable {current_token.tokenvalue} not yet declared", current_line)
         node = current_token
         advance() # pass varident to go to next token
         return node
@@ -2388,7 +2388,7 @@ def print_expression():
     elif current_token.tokentype == "variable_identifier": # check if variable identifier
         node = ("VARIDENT", current_token.tokentype, current_token.tokenvalue)
         if current_token.tokenvalue not in variables:
-            error("[SyntaxError] Variable not yet declared", current_line)
+            error(f"[SyntaxError] Variable {current_token.tokenvalue} not yet declared", current_line)
         #extract/print value of var identifier
         variable_value = variables[current_token.tokenvalue]
         # change variable value to WIN or FAIL
