@@ -12,9 +12,11 @@ Presentation Schedule:
 DO SOME BONUS IF KAYA
 (because not fully working ang syntax natin)
 [] suppress the newline after a line of output by ending the VISIBLE statement with a !
-[] MEBBE / Else-if clauses
+[] line continuation (...)
+
+[/] MEBBE / Else-if clauses
 [] soft-line/command breaks (,)
-[] array  
+[] array
 [/?] special characters in strings
 [] Nesting of different flow-control statements
 [] Loop-nesting
@@ -24,7 +26,7 @@ DO SOME BONUS IF KAYA
 Change IT - Danie (Check Along the Way)
 [] if-else
 [] switch-case
-[] function return
+[/] function return
 [/] expressions
 
 > return value

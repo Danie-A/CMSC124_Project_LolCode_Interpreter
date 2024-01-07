@@ -2540,7 +2540,7 @@ def update_symbol_table():
     for i in symbolTable.get_children():
         symbolTable.delete(i)
     # add variables again to the table
-    print("VARIABLES are 💯", variables)
+    # print("VARIABLES are 💯", variables)
     for key, value in variables.items():
         # if value is True or False, should show WIN or FAIL
         value = check_if_bool(value)
