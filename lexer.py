@@ -30,7 +30,7 @@ def find_tldr(i,line):
 
 def lexical_analyzer(contents):
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
-    print("lines are:", lines)
+    # print("lines are:", lines)
     lexeme = ""
     items = []
     obtwFound = False

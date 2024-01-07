@@ -37,7 +37,7 @@ TLDR
 		NO WAI
 			VISIBLE "Invalid Input!"
 	OIC
-
+	choice R "rawr"
 	DIFFRINT BIGGR OF 3 AN choice AN 3
 	O RLY?
 		YA RLY

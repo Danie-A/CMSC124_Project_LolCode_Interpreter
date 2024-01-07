@@ -64,3 +64,9 @@
 #     print("eme")
 
 
+x = 5.0
+y = 5
+print(x==y)
+
+line = ""
+print("line is: [",line.strip(), "]")

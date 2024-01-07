@@ -2,7 +2,7 @@ DANIE
 January 5
 
 CHECK
-[] if function gtfo (in statement) conflicting with switch-case gtfo syntax
+[-] if function gtfo (in statement) conflicting with switch-case gtfo syntax
 
 ~ Thinking of Function Algorithm ~
 [-] save PC
@@ -21,8 +21,13 @@ FUNCTIONS SYNTAX
 
 ---
 
-Minor Efficiency and Creativity
+### TEST FIXES
+
+[] line number for error wrong in 07_ifelse
 [] add " " if string in symbol table
+
+### MINOR EFFICIENCY CHORES
+
 [] save button for text editor
 [/] show line in current_line
 [/] linebreak expected after {tokenvalue}

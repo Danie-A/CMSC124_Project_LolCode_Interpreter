@@ -67,10 +67,12 @@ def lexical_analyzer(contents):
                 obtwFound = False
                 # change line to empty string
                 lines[i] = ""
+                items.append(Token("empty_line", line))
                 continue
             else:
                 # change line to empty string
                 lines[i] = ""
+                items.append(Token("empty_line", line))
                 continue
         
         # OBTW
@@ -87,6 +89,7 @@ def lexical_analyzer(contents):
                 obtwFound = True
                 # change line to empty string
                 lines[i] = ""
+                items.append(Token("empty_line", line))
                 continue
         
         
@@ -450,6 +453,8 @@ def parse_tkinter(code):
     
     #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(code)
+    print("LINES ARE 💁: ", lines)
+    print("tokens are 🪙: ", tokens)
     return tokens
     
 # ______________________________________________________________________________________________________________
