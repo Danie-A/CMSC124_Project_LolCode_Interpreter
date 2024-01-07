@@ -11,17 +11,26 @@ Presentation Schedule:
 
 DO SOME BONUS IF KAYA
 (because not fully working ang syntax natin)
-[] suppress the newline after a line of output by ending the VISIBLE statement with a !
-[] line continuation (...)
 
-[/] MEBBE / Else-if clauses
+[/] line continuation (...)
+
+potential errors:
+empty lines
+
 [] soft-line/command breaks (,)
-[] array
-[/?] special characters in strings
-[] Nesting of different flow-control statements
+I HAS A var ITZ 1, I HAS A var2 ITZ 2
+
+[] Nesting of different flow-control statements - (Test: while/if-else within function)
+
 [] Loop-nesting
 [] If-else nesting
 [] Switch-nesting
+[] array
+
+[/] MEBBE / Else-if clauses
+[/] suppress the newline after a line of output by ending the VISIBLE statement with a !
+VISIBLE "Hello World!" !
+[/?] special characters in strings
 
 Change IT - Danie (Check Along the Way)
 [] if-else
@@ -72,17 +81,19 @@ Operations
 [/] Comparison - Mart
 [/] Boolean - Mart
 
-### TO FIX (MORE IMPORTANT):
+### TO CLARIFY:
 
-[/] switch-case - should still run even if not equal (without break) - [/] same case not allowed
-[/] recheck all return (changed return tokens to return actual values)
+[numbers?] For numbers lang ba comparison: BOTH SAEM 1 AN 2, or pwede rin BOTH SAEM "a" AN "a"?
 
-[-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
-[/] optional WAZZUP BUHBYE
-[/] KTHXBYE, BUHBYE not detected
-[/] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
-[/] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
-[/] VISIBLE NOOB
+[] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
+
+[/] Is it possible to print NOOB? VISIBLE NOOB
+
+[-] Function Declaration Inside HAI or Outside HAI
+
+[/] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
+
+[-] double function name not allowed ? (pwede pero maooverwrite ung past same func)
 
 ### CASES TO CONSIDER (TO FIX LESS IMPORTANT):
 
@@ -101,30 +112,25 @@ Operations
 [-] SUM OF expr not only arith
 [/] SUM OF IT AN 5
 
-### TO CLARIFY:
-
-[numbers?] For numbers lang ba comparison: BOTH SAEM 1 AN 2, or pwede rin BOTH SAEM "a" AN "a"?
-
-[/] Is it possible to print NOOB? VISIBLE NOOB
-[] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
-
-[-] Function Declaration Inside HAI or Outside HAI
-
-[/] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
-
-[-] double function name not allowed ? (pwede pero maooverwrite ung past same func)
-
 ### EFFICIENCY CHORES:
 
-[] remove current_line in error parameter (global var already)
+[] Save text editor button
 
 [/] print console error the whole line based on line number
-
-[] Save text editor button
 
 ### DONE:
 
 DONE-FIX
+[/] switch-case - should still run even if not equal (without break) - [/] same case not allowed
+[/] recheck all return (changed return tokens to return actual values)
+
+[-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
+[/] optional WAZZUP BUHBYE
+[/] KTHXBYE, BUHBYE not detected
+[/] VISIBLE a -> if a = None; print "NOOB" (show NOOB in symbol table)
+[/] bool - BOTH OF FAIL AN FAIL should be FAIL not WIN
+[/] VISIBLE NOOB
+[/] IT NOOB in Symbol Table
 [/] if function doesn't return anything it should
 [/] line number for error wrong in 07_ifelse
 [x] add " " if string in symbol table (no need)

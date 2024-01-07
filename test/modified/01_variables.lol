@@ -2,7 +2,8 @@ BTW start of the program
 HAI
     WAZZUP
         BTW variable dec
-        I HAS A monde
+        I HAS A monde ...
+ITZ 14
         I HAS A num ITZ 17
         I HAS A name ITZ "seventeen"
         I HAS A fnum ITZ 17.0
@@ -17,12 +18,22 @@ HAI
     BTW print literals and variables
     VISIBLE "declarations"
     VISIBLE monde BTW should be NOOB
-    VISIBLE num
+    VISIBLE num ...
+    + name
     VISIBLE name
     VISIBLE fnum
-    VISIBLE flag
+    VISIBLE flag ...
+    + "hi"
 
-    VISIBLE sum
+    VISIBLE flag + "hi"
+    "" 
+
+    VISIBLE sum <line_cont>
+    + shish
+
+    VISIBLE sum <line_cont>
+    + shish
+
     VISIBLE diff
     VISIBLE prod
     VISIBLE quo

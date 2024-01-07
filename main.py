@@ -56,6 +56,7 @@ def lexical_analyzer(contents):
     lexeme = ""
     items = []
     obtwFound = False
+    after_line_cont = False # checker for line continuation (line after ...)
     for i, line in enumerate(lines):
         # print(f"i and line is {i+1}: {line}")
 
@@ -261,6 +262,7 @@ def lexical_analyzer(contents):
         tokens.append("\n")
         
         num_quote = 0
+        line_cont = False # checker for line continuation
         for j,token in enumerate(tokens):
             if token == '"':
                 num_quote += 1
@@ -417,13 +419,33 @@ def lexical_analyzer(contents):
             
             # ADDED LEXEMES FROM GRAMMAR
             elif re.fullmatch(r"\n", token):
-                items.append(Token("linebreak", "\\n"))
+                if line_cont:
+                    line_cont = False
+                    after_line_cont = True
+                    continue
+                else:
+                    if after_line_cont:
+                        after_line_cont = False
+                        items.append(Token("linebreak", "\\n"))
+                        # append empty line (for correct line numbering)
+                        items.append(Token("empty_line", ""))
+                    else: 
+                        items.append(Token("linebreak", "\\n"))
             elif re.fullmatch(r"", token):
                 items.append(Token("epsilon", token))
             # elif re.fullmatch(r".*", token):
             #     items.append(Token("any", token))
             elif re.fullmatch(r"\+", token):
                 items.append(Token("print_concatenation_keyword", token))
+            elif re.fullmatch(r"!", token):
+                items.append(Token("suppress_newline", token))
+            elif re.fullmatch(r"\.\.\.", token):
+                # if next token is not linebreak, error, else do not add to items: ... and linebreak
+                if tokens[j+1] != "\n":
+                    error(f"[SyntaxError] Invalid token ({token}) Token after ... should be linebreak", i+1)
+                else:
+                    line_cont = True
+                    continue
             else:
                 error(f"[LexerError] Invalid Token Detected.", i+1)
 
@@ -585,6 +607,7 @@ def if_linebreak():
 def program():
     global current_token, current_line
     nodes = []
+    update_symbol_table()
     skip_empty_lines()
     
     # check for function definitions outside hai
@@ -707,7 +730,7 @@ def popup_input(varident_):
         user_input = ""
     else:
         variables[varident_.tokenvalue] = user_input
-    insert_output(user_input)
+    insert_output(user_input+"\n")
     update_symbol_table()
     print("User input:", user_input)
 
@@ -940,19 +963,31 @@ def statement():
     elif current_token.tokentype == "print_keyword": 
         advance() # pass VISIBLE
         ans = "" # initialize empty string
+        newline = True # checker for ! (suppress newline)
         while current_token.tokentype != "linebreak":
             operand = print_expression()
             ans = str(ans) + str(operand)
             if current_token.tokentype == "print_concatenation_keyword":
                 advance() # advance +
+            elif current_token.tokentype == "suppress_newline":
+                # if next token is linebreak, do not print newline else error
+                if tokens[token_idx+1].tokentype == "linebreak":
+                    advance() # pass !
+                    newline = False
+                else:
+                    error("[SyntaxError] Suppress newline (!) must be followed by linebreak", current_line) 
             elif current_token.tokentype == "linebreak":
                 break
             else:
                 error("[SyntaxError] : no + keyword detected", current_line)
+        
         # ans = print_expression()
         print(ans)
         place_in_IT(ans) # place in IT variable
-        insert_output(ans) # show final value in tkinter
+        if newline == True:
+            insert_output(ans + "\n")
+        else:
+            insert_output(ans)
         return ("PRINT", ans)  
     elif current_token.tokentype == "input_keyword":
         advance() # pass GIMMEH
@@ -2069,20 +2104,6 @@ def switch_statement():
                                         elif current_token.tokentype == "switch_default_keyword":
                                             print("CHECK")
                                             break
-                                            # advance() #pass OMGWTF
-                                            # advance() #linebreak
-                                            # if has_gtfo:
-                                            #     while current_token.tokentype != "end_of_if_block_keyword":
-                                            #         advance() #pass entire OMGWTF block
-                                            #         if current_token.tokentype == "general_purpose_break_keyword":
-                                            #             error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
-                                            # else:
-                                            #     while current_token.tokentype != "end_of_if_block_keyword":
-                                            #         statement() 
-                                            #         advance() #pass linebreak
-                                            #         if current_token.tokentype == "general_purpose_break_keyword":
-                                            #             error("[Syntax Error] OMGWTF does not need GTFO", current_line)  
-                                            
                                         elif current_token.tokentype == "switch_case_keyword":
                                             advance() #pass omg
                                             advance() #pass value literal
@@ -2540,7 +2561,6 @@ def update_symbol_table():
     for i in symbolTable.get_children():
         symbolTable.delete(i)
     # add variables again to the table
-    # print("VARIABLES are 💯", variables)
     for key, value in variables.items():
         # if value is True or False, should show WIN or FAIL
         value = check_if_bool(value)
@@ -2593,22 +2613,14 @@ def insert_output(output):
     color = "white"
     if errorMessage != "":
         color = "#f59393"
-    if output == False and isinstance(output, bool):
-        output = "FAIL"
-    print("COLOR IS ", color)
     outputText.configure(state=tk.NORMAL) # make outputText editable
     start_index = outputText.index('end') # get the index before inserting the text
-    outputText.insert('end', str(output) + "\n") # show new output in tkinter console
+    outputText.insert('end', str(output)) # show new output in tkinter console
     end_index = outputText.index('end') # get the index after inserting the text
     outputText.tag_configure(color, foreground=color) # configure a tag for red text
     outputText.tag_add(color, start_index, end_index) # apply the tag to the inserted text
     outputText.configure(state=tk.DISABLED) # make outputText uneditable again
     
-# def insert_output(output):
-#     outputText.configure(state=tk.NORMAL) # make outputText editable
-#     outputText.insert('end', str(output) + "\n") # show new output in tkinter console
-#     outputText.configure(state=tk.DISABLED) # make outputText uneditable again
-
 root = tk.Tk()
 root.title("The Lords of the Strings LOLCODE Interpreter")
 

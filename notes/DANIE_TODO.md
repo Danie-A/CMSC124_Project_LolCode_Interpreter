@@ -68,4 +68,10 @@ func defs
 
 [-] IT nasa unahan sa symbol table pag inside function - di naman kita (tuwing may error lang sa loob ng func when running)
 
+Bonus Notes
+Line Continuation:
+if next token is linebreak, delete ... and linebreak, else error
+I HAS A var ...
+ITZ 1
+
 ---
