@@ -839,6 +839,7 @@ def get_line(line):
 # 🌍 GLOBAL VARIABLES FOR FUNCTIONS    
 saved_main = {"tokens": [], "token_idx": -1, "current_line": 1, "variables": {"IT":None}, "var_assign_ongoing": False}
 function_on = 0 # checker if function is running (if function is on, the symbol table should print the saved main NOT the function variables)
+loop_on = 0
 has_return = 0 # checker for found yr
 
 def statement():
@@ -1009,6 +1010,7 @@ def statement():
     elif current_token.tokentype in flow_control_tokens:  #FLOW CONTROL
         if current_token.tokentype == "explicit_start_loop_keyword": #IM IN YR
             node = loop()
+            loop_on = 0
         elif current_token.tokentype == "if_keyword":
             node = if_else_statement()
         elif current_token.tokentype == "switch_keyword":
@@ -1022,7 +1024,11 @@ def statement():
     # to check if conflicting with switch-case
     elif current_token.tokentype == "general_purpose_break_keyword": # GTFO
         if function_on == 0:
-            error("[SyntaxError] GTFO found outside function", current_line)
+            if loop_on == 0:
+                error("[SyntaxError] GTFO found outside function and loop", current_line)
+            else:
+                advance()
+                return "break"
         else:
             advance() # pass GTFO
             # make NOOB in IT main
@@ -1611,6 +1617,8 @@ def boolean_expression():
         error("[Syntax Error] Invalid Boolean operation", current_line) 
 
 def loop():
+    global loop_on, current_token, current_line
+    loop_on = 1
     if current_token.tokentype == "explicit_start_loop_keyword":
         advance()
         if current_token.tokentype == "variable_identifier":
@@ -1653,6 +1661,26 @@ def loop():
                         savedpc_codeblock = token_idx
                         saved_currline_codeblock = current_line
                         code_block = loop_statement_list()
+                        #GTFO
+                        if code_block == "break":
+                            print("break runs")
+                            #skip lines
+                            while current_token.tokentype != "break_loop_keyword":
+                                    if current_token.tokentype == "linebreak":
+                                        current_line += 1
+                                    if current_token.tokentype == "end_code_delimiter":
+                                        error("[Syntax Error] IM OUTTA YR not found", current_line)
+                                    advance()
+                            if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                                advance()
+                                if current_token.tokentype == "variable_identifier":
+                                    if current_token.tokenvalue == loop_name:
+                                        advance()
+                                        return "break"
+                                else:
+                                    error("[Syntax Error] Loop variable identifier not found", current_line)
+                            else:
+                                error("[Syntax Error] IM OUTTA YR not found", current_line)
                         if op_type == "increment":
                             variables[loop_variable] = variables[loop_variable] + 1
                             update_symbol_table()
@@ -1684,6 +1712,12 @@ def loop():
                                             restore(savedpc_codeblock, saved_currline_codeblock)
                                             print("runs here", current_token.tokenvalue)
                                             code_block = loop_statement_list()
+                                            #GTFO
+                                            if code_block == "break":
+                                                restore(savedpc_end, saved_currline_end)
+                                                active_loops.pop(loop_name)
+                                                loop_complete = True
+                                                # return "break"
                                             #increment or decrement
                                             if op_type == "increment":
                                                 variables[loop_variable] = variables[loop_variable] + 1
@@ -1712,6 +1746,25 @@ def loop():
                         savedpc_codeblock = token_idx
                         saved_currline_codeblock = current_line
                         code_block = loop_statement_list()
+                        if code_block == "break":
+                            print("break runs")
+                            #skip lines
+                            while current_token.tokentype != "break_loop_keyword":
+                                    if current_token.tokentype == "linebreak":
+                                        current_line += 1
+                                    if current_token.tokentype == "end_code_delimiter":
+                                        error("[Syntax Error] IM OUTTA YR not found", current_line)
+                                    advance()
+                            if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                                advance()
+                                if current_token.tokentype == "variable_identifier":
+                                    if current_token.tokenvalue == loop_name:
+                                        advance()
+                                        return "break"
+                                else:
+                                    error("[Syntax Error] Loop variable identifier not found", current_line)
+                            else:
+                                error("[Syntax Error] IM OUTTA YR not found", current_line)
                         if op_type == "increment":
                             variables[loop_variable] = variables[loop_variable] + 1
                             update_symbol_table()
@@ -1743,6 +1796,12 @@ def loop():
                                             restore(savedpc_codeblock, saved_currline_codeblock)
                                             print("runs here", current_token.tokenvalue)
                                             code_block = loop_statement_list()
+                                            #GTFO
+                                            if code_block == "break":
+                                                restore(savedpc_end, saved_currline_end)
+                                                active_loops.pop(loop_name)
+                                                loop_complete = True
+                                                # return "break"
                                             #increment or decrement
                                             if op_type == "increment":
                                                 variables[loop_variable] = variables[loop_variable] + 1
@@ -2291,6 +2350,9 @@ def loop_statement_list():
     while current_token.tokentype != "break_loop_keyword":
         if current_token.tokentype == "end_code_delimiter":
             error("[Syntax Error] OUTTA YR not found",current_line)
+        if current_token.tokentype == "general_purpose_break_keyword":
+            advance()
+            return "break"
         node = statement()
         if node is not None:
             nodes.append(node)
