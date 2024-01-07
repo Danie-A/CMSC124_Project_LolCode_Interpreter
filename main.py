@@ -1,3 +1,4 @@
+from pickletools import optimize
 from typing import Concatenate
 import regex as re
 import sys
@@ -1635,25 +1636,132 @@ def loop():
                     active_loops[loop_name] = loop_variable #save the loop name and associated variable to active loops
                     advance()
                     # optional TIL and WILE
+                    savedpc_expression = 0
+                    saved_currline_expr = 0
                     if current_token.tokentype == "until_indicated_end_of_loop_keyword":
-                        end_cond_type = "until"
+                        # end_cond_type = "until"
                         advance()
-                        savedpc = token_idx
+                        savedpc_expression = token_idx
+                        saved_currline_expr = current_line
                         expr = expression()
-                        #TODO: check if expr is troof
+                        #check if result is troof
                         print(expr)
+                        if expr not in ["FAIL","WIN"]:
+                            error("[RuntimeError] Expression in loop operation did not convert to troof", current_line)
+                        # CODE BLOCK FOR LOOP
+                        if_linebreak()
+                        savedpc_codeblock = token_idx
+                        saved_currline_codeblock = current_line
+                        code_block = loop_statement_list()
+                        if op_type == "increment":
+                            variables[loop_variable] = variables[loop_variable] + 1
+                            update_symbol_table()
+                        elif op_type == "decrement":
+                            variables[loop_variable] = variables[loop_variable] - 1
+                            update_symbol_table()
+                        else: 
+                            error("[RuntimeError] No operation type given", current_line)
+                        print("Nodes after loop statement list",code_block)
+                        print("runs here", current_token.tokenvalue)
+                        if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                            advance()
+                            if current_token.tokentype == "variable_identifier":
+                                if current_token.tokenvalue == loop_name:
+                                    advance()
+                                    savedpc_end = token_idx
+                                    saved_currline_end = current_line
+                                    if_linebreak()
+                                    loop_complete = False
+                                    while loop_complete == False:
+                                        #revaluate expression
+                                        restore(savedpc_expression, saved_currline_expr)
+                                        expr = expression()
+                                        print(expr)
+                                        if expr not in ["FAIL","WIN"]:
+                                            error("[RuntimeError] Expression in loop operation did not convert to troof", current_line)
+                                        if expr == "FAIL":
+                                            #loop again
+                                            restore(savedpc_codeblock, saved_currline_codeblock)
+                                            print("runs here", current_token.tokenvalue)
+                                            code_block = loop_statement_list()
+                                            #increment or decrement
+                                            if op_type == "increment":
+                                                variables[loop_variable] = variables[loop_variable] + 1
+                                                update_symbol_table()
+                                            elif op_type == "decrement":
+                                                variables[loop_variable] = variables[loop_variable] - 1
+                                                update_symbol_table()
+                                            else: 
+                                                error("[RuntimeError] No operation type given", current_line)
+                                        else:
+                                            restore(savedpc_end, saved_currline_end)
+                                            active_loops.pop(loop_name)
+                                            loop_complete = True
+
                     elif current_token.tokentype == "while_indicated_end_of_loop_keyword":
-                        end_cond_type = "while"
-                    elif current_token.tokentype == "linebreak": # infinite loop until GTFO
-                        end_cond_type = None
+                        advance()
+                        savedpc_expression = token_idx
+                        saved_currline_expr = current_line
+                        expr = expression()
+                        #check if result is troof
+                        print(expr)
+                        if expr not in ["FAIL","WIN"]:
+                            error("[RuntimeError] Expression in loop operation did not convert to troof", current_line)
+                        # CODE BLOCK FOR LOOP
+                        if_linebreak()
+                        savedpc_codeblock = token_idx
+                        saved_currline_codeblock = current_line
+                        code_block = loop_statement_list()
+                        if op_type == "increment":
+                            variables[loop_variable] = variables[loop_variable] + 1
+                            update_symbol_table()
+                        elif op_type == "decrement":
+                            variables[loop_variable] = variables[loop_variable] - 1
+                            update_symbol_table()
+                        else: 
+                            error("[RuntimeError] No operation type given", current_line)
+                        print("Nodes after loop statement list",code_block)
+                        print("runs here", current_token.tokenvalue)
+                        if current_token.tokentype == "break_loop_keyword": #OUTTA YR
+                            advance()
+                            if current_token.tokentype == "variable_identifier":
+                                if current_token.tokenvalue == loop_name:
+                                    advance()
+                                    savedpc_end = token_idx
+                                    saved_currline_end = current_line
+                                    if_linebreak()
+                                    loop_complete = False
+                                    while loop_complete == False:
+                                        #revaluate expression
+                                        restore(savedpc_expression, saved_currline_expr)
+                                        expr = expression()
+                                        print(expr)
+                                        if expr not in ["FAIL","WIN"]:
+                                            error("[RuntimeError] Expression in loop operation did not convert to troof", current_line)
+                                        if expr == "WIN":
+                                            #loop again
+                                            restore(savedpc_codeblock, saved_currline_codeblock)
+                                            print("runs here", current_token.tokenvalue)
+                                            code_block = loop_statement_list()
+                                            #increment or decrement
+                                            if op_type == "increment":
+                                                variables[loop_variable] = variables[loop_variable] + 1
+                                                update_symbol_table()
+                                            elif op_type == "decrement":
+                                                variables[loop_variable] = variables[loop_variable] - 1
+                                                update_symbol_table()
+                                            else: 
+                                                error("[RuntimeError] No operation type given", current_line)
+                                        else:
+                                            restore(savedpc_end, saved_currline_end)
+                                            active_loops.pop(loop_name)
+                                            loop_complete = True
+
+                    # elif current_token.tokentype == "linebreak": # infinite loop until GTFO
+                    #     end_cond_type = None
                     else:
                         error("[Syntax Error] Unknown loop condition type", current_line)
-                    # CODE BLOCK FOR LOOP
-                    advance()
-                    code_block = loop_statement_list()
-                    if current_token.tokentype == "break_loop_keyword": #OUTTA YR
-                        advance()
-
+                    
                 else:
                     error("[Syntax Error] Variable identifier not found", current_line)
             else:
