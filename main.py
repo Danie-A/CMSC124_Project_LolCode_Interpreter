@@ -1661,6 +1661,7 @@ def loop():
 
 def if_else_statement():
     global current_token
+    print("CURRENT TOKen", current_token.tokenvalue)
     has_YA_RLY = False
 
     if current_token.tokentype == "if_keyword": #O RLY
@@ -1677,13 +1678,16 @@ def if_else_statement():
                     if current_token.tokentype == "linebreak":
                         if_linebreak() #pass linebreak
                         while current_token.tokentype != "else_keyword": #multiple statements in code block
-                            statement()
-                            if_linebreak() #pass linebreak
+                            if current_token.tokentype != "end_of_if_block_keyword":
+                                statement()
+                                if_linebreak() #pass linebreak
+                            else:
+                                break
                         while current_token.tokentype != "end_of_if_block_keyword": #pass entire NO WAI block
                             advance()
                             if current_token.tokentype == "linebreak":
                                 if_linebreak()
-                                print("CURRENT LINE", current_line)
+                                print("CURRENT LINE  1", current_line)
                             
                         print("CURRENT TOKEN:", current_token.tokentype)
                     else: 
@@ -1692,10 +1696,14 @@ def if_else_statement():
                 elif variables["IT"] == "FAIL":
                     if not has_YA_RLY:
                         while current_token.tokentype != "else_keyword": #to pass entire YA RLY block
-                            advance()
-                            if current_token.tokentype == "linebreak":
-                                if_linebreak()
-                                print("CURRENT LINE", current_line)
+                            if current_token.tokentype != "end_of_if_block_keyword":
+                                advance()
+                                if current_token.tokentype == "linebreak":
+                                    if_linebreak()
+                                    print("CURRENT LINE 2", current_line)
+                                    print("THE CURRENT TOKEN", current_token.tokenvalue)
+                            else:
+                                break
                     
                     if current_token.tokentype == "else_keyword":
                         print("EXECUTED NO WAI")
@@ -1706,13 +1714,14 @@ def if_else_statement():
                                 statement()
                                 if current_token.tokentype == "linebreak":
                                     if_linebreak()
-                                    print("CURRENT LINE", current_line)
+                                    print("CURRENT LINE 3", current_line)
                    
                         else:
                             error("[Syntax Error] Expected linebreak after NO WAI", current_line) 
 
                 if current_token.tokentype == "end_of_if_block_keyword":
                     advance() #pass OIC 
+                    print("CHECCKK", current_token.tokenvalue)
                 else:
                     error("[Syntax Error] Expected OIC", current_line)  
             else:
@@ -1737,8 +1746,10 @@ def switch_statement():
             while current_token.tokentype != "end_of_if_block_keyword":
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
+                    print("IT VALUE", variables["IT"], "CASE VALUE:", current_token.tokenvalue)
+                    print("IT VALUE",type(variables["IT"]), "CASE VALUE:", type(current_token.tokenvalue))
                     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
-                        if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
+                        if typecast_string(statement_value) == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
                             has_omg_match = True
                             advance() #pass value literal
                             if_linebreak() #pass line break
