@@ -22,9 +22,10 @@ FUNCTIONS SYNTAX
 ---
 
 Minor Efficiency and Creativity
+[] add " " if string in symbol table
+[] save button for text editor
 [/] show line in current_line
 [/] linebreak expected after {tokenvalue}
-[] save button for text editor
 [/] print user input in console
 
 ### FIX FUNCTIONS

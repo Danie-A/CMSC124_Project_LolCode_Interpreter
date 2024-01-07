@@ -8,8 +8,18 @@ Presentation Schedule:
 ### TO-DO HURDLES:
 
 [] Check Test Cases
-[] Do Bonus na kaya (because not fully working ang syntax natin)
-[]
+
+DO SOME BONUS IF KAYA
+(because not fully working ang syntax natin)
+[] suppress the newline after a line of output by ending the VISIBLE statement with a !
+[] MEBBE / Else-if clauses
+[] soft-line/command breaks (,)
+[] array  
+[/?] special characters in strings
+[] Nesting of different flow-control statements
+[] Loop-nesting
+[] If-else nesting
+[] Switch-nesting
 
 Change IT - Danie (Check Along the Way)
 [] if-else
