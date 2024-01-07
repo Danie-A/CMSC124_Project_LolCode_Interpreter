@@ -11,7 +11,6 @@ int main()
     {
     case 1:
         printf("You entered one.\n");
-        break;
     case 2:
         printf("You entered two.\n");
     case 3:

@@ -93,7 +93,7 @@ Operations
 
 [-] Khaki UI
 [-] Special Characters in Strings (?)
-[-] SMOOSH expr
+[-] SMOOSH expr, funct
 [-] VISIBLE expr not only arith
 [-] Literal Only on Single Line Possible
 [-] SUM OF expr not only arith
