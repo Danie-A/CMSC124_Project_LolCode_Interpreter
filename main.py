@@ -1746,8 +1746,10 @@ def switch_statement():
             while current_token.tokentype != "end_of_if_block_keyword":
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
+                    print("IT VALUE", variables["IT"], "CASE VALUE:", current_token.tokenvalue)
+                    print("IT VALUE",type(variables["IT"]), "CASE VALUE:", type(current_token.tokenvalue))
                     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
-                        if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
+                        if typecast_string(statement_value) == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
                             has_omg_match = True
                             advance() #pass value literal
                             if_linebreak() #pass line break
