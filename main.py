@@ -1,11 +1,17 @@
 from pickletools import optimize
 from typing import Concatenate
-import regex as re
-import sys
-import math
-import tkinter as tk
+
+# for sounds
+import pygame
+import random  # for random sounds
+
+import regex as re # for regex in lexemes
+import sys 
+import math 
+import tkinter as tk # for display
 from tkinter import font, ttk, filedialog, simpledialog
 import subprocess as sub
+
 
 """
 ────────────────────────────────────────────────────────────────────────────────────
@@ -567,7 +573,7 @@ def advance():
             current_token = tokens[token_idx]
             print(current_token)
         else:
-            error("[SyntaxError] End of file reached with incorrect ending syntax", current_line)
+            error("[SyntaxError] End of file reached with incorrect syntax", current_line)
 
 def restore(saved_token_idx, saved_curr_line):
     global token_idx, current_token, current_line
@@ -586,6 +592,8 @@ def error(msg, line):
     code = get_line(line)
     errorMessage = f"{msg} \n{code}  :  Line {line}"
     insert_output(errorMessage)
+    pygame.mixer.music.load("sounds/windows-error.mp3")
+    pygame.mixer.music.play(loops=0)
     raise Error(errorMessage)
 
 def skip_empty_lines():
@@ -2507,21 +2515,20 @@ texteditorFont = ("Consolas", 10, "normal")
 # ============
 
 # GUI Functions ===============
-# Events
-def on_resize(event):
-    width = root.winfo_width()
-    height = root.winfo_height()
-    topFrame.configure(width=width, height=height // 2)
-    bottomFrame.configure(width=width, height=height // 2)
 
-        
 def insert_spaces(event):
     textEditor.insert(tk.INSERT, " " * 4)
     return 'break'
 
+# SOUNDS
+sounds = ["anitamaxwynn","fbi-open-up", "windows-error", "ws-in-the-sshat", "oof", "omg", "shout", "wow", "bro", "wait", "whoareyou", "shish", "anitamaxwynn2"] 
+
 # Program Functions
 def open_file():
     global fileLoaded, file_path
+    filename = "sounds/"+random.choice(sounds)+".mp3"
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play(loops=0)
     file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Lolcode files", "*.lol"), ("All files", "*.*")])
     file = open(file_path, "r")
     if file_path != "":
@@ -2599,6 +2606,10 @@ def reset_console():
     outputText.configure(state=tk.DISABLED)
     
 def execute_code():
+    # play meme sound
+    filename = "sounds/"+random.choice(sounds)+".mp3"
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play(loops=0)
     # reset lexeme and symbol table
     reset_lexeme_table()
     reset_symbol_table()
@@ -2623,6 +2634,8 @@ def insert_output(output):
     
 root = tk.Tk()
 root.title("The Lords of the Strings LOLCODE Interpreter")
+
+pygame.mixer.init() # for sounds
 
 # sets the width and height of the window
 window_width = 1350
@@ -2750,8 +2763,6 @@ bottomFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # Event Binds
 textEditor.bind("<Tab>", insert_spaces)
-
-# root.bind('<Configure>', on_resize) # flickering bug 
 
 root.mainloop()
 

@@ -10,6 +10,7 @@ January 5
 ### MINOR EFFICIENCY CHORES
 
 [] save button for text editor
+[] if empty text editor do nothing - No code found error
 
 [/] show line in current_line
 [/] linebreak expected after {tokenvalue}

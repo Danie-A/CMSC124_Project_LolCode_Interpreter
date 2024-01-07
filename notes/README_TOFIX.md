@@ -11,12 +11,6 @@ Presentation Schedule:
 
 DO SOME BONUS IF KAYA
 (because not fully working ang syntax natin)
-
-[/] line continuation (...)
-
-potential errors:
-empty lines
-
 [] soft-line/command breaks (,)
 I HAS A var ITZ 1, I HAS A var2 ITZ 2
 
@@ -31,6 +25,7 @@ I HAS A var ITZ 1, I HAS A var2 ITZ 2
 [/] suppress the newline after a line of output by ending the VISIBLE statement with a !
 VISIBLE "Hello World!" !
 [/?] special characters in strings
+[/] line continuation (...)
 
 Change IT - Danie (Check Along the Way)
 [] if-else
