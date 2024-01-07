@@ -6,7 +6,6 @@ HAI
 
     HOW IZ I printName YR person
         VISIBLE "Hello, " + person
-        GTFO
     IF U SAY SO
 
     HOW IZ I printNum YR x
@@ -25,7 +24,7 @@ HAI
     GIMMEH num1
     GIMMEH num2
 
-    I IZ addNuM YR num1 AN YR num2
+    I IZ addNum YR num1 AN YR num2
     VISIBLE IT
 
     GIMMEH name

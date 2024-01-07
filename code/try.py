@@ -64,9 +64,18 @@
 #     print("eme")
 
 
-x = 5.0
-y = 5
-print(x==y)
+# x = 5.0
+# y = 5
+# print(x==y)
 
-line = ""
-print("line is: [",line.strip(), "]")
+# line = ""
+# print("line is: [",line.strip(), "]")
+
+new_value = 0
+var_value = False
+if isinstance(var_value, bool) and var_value == True:
+    new_value = "WIN"
+elif isinstance(var_value, bool) and var_value == False:
+    new_value = "FAIL"
+
+print("new value is ", new_value)

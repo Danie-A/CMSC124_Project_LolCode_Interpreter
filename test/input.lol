@@ -8,12 +8,11 @@ HAI
     VISIBLE "loe"
     VISIBLE WIN
     VISIBLE SUM OF 3 AN 2
-    GIMMEH var2
     var2 R 4
     var R var3
     var3 R 16.5
     var R 20
     var R FAIL
-    MAEK var1 YARN
-    number IS NOW A NUMBAR
+    VISIBLE MAEK var YARN
+    VISIBLE var
 KTHXBYE

@@ -72,8 +72,8 @@ Operations
 
 ### TO FIX (MORE IMPORTANT):
 
-[] switch-case - should still run even if not equal (without break) - [] same case not allowed
-[] recheck all return (changed return tokens to return actual values)
+[/] switch-case - should still run even if not equal (without break) - [/] same case not allowed
+[/] recheck all return (changed return tokens to return actual values)
 
 [-] Wrong Error Message - Always "Error: linebreak expected" - e.g.VISIBLE 6 AN 5 (it's okay?)
 [/] optional WAZZUP BUHBYE
@@ -97,18 +97,18 @@ Operations
 [-] VISIBLE expr not only arith
 [-] Literal Only on Single Line Possible
 [-] SUM OF expr not only arith
-[ ] SUM OF IT AN 5
+[/] SUM OF IT AN 5
 
 ### TO CLARIFY:
 
-[] For numbers lang ba comparison: BOTH SAEM 1 AN 2, or pwede rin BOTH SAEM "a" AN "a"?
+[numbers?] For numbers lang ba comparison: BOTH SAEM 1 AN 2, or pwede rin BOTH SAEM "a" AN "a"?
 
-[] Is it possible to print NOOB? VISIBLE NOOB
+[/] Is it possible to print NOOB? VISIBLE NOOB
 [] IT - boolean sa if-else, switch-case, function return, expr without var assignment (e.g., visible) -->> YES? (Expression Statements SPECS)
 
-[] Function Declaration Inside HAI or Outside HAI
+[-] Function Declaration Inside HAI or Outside HAI
 
-[] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
+[/] Arithmetic Other Expr (?) PRODUKT OF MAEK var NUMBR
 
 [-] double function name not allowed ? (pwede pero maooverwrite ung past same func)
 
@@ -116,13 +116,16 @@ Operations
 
 [] remove current_line in error parameter (global var already)
 
-[] print console error the whole line based on line number
+[/] print console error the whole line based on line number
 
 [] Save text editor button
 
 ### DONE:
 
 DONE-FIX
+[/] if function doesn't return anything it should
+[/] line number for error wrong in 07_ifelse
+[x] add " " if string in symbol table (no need)
 [/] importing to text editor changes indentation - 07_ifelse.lol and above (tab not working)
 [/] not required function declaration no else in WAZZUP....
 [/] SUM OF IT AN 4 (IT = "LOL") only terminal error

@@ -83,7 +83,6 @@ def lexical_analyzer(contents):
             
             # Check if there are words before "OBTW"
             if words_before_obtw:
-                
                 error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)
             else:
                 obtwFound = True
@@ -425,7 +424,7 @@ def lexical_analyzer(contents):
             elif re.fullmatch(r"\+", token):
                 items.append(Token("print_concatenation_keyword", token))
             else:
-                error(f"[LexerError] Invalid Token Detected. {line}", i+1)
+                error(f"[LexerError] Invalid Token Detected.", i+1)
 
     # print items separated by newline
     for item in items:
@@ -530,9 +529,7 @@ variables = {'IT': None}
 var_assign_ongoing = False # checker for expressions if to be placed in IT
 
 active_loops = {}
-
 tokens = []
-
 token_idx = -1
 current_token = None
 current_line = 1
@@ -563,7 +560,7 @@ class Error(Exception):
 def error(msg, line):
     global errorMessage
     # use Error class
-    code = get_line()
+    code = get_line(line)
     errorMessage = f"{msg} \n{code}  :  Line {line}"
     insert_output(errorMessage)
     raise Error(errorMessage)
@@ -834,9 +831,9 @@ def get_op_value():
     return ans
 
 # show the line based on the current_line
-def get_line():
-    global lines, current_line 
-    return lines[current_line-1]
+def get_line(line):
+    global lines
+    return lines[line-1]
 
 # 🌍 GLOBAL VARIABLES FOR FUNCTIONS    
 saved_main = {"tokens": [], "token_idx": -1, "current_line": 1, "variables": {"IT":None}, "var_assign_ongoing": False}
@@ -926,7 +923,7 @@ def statement():
             
             if has_return == 0: # no return value; IT in main is still NOOB
                 saved_main["variables"]["IT"] = None
-                print("break on is 0, IT IS NOOB")
+                # print("IT IS NOOB!!! 🫵🫵🫵🫵")
 
             # restore main details (PC)
             token_idx = saved_main["token_idx"]
@@ -935,6 +932,7 @@ def statement():
             variables = saved_main["variables"]
             var_assign_ongoing = saved_main["var_assign_ongoing"]
             
+            has_return = 0 # set has_return back to 0
             function_on = 0 # set function off (only one function at a time, no nesting)
             return ("FUNCTION_CALL", funcname, args)
     elif current_token.tokentype == "print_keyword": 
@@ -1077,6 +1075,8 @@ def convert_to_string():
         ans = expression()
         ans = check_if_bool(ans)
         value = subconvert_to_string(ans)
+    else:
+        error("[SyntaxError] Invalid operand", current_line)
     return value
         
 def expression():
@@ -1992,7 +1992,8 @@ def handle_semi_typecast(var_name, target_type, current_line):
             new_value = "FAIL"
         elif var_value == None: # none to string only in explicit typecasting
             error(f"[RuntimeError] Cannot convert uninitialized value to YARN", current_line)
-        new_value = str(var_value)
+        else:
+            new_value = str(var_value)
     elif target_type == "NOOB": # var IS NOW A NOOB # typecase a variable to NOOB
         new_value = None
     else:
@@ -2299,6 +2300,8 @@ def insert_output(output):
     color = "white"
     if errorMessage != "":
         color = "#f59393"
+    if output == False and isinstance(output, bool):
+        output = "FAIL"
     print("COLOR IS ", color)
     outputText.configure(state=tk.NORMAL) # make outputText editable
     start_index = outputText.index('end') # get the index before inserting the text
