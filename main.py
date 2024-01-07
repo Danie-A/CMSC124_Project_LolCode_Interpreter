@@ -1754,7 +1754,12 @@ def switch_statement():
                     print("IT VALUE", variables["IT"], "CASE VALUE:", current_token.tokenvalue)
                     print("IT VALUE",type(variables["IT"]), "CASE VALUE:", type(current_token.tokenvalue))
                     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
-                        if typecast_string(statement_value) == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
+                        if isinstance(statement_value, str):
+                            statement_value = typecast_string(statement_value)
+                            print("CHECCCCK HERE HEY")
+                            print(statement_value)
+                        if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
+            
                             has_omg_match = True
                             advance() #pass value literal
                             if_linebreak() #pass line break
@@ -1817,7 +1822,6 @@ def switch_statement():
                     else:
                         error("[Logic Error] Invalid value literal", current_line) 
                 elif current_token.tokentype == "switch_default_keyword":
-                    print("HEY YOU'RE HERE BITCH", current_token.tokenvalue)
                     advance() #pass OMGWTF
                     if_linebreak() # pass linebreak
                     if has_gtfo or has_omg_match:
