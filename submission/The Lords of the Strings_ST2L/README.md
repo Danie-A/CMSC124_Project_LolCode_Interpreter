@@ -34,7 +34,7 @@ The Lords of the Strings
 ### SCREENSHOTS
 
 _Image of LolCode Interpreter_
-![Screenshot]("source code"/images/lolcode-interpreter.png)
+![Screenshot]("/source code/images/lolcode-interpreter.png")
 
 ### REFERENCES
 
