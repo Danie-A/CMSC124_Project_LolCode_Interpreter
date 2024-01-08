@@ -13,13 +13,13 @@ HAI
 	VISIBLE "Choice: "
 	GIMMEH choice
 
-	BOTH SAEM choice AN 1
+	BOTH SAEM choice AN "1"
 	O RLY?
 		YA RLY
 			VISIBLE "Enter birth year: "
 			GIMMEH input
 			VISIBLE DIFF OF 2022 AN input
-
+OBTW
 	BTW uncomment this portion if you have MEBBE
 	BTW else, this portion should be ignored
 
@@ -33,11 +33,11 @@ HAI
 			VISIBLE "Square Area: " PRODUKT OF input AN input
 		MEBBE BOTH SAEM choice AN 0
 			VISIBLE "Goodbye"
-
+TLDR
 		NO WAI
 			VISIBLE "Invalid Input!"
 	OIC
-	choice R "rawr"
+
 	DIFFRINT BIGGR OF 3 AN choice AN 3
 	O RLY?
 		YA RLY

@@ -8,7 +8,7 @@ January 5
 [] clean up code
 
 [/] full typecast yarn
-[] wrong line numbering error - VISIBLE tip 07_ifelse
+[/] wrong line numbering error - VISIBLE tip 07_ifelse
 
 ### MINOR EFFICIENCY CHORES
 
