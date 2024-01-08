@@ -13,8 +13,11 @@ DO SOME BONUS IF KAYA
 (because not fully working ang syntax natin)
 [] soft-line/command breaks (,)
 I HAS A var ITZ 1, I HAS A var2 ITZ 2
+potential errors:
 
-[] Nesting of different flow-control statements - (Test: while/if-else within function)
+[] BOTH SAEM/DIFFRINT
+
+[] Nesting of different flow-control statements - (Test: while/if-else within function) - 0.5
 
 [] Loop-nesting
 [] If-else nesting

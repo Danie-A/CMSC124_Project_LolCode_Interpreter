@@ -1,16 +1,12 @@
-from pickletools import optimize
-from typing import Concatenate
-
 # for sounds
 import pygame
 import random  # for random sounds
 
 import regex as re # for regex in lexemes
-import sys 
+import sys  
 import math 
 import tkinter as tk # for display
 from tkinter import font, ttk, filedialog, simpledialog
-import subprocess as sub
 
 
 """
@@ -51,23 +47,19 @@ def find_tldr(i,line):
     else:
         # Check if TLDR is not found
         if re.search(r'\bTLDR\b', line):
-            error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)    
+            error(f"[CommentError] Wrong OBTW TLDR Comment Format Detected. {line}", i+1)  
         else:
             return False
 
 def lexical_analyzer(contents):
     global lines
     lines = contents.split('\n') # split contents (per line through newline) to the 'lines' list
-    # print("lines are:", lines)
     lexeme = ""
     items = []
     obtwFound = False
     after_line_cont = False # checker for line continuation (line after ...)
     for i, line in enumerate(lines):
-        # print(f"i and line is {i+1}: {line}")
-
-        # For Multi-Line Comments 
-        
+        # For Multi-Line Comments
         # Check if OBTW is found
         if obtwFound:
             # Check if TLDR is found
@@ -112,13 +104,11 @@ def lexical_analyzer(contents):
         for char in chars:
             if char == '"':
                 if in_quotes: # if in_quotes is true (already second quote)
-                    
                     tokens.append(lexeme)  # append the string inside quotes as string literal token
                     lexeme = '' # set lexeme to empty again
                 tokens.append(char)  # append the quote '"' itself as a lexeme
                 in_quotes = not in_quotes  # if in_quotes is true, set to false, if false, set to true
             elif char == " " and not in_quotes: # in_quotes is false
-                # print("lexeme is ", lexeme)
                 if lexeme=="I":
                     # [] Keywords with Spaces
                     lexeme += char # append char to lexeme
@@ -251,7 +241,6 @@ def lexical_analyzer(contents):
                     tokens.append(lexeme)
                     lexeme = ''                                  
                 else: # if lexeme is not empty
-                    #print("ELSE RUNS")
                     if lexeme:
                         tokens.append(lexeme)
                         lexeme = '' # set lexeme to empty again
@@ -457,20 +446,14 @@ def lexical_analyzer(contents):
 
     # print items separated by newline
     for item in items:
-        print(item)
-                    
+        print(item)        
     return items
-
-
 
 # parse function for terminal-based
 def parse_terminal(file):
     contents = open(file, 'r').read()
     contents.replace('\t', '    ') # change tabs to 4 spaces
-    # print(repr(contents)) # printable representation of contents
     contents = re.sub(r"(?<!O)BTW.*?(?=\n)", "", contents) # remove comments by deleting BTW and after it before \n
-    
-    #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(contents)
     return tokens
 
@@ -478,11 +461,8 @@ def parse_terminal(file):
 def parse_tkinter(code):
     print(repr(code)) # printable representation of contents
     code = re.sub(r"(?<!O)BTW.*?(?=\n)", "", code) # remove comments by deleting BTW and after it before \n
-    
     #print("REVISED CONTENTS ARE:\n", result)
     tokens = lexical_analyzer(code)
-    print("LINES ARE 💁: ", lines)
-    print("tokens are 🪙: ", tokens)
     return tokens
     
 # ______________________________________________________________________________________________________________
@@ -571,7 +551,6 @@ def advance():
         token_idx += 1
         if token_idx < len(tokens):
             current_token = tokens[token_idx]
-            print(current_token)
         else:
             error("[SyntaxError] End of file reached with incorrect syntax", current_line)
 
@@ -608,7 +587,6 @@ def if_linebreak():
         current_line += 1
         advance()
         skip_empty_lines()
-        print("Current line")
     else:
         error(f"[SyntaxError] Linebreak expected after token: {tokens[token_idx-1].tokenvalue}", current_line)
         
@@ -695,7 +673,7 @@ def var_declaration():
                     return node
                 elif current_token.tokentype in expression_tokens:
                     ans = expression()
-                    ans = check_if_bool(ans)
+                    ans = check_if_bool_var(ans)
                     variables[varident] = ans
                     node = ("VARIABLE", varident, ans)
                     var_assign_ongoing = False # set back to false
@@ -819,13 +797,7 @@ def check_function_def():
             "currentline":currentline, 
             "funcvars": funcvars
             }
-    
-        # functions[funcname] = funcbody # function name: list of tokens
-        
         advance() # pass IF U SAY SO     
-        
-        # print("RETURNING NOW....")
-        # print("current token is ", current_token)
         return ("FUNCTION", functions[funcname])
     else:
         error("[SyntaxError] Invalid function name", current_line)
@@ -879,10 +851,7 @@ def statement():
         func_details = check_function_def()
         return ("FUNCTION_DEF", func_details)
     elif current_token.tokentype == "function_call": # [] no function nesting
-        # print("FUNCTION IZ RUNNINGG")
-        # print("function_on is: ", function_on)
         advance() # pass I IZ
-        # print("RUNNING I IZ")
         if current_token.tokentype != "variable_identifier":
             error("[SyntaxError] Invalid function name", current_line)
         else:
@@ -912,8 +881,6 @@ def statement():
                         args.append(param_val)
                 else:
                     error("[SyntaxError] Invalid function argument", current_line)
-            
-            # print("CURRTOKEN AND ARGS ARE: ", current_token, " ", args)
             # check total number of parameters if same with number of arguments 
             numParams = len(functions[funcname]["funcvars"])
             if numParams != len(args):
@@ -927,7 +894,6 @@ def statement():
             for i in range(numParams):
                 funcvars[params[i]] = args[i]
             funcvars["IT"] = None # place IT in dictionary
-            # print("FUNCTION VARIABLES ARE: ", funcvars)
             
             # save main details (PC)
             saved_main = {"token_idx": token_idx, "current_line": current_line, "variables": variables, "var_assign_ongoing": var_assign_ongoing}
@@ -939,9 +905,6 @@ def statement():
             variables = functions[funcname]["funcvars"]
             var_assign_ongoing = False # initialize to false first
             current_token = tokens[token_idx]
-            print("TOKENIDX IS ", token_idx)
-            print("NEXT TOKEN IS ", tokens[token_idx+1])
-            print("CURRTOKEN IS ", current_token)
 
             if function_on == 1:
                 error("[SyntaxError] Function nesting is not allowed or implementable", current_line)
@@ -949,14 +912,13 @@ def statement():
             # RUN FUNCTION BODY
             while current_token.tokentype != "end_of_function_keyword":
                 # check if function is off, break
-                if function_on == 0:                   
+                if function_on == 0:                  
                     break
                 statement()
                 if_linebreak()
             
             if has_return == 0: # no return value; IT in main is still NOOB
                 saved_main["variables"]["IT"] = None
-                # print("IT IS NOOB!!! 🫵🫵🫵🫵")
 
             # restore main details (PC)
             token_idx = saved_main["token_idx"]
@@ -1003,7 +965,6 @@ def statement():
         # pop up tkinter input box
         popup_input(varident_)
         print("variables is now:", variables)
-
         return ("INPUT", varident_)
     elif current_token.tokentype == "variable_identifier": #assignment statement
         var_assign_ongoing = True # variable assignment ongoing
@@ -1055,15 +1016,14 @@ def statement():
             node = loop()
             loop_on = 0
         elif current_token.tokentype == "if_keyword":
-            node = if_else_statement()
+            if_else_statement()
         elif current_token.tokentype == "switch_keyword":
-            node = switch_statement()
+            switch_statement()
     
     elif current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_delimiter"]:
         ans = literal() # returns literal value
         place_in_IT(ans) # place in IT variable
         return ("LITERAL", ans)
-    
     # to check if conflicting with switch-case
     elif current_token.tokentype == "general_purpose_break_keyword": # GTFO
         if function_on == 0:
@@ -1095,9 +1055,7 @@ def statement():
         if current_token.tokentype in expression_tokens:
             expression_ = expression()
             return expression_
-
         else:
-            print("CURRENT TOKEN IS ", current_token)
             error("[SyntaxError] Invalid statement", current_line)
 
 # FOR SMOOSH TYPECASTING
@@ -1378,11 +1336,9 @@ def compare_expression():
               
             elif comparisonType == "both_argument_equal_check_keyword": # Equal to ==
                 result = "WIN" if left == right and type(left) == type(right) else "FAIL"
-                print("RESULT", result)
                 return result
             elif comparisonType == "both_argument_not_equal_check_keyword": # Equal to !=
                 result = "WIN" if left != right else "FAIL"
-                print("RESULT", result)
                 return result  
             else:
                 error("[Syntax Error] Invalid Comparison operation", current_line)  
@@ -1397,7 +1353,6 @@ def boolean_expression():
 
     if current_token.tokentype in ["both_true_check_keyword", "both_false_check_keyword", "exactly_one_is_true_check_keyword", "negate_keyword", "atleast_one_true_check_keyword", "all_true_check_keyword"]:
         operationType = current_token.tokentype #save boolean operation
-        print("CHECK",current_token.tokentype)
         advance()
 
         #ALL OF and ANY OF existence check (since can't be nested into each other or themselves)
@@ -1733,7 +1688,6 @@ def loop():
                         else: 
                             error("[RuntimeError] No operation type given", current_line)
                         print("Nodes after loop statement list",code_block)
-                        print("runs here", current_token.tokenvalue)
                         if current_token.tokentype == "break_loop_keyword": #OUTTA YR
                             advance()
                             if current_token.tokentype == "variable_identifier":
@@ -1753,7 +1707,6 @@ def loop():
                                         if expr == "FAIL":
                                             #loop again
                                             restore(savedpc_codeblock, saved_currline_codeblock)
-                                            print("runs here", current_token.tokenvalue)
                                             code_block = loop_statement_list()
                                             #GTFO
                                             if code_block == "break":
@@ -1790,7 +1743,6 @@ def loop():
                         saved_currline_codeblock = current_line
                         code_block = loop_statement_list()
                         if code_block == "break":
-                            print("break runs")
                             #skip lines
                             while current_token.tokentype != "break_loop_keyword":
                                     if current_token.tokentype == "linebreak":
@@ -1817,7 +1769,6 @@ def loop():
                         else: 
                             error("[RuntimeError] No operation type given", current_line)
                         print("Nodes after loop statement list",code_block)
-                        print("runs here", current_token.tokenvalue)
                         if current_token.tokentype == "break_loop_keyword": #OUTTA YR
                             advance()
                             if current_token.tokentype == "variable_identifier":
@@ -1837,7 +1788,6 @@ def loop():
                                         if expr == "WIN":
                                             #loop again
                                             restore(savedpc_codeblock, saved_currline_codeblock)
-                                            print("runs here", current_token.tokenvalue)
                                             code_block = loop_statement_list()
                                             #GTFO
                                             if code_block == "break":
@@ -1989,13 +1939,10 @@ def if_else_statement():
         error("[Syntax Error] Expected O RLY?", current_line) 
 
 
-
-
 ###### DO NOT UNCOMMENT (W/O MEBBE) ###################################
 
 # def if_else_statement():
 #     global current_token
-#     print("CURRENT TOKen", current_token.tokenvalue)
 #     has_YA_RLY = False
 
 #     if current_token.tokentype == "if_keyword": #O RLY
@@ -2006,9 +1953,7 @@ def if_else_statement():
 #             if current_token.tokentype == "if_true_keyword":
 #                 advance() #pass YA RLY
 #                 if variables["IT"] == "WIN":
-#                     print("EXECUTED YA RLY")
-#                     has_YA_RLY = True
-#                     print("CURRENT TOKEN:", current_token.tokentype)              
+#                     has_YA_RLY = True           
 #                     if current_token.tokentype == "linebreak":
 #                         if_linebreak() #pass linebreak
 #                         while current_token.tokentype != "else_keyword": #multiple statements in code block
@@ -2021,9 +1966,6 @@ def if_else_statement():
 #                             advance()
 #                             if current_token.tokentype == "linebreak":
 #                                 if_linebreak()
-#                                 print("CURRENT LINE  1", current_line)
-                            
-#                         print("CURRENT TOKEN:", current_token.tokentype)
 #                     else: 
 #                         error("[Syntax Error] Expected linebreak after YA RLY", current_line)
 
@@ -2034,28 +1976,22 @@ def if_else_statement():
 #                                 advance()
 #                                 if current_token.tokentype == "linebreak":
 #                                     if_linebreak()
-#                                     print("CURRENT LINE 2", current_line)
-#                                     print("THE CURRENT TOKEN", current_token.tokenvalue)
 #                             else:
 #                                 break
                     
 #                     if current_token.tokentype == "else_keyword":
-#                         print("EXECUTED NO WAI")
 #                         advance() #pass NO WAI
 #                         if current_token.tokentype == "linebreak":
 #                             if_linebreak() #pass linebreak
 #                             while current_token.tokentype != "end_of_if_block_keyword": #multiple statements in code block
 #                                 statement()
 #                                 if current_token.tokentype == "linebreak":
-#                                     if_linebreak()
-#                                     print("CURRENT LINE 3", current_line)
-                   
+#                                     if_linebreak()                   
 #                         else:
 #                             error("[Syntax Error] Expected linebreak after NO WAI", current_line) 
 
 #                 if current_token.tokentype == "end_of_if_block_keyword":
 #                     advance() #pass OIC 
-#                     print("CHECCKK", current_token.tokenvalue)
 #                 else:
 #                     error("[Syntax Error] Expected OIC", current_line)  
 #             else:
@@ -2064,7 +2000,6 @@ def if_else_statement():
 #             error("[Syntax Error] Expected linebreak after O RLY?", current_line) 
 #     else:
 #         error("[Syntax Error] Expected O RLY?", current_line) 
-
 
 
 def switch_statement():
@@ -2080,13 +2015,9 @@ def switch_statement():
             while current_token.tokentype != "end_of_if_block_keyword":
                 if current_token.tokentype == "switch_case_keyword":
                     advance() #pass OMG
-                    print("IT VALUE", variables["IT"], "CASE VALUE:", current_token.tokenvalue)
-                    print("IT VALUE",type(variables["IT"]), "CASE VALUE:", type(current_token.tokenvalue))
                     if current_token.tokentype in ["numbr_literal", "numbar_literal", "troof_literal", "string_literal"]:
                         if isinstance(statement_value, str):
                             statement_value = typecast_string(statement_value)
-                            print("CHECCCCK HERE HEY")
-                            print(statement_value)
                         if statement_value == current_token.tokenvalue and not has_omg_match: #when a case is satisfied
             
                             has_omg_match = True
@@ -2107,10 +2038,8 @@ def switch_statement():
                                             advance() #pass GTFO
                                             if current_token.tokentype == "linebreak":
                                                 if_linebreak()
-                                            print("YOU'RE HERE", current_token.tokenvalue)
                                             break
                                         elif current_token.tokentype == "switch_default_keyword":
-                                            print("CHECK")
                                             break
                                         elif current_token.tokentype == "switch_case_keyword":
                                             advance() #pass omg
@@ -2119,20 +2048,17 @@ def switch_statement():
                                             
                                         elif current_token.tokentype == "end_of_if_block_keyword":
                                             break
-                                    print("CHECKINGGGGGG")
                                 else:
                                     error("[Logic Error] Missing code block for this case", current_line)
                         elif statement_value == current_token.tokenvalue and has_omg_match:
                             error("[Syntax Error] OMG literal must be unique at", current_line)
                         else: 
-                            print("NOT ACCEPTED", current_token.tokenvalue)
                             while current_token.tokentype != "switch_case_keyword":
                                 advance() #pass entire OMG block
                                 if current_token.tokentype == "linebreak":
                                     if_linebreak()
                                 if current_token.tokentype == "switch_default_keyword":
                                     break
-                            print("CHECK THIS OUT")
 
                     else:
                         error("[Logic Error] Invalid value literal", current_line) 
@@ -2186,7 +2112,6 @@ def handle_full_typecast(var_name, target_type, current_line):
         elif isinstance(var_value, str):
             # test yarn_pattern
             if re.fullmatch(yarn_pattern, var_value):
-                print("var_value:", var_value)
                 var_value = re.sub(r'\.\d+', '', var_value)
                 variables[var_name] = int(var_value)
             else:
@@ -2209,7 +2134,7 @@ def handle_full_typecast(var_name, target_type, current_line):
             variables[var_name] = new_value
         elif isinstance(var_value, str):
             if re.fullmatch(yarn_pattern, var_value):
-                variables[var_name] = int(var_value)
+                variables[var_name] = float(var_value)
             else:
               error(f"[RuntimeError] Invalid String. Cannot convert '{var_value}' to NUMBAR", current_line)  
         elif isinstance(var_value, float):
@@ -2233,13 +2158,14 @@ def handle_full_typecast(var_name, target_type, current_line):
             variables[var_name] = new_value
             
     elif target_type == "YARN":
-        if variables[var_name] == True:
+        if variables[var_name] == True and isinstance(variables[var_name], bool):
             variables[var_name] = "WIN"
-        elif variables[var_name] == False:
+        elif variables[var_name] == False and isinstance(variables[var_name], bool):
             variables[var_name] = "FAIL"
         elif variables[var_name] == None:
             variables[var_name] = "" # explicit typecasting of noob to yarn (empty string)
-        variables[var_name] = str(variables[var_name])
+        else:
+            variables[var_name] = str(variables[var_name])
     elif target_type == "NOOB": # var IS NOW A NOOB # typecase a variable to NOOB
         variables[var_name] = None
     else:
@@ -2261,7 +2187,6 @@ def handle_semi_typecast(var_name, target_type, current_line):
         elif isinstance(var_value, str):
             # test yarn_pattern
             if re.fullmatch(yarn_pattern, var_value): # check if string is a number
-                print("var_value:", var_value)
                 var_value = re.sub(r'\.\d+', '', var_value)
                 new_value = int(var_value) # change to integer
             else:
@@ -2289,7 +2214,6 @@ def handle_semi_typecast(var_name, target_type, current_line):
             new_value = float(var_value)
         else: # for None
             error(f"[RuntimeError] Cannot convert '{var_value}' to NUMBAR", current_line)
-    
     elif target_type == "TROOF":
         if var_value == "" or var_value == 0 or var_value == None: # implicit typecasting of None to False
             new_value = False # will print FAIL in Symbol Table
@@ -2422,8 +2346,6 @@ def print_expression():
         variable_value = variables[current_token.tokenvalue]
         # change variable value to WIN or FAIL
         variable_value = check_if_bool(variable_value)
-        if variable_value == None:
-            variable_value = "NOOB"
         advance() # pass varident
         # next should be linebreak or AN, else error
         if current_token.tokentype == "linebreak" or current_token.tokentype == "print_concatenation_keyword":
@@ -2438,6 +2360,16 @@ def print_expression():
         error("[SyntaxError] Invalid print arguments", current_line)
 
 def check_if_bool(ans):
+    if isinstance(ans, bool) and ans == True: # because True is similar to 1 
+        return "WIN"
+    elif isinstance(ans, bool) and ans == False: # False similar to 0
+        return "FAIL"
+    elif ans == None:
+        return "NOOB"
+    else:
+        return ans
+
+def check_if_bool_var(ans):
     if isinstance(ans, bool) and ans == True: # because True is similar to 1 
         return "WIN"
     elif isinstance(ans, bool) and ans == False: # False similar to 0
@@ -2479,7 +2411,6 @@ def do_parse_tree(tokens_list):
 # Global Variables ===
 fileLoaded = False
 file_path = ""
-tokens = []
 # ====================
 
 # Color ======
@@ -2521,7 +2452,7 @@ def insert_spaces(event):
     return 'break'
 
 # SOUNDS
-sounds = ["anitamaxwynn","fbi-open-up", "windows-error", "ws-in-the-sshat", "oof", "omg", "shout", "wow", "bro", "wait", "whoareyou", "shish", "anitamaxwynn2"] 
+sounds = ["anitamaxwynn","fbi-open-up", "windows-error", "ws-in-the-sshat", "oof", "omg", "shout", "wow", "bro", "wait", "whoareyou", "shish", "anitamaxwynn2", "hbd", "hbd2", "walangpasok", "fewmoments", "brb", "justdoit", "hellothere", "alert", "lol"] 
 
 # Program Functions
 def open_file():
@@ -2546,10 +2477,7 @@ def execute_lexical():
     global tokens
     # get text from text editor
     text = textEditor.get("1.0", tk.END)
-    print("TEXT IS: ", repr(text))
     text = text.replace('\t', '    ') # change tabs to 4 spaces
-    
-    # print("text is:\n", text)
     if text:
         tokens = parse_tkinter(text)
         print(tokens)
@@ -2571,8 +2499,6 @@ def update_symbol_table():
     for key, value in variables.items():
         # if value is True or False, should show WIN or FAIL
         value = check_if_bool(value)
-        if value == None:
-            value = "NOOB"
         symbolTable.insert("", "end", values=(key, value))
 
 def reset_symbol_table():
@@ -2624,6 +2550,8 @@ def insert_output(output):
     color = "white"
     if errorMessage != "":
         color = "#f59393"
+    if output == None:
+        output = "NOOB"
     outputText.configure(state=tk.NORMAL) # make outputText editable
     start_index = outputText.index('end') # get the index before inserting the text
     outputText.insert('end', str(output)) # show new output in tkinter console

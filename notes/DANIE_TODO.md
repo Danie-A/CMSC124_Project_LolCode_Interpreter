@@ -4,8 +4,11 @@ January 5
 ### TEST FIXES
 
 [] check own created test cases
-[] add documentation
+[/] add documentation
 [] clean up code
+
+[/] full typecast yarn
+[] wrong line numbering error - VISIBLE tip 07_ifelse
 
 ### MINOR EFFICIENCY CHORES
 
@@ -18,7 +21,7 @@ January 5
 
 ### FIX FUNCTIONS
 
-mej di ko magawa
+DI KO MAGAWA T.T
 [] wouldn't check syntax of statements sa function before it is called: solution-> [] copy paste all without execution ? :'> (gawa syntax analyzer)
 [] function after kthxbye - di kaya, needed separate and syntax at semantics - [-] nilagyan ko pero no use kasi hindi pa defined ung function pag-nagrun ung statements sa loob
 [] pop up input color not khaki
@@ -72,7 +75,8 @@ func defs
 Bonus Notes
 Line Continuation:
 if next token is linebreak, delete ... and linebreak, else error
+
 I HAS A var ...
-ITZ 1
+ITZ var!!!
 
 ---
