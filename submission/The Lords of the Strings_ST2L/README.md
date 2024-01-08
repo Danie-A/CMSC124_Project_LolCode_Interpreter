@@ -29,7 +29,7 @@ The Lords of the Strings
 
 3. Click the "Open" button to select a LolCode file to be interpreted.
 
-4. Click the "Run" button to run the interpreter and show the output on the console.
+4. Click the "EXECUTE" button to run the interpreter and show the output on the console.
 
 ### SCREENSHOTS
 

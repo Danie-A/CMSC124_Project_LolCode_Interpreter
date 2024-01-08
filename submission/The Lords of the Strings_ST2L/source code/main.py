@@ -1636,9 +1636,19 @@ def loop():
                 if current_token.tokentype == "variable_identifier":
                     loop_variable = current_token.tokenvalue
                     # check if value can be incremented or decremented and if it exists
+                    numbr_pattern = r"-?([1-9][0-9]*|0)"
+                    numbar_pattern = r"-?(0|[1-9][0-9]*)(\.[0-9]+)?"
                     if loop_variable in variables.keys():
-                        if not isinstance(variables[loop_variable],(int, float)): 
-                            error("[Logic Error] Variable cannot be incremented or decremented", current_line)
+                        if re.fullmatch(numbr_pattern, str(variables[loop_variable])):
+                            variables[loop_variable] = handle_semi_typecast(loop_variable, "NUMBR", current_line)
+                        elif re.fullmatch(numbar_pattern, str(variables[loop_variable])):
+                            variables[loop_variable] = handle_semi_typecast(loop_variable, "NUMBAR", current_line)
+                        elif str(variables[loop_variable]) == "WIN" or variables[loop_variable] == True: 
+                            variables[loop_variable] = 1
+                        elif str(variables[loop_variable]) == "FAIL" or variables[loop_variable] == False or variables[loop_variable] == None: 
+                            variables[loop_variable] = 0
+                        else:
+                            error(f"[Logic Error] Variable {loop_variable} cannot be incremented or decremented", current_line)
                     else:
                         error("[Logic Error] Variable does not exist", current_line)
                     active_loops[loop_name] = loop_variable #save the loop name and associated variable to active loops
@@ -1681,14 +1691,6 @@ def loop():
                                     error("[Syntax Error] Loop variable identifier not found", current_line)
                             else:
                                 error("[Syntax Error] IM OUTTA YR not found", current_line)
-                        if op_type == "increment":
-                            variables[loop_variable] = variables[loop_variable] + 1
-                            update_symbol_table()
-                        elif op_type == "decrement":
-                            variables[loop_variable] = variables[loop_variable] - 1
-                            update_symbol_table()
-                        else: 
-                            error("[RuntimeError] No operation type given", current_line)
                         print("Nodes after loop statement list",code_block)
                         if current_token.tokentype == "break_loop_keyword": #OUTTA YR
                             advance()
@@ -1700,6 +1702,15 @@ def loop():
                                     if_linebreak()
                                     loop_complete = False
                                     while loop_complete == False:
+                                        #increment or decrement
+                                        if op_type == "increment":
+                                            variables[loop_variable] = variables[loop_variable] + 1
+                                            update_symbol_table()
+                                        elif op_type == "decrement":
+                                            variables[loop_variable] = variables[loop_variable] - 1
+                                            update_symbol_table()
+                                        else: 
+                                            error("[RuntimeError] No operation type given", current_line)
                                         #revaluate expression
                                         restore(savedpc_expression, saved_currline_expr)
                                         expr = expression()
@@ -1716,15 +1727,6 @@ def loop():
                                                 active_loops.pop(loop_name)
                                                 loop_complete = True
                                                 # return "break"
-                                            #increment or decrement
-                                            if op_type == "increment":
-                                                variables[loop_variable] = variables[loop_variable] + 1
-                                                update_symbol_table()
-                                            elif op_type == "decrement":
-                                                variables[loop_variable] = variables[loop_variable] - 1
-                                                update_symbol_table()
-                                            else: 
-                                                error("[RuntimeError] No operation type given", current_line)
                                         else:
                                             restore(savedpc_end, saved_currline_end)
                                             active_loops.pop(loop_name)
@@ -1762,14 +1764,6 @@ def loop():
                                     error("[Syntax Error] Loop variable identifier not found", current_line)
                             else:
                                 error("[Syntax Error] IM OUTTA YR not found", current_line)
-                        if op_type == "increment":
-                            variables[loop_variable] = variables[loop_variable] + 1
-                            update_symbol_table()
-                        elif op_type == "decrement":
-                            variables[loop_variable] = variables[loop_variable] - 1
-                            update_symbol_table()
-                        else: 
-                            error("[RuntimeError] No operation type given", current_line)
                         print("Nodes after loop statement list",code_block)
                         if current_token.tokentype == "break_loop_keyword": #OUTTA YR
                             advance()
@@ -1781,6 +1775,15 @@ def loop():
                                     if_linebreak()
                                     loop_complete = False
                                     while loop_complete == False:
+                                        #increment or decrement
+                                        if op_type == "increment":
+                                            variables[loop_variable] = variables[loop_variable] + 1
+                                            update_symbol_table()
+                                        elif op_type == "decrement":
+                                            variables[loop_variable] = variables[loop_variable] - 1
+                                            update_symbol_table()
+                                        else: 
+                                            error("[RuntimeError] No operation type given", current_line)
                                         #revaluate expression
                                         restore(savedpc_expression, saved_currline_expr)
                                         expr = expression()
@@ -1796,16 +1799,7 @@ def loop():
                                                 restore(savedpc_end, saved_currline_end)
                                                 active_loops.pop(loop_name)
                                                 loop_complete = True
-                                                # return "break"
-                                            #increment or decrement
-                                            if op_type == "increment":
-                                                variables[loop_variable] = variables[loop_variable] + 1
-                                                update_symbol_table()
-                                            elif op_type == "decrement":
-                                                variables[loop_variable] = variables[loop_variable] - 1
-                                                update_symbol_table()
-                                            else: 
-                                                error("[RuntimeError] No operation type given", current_line)
+                                                # return "break"                        
                                         else:
                                             restore(savedpc_end, saved_currline_end)
                                             active_loops.pop(loop_name)

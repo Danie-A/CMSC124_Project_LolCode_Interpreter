@@ -1636,9 +1636,19 @@ def loop():
                 if current_token.tokentype == "variable_identifier":
                     loop_variable = current_token.tokenvalue
                     # check if value can be incremented or decremented and if it exists
+                    numbr_pattern = r"-?([1-9][0-9]*|0)"
+                    numbar_pattern = r"-?(0|[1-9][0-9]*)(\.[0-9]+)?"
                     if loop_variable in variables.keys():
-                        if not isinstance(variables[loop_variable],(int, float)): 
-                            error("[Logic Error] Variable cannot be incremented or decremented", current_line)
+                        if re.fullmatch(numbr_pattern, str(variables[loop_variable])):
+                            variables[loop_variable] = handle_semi_typecast(loop_variable, "NUMBR", current_line)
+                        elif re.fullmatch(numbar_pattern, str(variables[loop_variable])):
+                            variables[loop_variable] = handle_semi_typecast(loop_variable, "NUMBAR", current_line)
+                        elif str(variables[loop_variable]) == "WIN" or variables[loop_variable] == True: 
+                            variables[loop_variable] = 1
+                        elif str(variables[loop_variable]) == "FAIL" or variables[loop_variable] == False or variables[loop_variable] == None: 
+                            variables[loop_variable] = 0
+                        else:
+                            error(f"[Logic Error] Variable {loop_variable} cannot be incremented or decremented", current_line)
                     else:
                         error("[Logic Error] Variable does not exist", current_line)
                     active_loops[loop_name] = loop_variable #save the loop name and associated variable to active loops
